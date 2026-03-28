@@ -191,7 +191,21 @@ export default function Navbar() {
             }}>
             {t('navbar.registration')}
           </Link>
-          
+
+          <Link to="/search" style={navLinkStyle}
+            onMouseEnter={(e) => {
+              e.target.style.color = '#E8B76A';
+              e.target.style.backgroundColor = 'rgba(232,183,106,0.1)';
+              e.target.style.transform = 'translateY(-2px)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.color = '#fdf8f2';
+              e.target.style.backgroundColor = 'transparent';
+              e.target.style.transform = 'translateY(0)';
+            }}>
+            Search
+          </Link>
+
           <Link to="/contact" style={navLinkStyle}
             onMouseEnter={(e) => {
               e.target.style.color = '#E8B76A';
@@ -248,6 +262,7 @@ export default function Navbar() {
         <div className={`mobile-menu ${!menuOpen ? 'closed' : ''}`}>
           <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }}>{t('navbar.home')}</Link>
           <Link to="/registration" style={{ textDecoration: 'none', color: 'inherit' }}>{t('navbar.registration')}</Link>
+          <Link to="/search" style={{ textDecoration: 'none', color: 'inherit' }}>Search</Link>
           <Link to="/contact" style={{ textDecoration: 'none', color: 'inherit' }}>{t('navbar.contact')}</Link>
           <select 
             value={i18n.language}

@@ -1,148 +1,87 @@
+// RegisterForm.jsx
+
 import { useState } from "react";
-import { useTranslation } from "react-i18next";
 
-const MOTHER_TONGUES = [
-  "Select",
-  "Tamil",
-  "Telugu",
-  "Kannada",
-  "Malayalam",
-  "Hindi",
-  "Marathi",
-  "Bengali",
-  "Gujarati",
-  "Punjabi",
-  "Odia",
-  "Urdu",
-  "Other",
-];
-const MARITAL_STATUSES = [
-  "Unmarried",
-  "Married",
-  "Divorced",
-  "Widowed",
-  "Separated",
-];
-const GENDERS = ["-Select-", "Male", "Female", "Other"];
-const HOURS = Array.from({ length: 12 }, (_, i) =>
-  String(i + 1).padStart(2, "0"),
-);
-const MINUTES = Array.from({ length: 60 }, (_, i) =>
-  String(i).padStart(2, "0"),
-);
+// Constants
+const GENDERS = ["-Select-", "Male", "Female"];
+const HOURS = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, "0"));
+const MINUTES = ["00", "15", "30", "45"];
 const AMPM = ["AM", "PM"];
+const MOTHER_TONGUES = ["Select", "Tamil", "Telugu", "Kannada", "Malayalam", "Hindi", "Marathi", "English"];
+const MARITAL_STATUSES = ["Unmarried", "Married", "Divorced", "Widowed"];
 const SIBLING_COUNTS = ["-", "0", "1", "2", "3", "4", "5"];
-const HEIGHTS = Array.from(
-  { length: 30 },
-  (_, i) => `${4 + Math.floor(i / 12)}'${i % 12}"`,
-);
-const WEIGHTS = Array.from({ length: 50 }, (_, i) => `${50 + i * 2} kg`);
-const BLOOD_GROUPS = [
-  "-Select-",
-  "O+",
-  "O-",
-  "A+",
-  "A-",
-  "B+",
-  "B-",
-  "AB+",
-  "AB-",
-];
-const STARS = [
-  "-Select-",
-  "Ashwini",
-  "Bharani",
-  "Kritika",
-  "Rohini",
-  "Mrigashirsha",
-];
-const CASTES = [
-  "-Select-",
-  "Brahmin",
-  "Kshatriya",
-  "Vaishya",
-  "Shudra",
-  "OBC",
-  "SC/ST",
-];
-const LAKNAM = [
-  "-Select Laknam-",
-  "Mesha",
-  "Vrishabha",
-  "Mithuna",
-  "Kataka",
-  "Simha",
-  "Kanya",
-  "Tula",
-  "Vrischika",
-  "Dhanus",
-  "Makara",
-  "Kumbha",
-  "Meena",
-];
-
-const MANDATORY_FIELDS = [
-  "name",
-  "gender",
-  "dob",
-  "motherTongue",
-  "placeBirth",
-  "nativity",
-];
+const HEIGHTS = ["4'8\"", "4'9\"", "4'10\"", "4'11\"", "5'0\"", "5'1\"", "5'2\"", "5'3\"", "5'4\"", "5'5\"", "5'6\"", "5'7\"", "5'8\"", "5'9\"", "5'10\"", "5'11\"", "6'0\""];
+const WEIGHTS = ["40kg", "45kg", "50kg", "55kg", "60kg", "65kg", "70kg", "75kg", "80kg", "85kg", "90kg"];
+const BLOOD_GROUPS = ["-Select-", "O+", "O-", "A+", "A-", "B+", "B-", "AB+", "AB-"];
+const CASTES = ["-Select-", "Brahmin", "Kshatriya", "Vaishya", "Shudra", "Others"];
+const STARS = ["-Select-", "Ashwini", "Bharani", "Krithika", "Rohini", "Mrigasira", "Aridra", "Punarvasu"];
+const LAKNAM = ["-Select Laknam-", "Laknam 1", "Laknam 2"];
 
 export default function PersonalFamilyForm() {
-  const { t } = useTranslation();
   const [form, setForm] = useState({
-    name: "",
-    gender: "-Select-",
-    dob: "",
-    birthHour: "",
-    birthMin: "",
-    birthAmPm: "AM",
-    placeBirth: "",
-    nativity: "",
-    motherTongue: "Select",
+    name: "Rajesh Kumar",
+    gender: "Male",
+    dob: "1995-06-15",
+    birthHour: "14",
+    birthMin: "30",
+    birthAmPm: "PM",
+    placeBirth: "Chennai",
+    nativity: "Tamil Nadu",
+    motherTongue: "Tamil",
     maritalStatus: "Unmarried",
-    fatherName: "",
+    fatherName: "Suresh Kumar",
     fatherAlive: "yes",
-    fatherJob: "",
-    motherName: "",
+    fatherJob: "Engineer",
+    motherName: "Lakshmi",
     motherAlive: "yes",
-    motherJob: "",
-    sibMarriedEB: "-",
-    sibMarriedYB: "-",
-    sibMarriedES: "-",
-    sibMarriedYS: "-",
-    sibUnmarriedEB: "-",
-    sibUnmarriedYB: "-",
-    sibUnmarriedES: "-",
-    sibUnmarriedYS: "-",
+    motherJob: "Teacher",
+    sibMarriedEB: "1",
+    sibMarriedYB: "0",
+    sibMarriedES: "0",
+    sibMarriedYS: "0",
+    sibUnmarriedEB: "0",
+    sibUnmarriedYB: "1",
+    sibUnmarriedES: "0",
+    sibUnmarriedYS: "0",
     others: "",
     // Physical Attributes
-    height: "-Select-",
-    weight: "-Select-",
-    bloodGroup: "-Select-",
+    height: "5'10\"",
+    weight: "75kg",
+    bloodGroup: "O+",
     diet: "Vegetarian",
     disability: "No",
-    complexion: "Very Fair",
+    complexion: "Fair",
     // Education & Occupation
-    qualification: "",
-    job: "",
-    placeJob: "",
-    incomeMonth: "",
+    qualification: "B.Tech",
+    job: "Software Engineer",
+    placeJob: "Bangalore",
+    incomeMonth: "60000",
+    // Partner Expectation (new UI section)
+    partnerQualification: "B.Tech/B.Com",
+    partnerJob: "Any",
+    partnerJobRequirement: "Must",
+    partnerIncomeMonth: "30000",
+    partnerAgeFrom: "25",
+    partnerAgeTo: "30",
+    partnerDiet: "Vegetarian",
+    partnerHoroscopeRequired: "No",
+    partnerMaritalStatus: "Unmarried",
+    partnerCaste: "Brahmin",
+    partnerSubCaste: "Any",
+    partnerOtherRequirement: "Should speak English",
     // Astrology
-    caste: "-Select-",
-    subCaste: "-select-",
-    gothram: "",
-    star: "-Select-",
-    raasi: "-Select Rasi -",
-    padam: "-Select Padam-",
-    laknam: "-Select Laknam-",
+    caste: "Brahmin",
+    subCaste: "Iyer",
+    gothram: "Bharadwaja",
+    star: "Rohini",
+    raasi: "Taurus",
+    padam: "Krithika 3",
+    laknam: "Laknam 1",
     // Communication Details
-    permanentAddress: "",
-    presentAddress: "",
-    contactPerson: "",
-    contactNumber: "",
+    permanentAddress: "123 Main Street, Chennai, TN 600001",
+    presentAddress: "456 Tech Park, Bangalore, KA 560001",
+    contactPerson: "Suresh Kumar",
+    contactNumber: "9876543210",
   });
   const [errors, setErrors] = useState({});
   const [submitted, setSubmitted] = useState(false);
@@ -166,11 +105,33 @@ export default function PersonalFamilyForm() {
     return e;
   };
 
-  const handleSubmit = (e) => {
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const errs = validate();
     setErrors(errs);
-    if (Object.keys(errs).length === 0) setSubmitted(true);
+    if (Object.keys(errs).length > 0) return;
+
+    setSubmitting(true);
+    try {
+      const res = await fetch("/API/register.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams(form).toString(),
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        setSubmitted(true);
+      } else {
+        alert(data.message || "Registration failed");
+      }
+    } catch (err) {
+      alert("Network error. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleReset = () => {
@@ -221,10 +182,24 @@ export default function PersonalFamilyForm() {
       presentAddress: "",
       contactPerson: "",
       contactNumber: "",
+      partnerQualification: "",
+      partnerJob: "",
+      partnerJobRequirement: "Optional",
+      partnerIncomeMonth: "",
+      partnerAgeFrom: "",
+      partnerAgeTo: "",
+      partnerDiet: "Vegetarian",
+      partnerHoroscopeRequired: "No",
+      partnerMaritalStatus: "Unmarried",
+      partnerCaste: "Any",
+      partnerSubCaste: "Any",
+      partnerOtherRequirement: "",
     });
     setErrors({});
     setSubmitted(false);
   };
+
+
 
   const inp = (hasErr) => ({
     padding: "6px 10px",
@@ -268,53 +243,67 @@ export default function PersonalFamilyForm() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Source+Sans+3:wght@400;500;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background: #fff5f5; }
-        input:focus, select:focus, textarea:focus {
-          border-color: #dc1f26 !important;
-          box-shadow: 0 0 0 2px rgba(220,31,38,0.15) !important;
-          outline: none;
-        }
-        select option { background: #fff; color: #222; }
+        body { background: #fff; color: #333; font-family: 'Source Sans 3', sans-serif; }
+
+        .page-wrapper { min-height: 100vh; background: #fff; padding: 20px 12px 30px; }
+        .card { max-width: 940px; margin: 0 auto; background: #fff; border-radius: 16px; border: 1px solid #f3b7bb; box-shadow: 0 8px 24px rgba(0,0,0,0.08); overflow: hidden; }
+
+        .heading-bar { background: #fff; padding: 16px 20px; border-bottom: 2px solid #dc1f26; text-align: center; }
+        .heading-bar h1 { margin: 0; color: #dc1f26; font-size: clamp(18px, 2.2vw, 26px); font-weight: 700; letter-spacing: 0.4px; }
+
         .form-table { width: 100%; border-collapse: collapse; }
-        .form-table td { padding: 7px 10px; vertical-align: middle; }
+        .form-table td { padding: 10px 12px; vertical-align: top; }
+        .form-table tr { border-bottom: 1px solid #f2d7d9; }
         .row-alt { background: #fff; }
-        .row-main { background: #f5f5f5; }
-        .section-sub { background: #ffefef; }
-        .radio-group { display: flex; align-items: center; gap: 14px; }
-        .radio-group label { display: flex; align-items: center; gap: 5px; cursor: pointer; font-family: Georgia, serif; font-size: 13px; color: #222; }
-        .radio-group input[type=radio] { accent-color: #dc1f26; width: 15px; height: 15px; cursor: pointer; }
-        .sib-table { width: 100%; border-collapse: collapse; font-family: Georgia, serif; font-size: 13px; }
-        .sib-table th { background: #ffdfdf; border: 1px solid #ffb3b3; padding: 8px 6px; font-weight: 700; text-align: center; color: #8B0000; }
-        .sib-table td { border: 1px solid #ffc8c8; padding: 5px 6px; text-align: center; background: #fff; }
-        .btn-submit { background: linear-gradient(135deg, #dc1f26, #a93226); color: #fff; border: none; padding: 10px 32px; border-radius: 5px; font-size:14px; font-family: Georgia,serif; font-weight:700; cursor:pointer; letter-spacing:0.5px; box-shadow: 0 3px 10px rgba(220,31,38,0.3); transition: all 0.2s; }
-        .btn-submit:hover { background: linear-gradient(135deg,#a93226,#8B0000); transform:translateY(-1px); box-shadow: 0 5px 14px rgba(220,31,38,0.4); }
-        .btn-reset { background: #fff; color: #dc1f26; border: 1.5px solid #dc1f26; padding: 10px 28px; border-radius: 5px; font-size:14px; font-family: Georgia,serif; font-weight:600; cursor:pointer; transition: all 0.2s; }
-        .btn-reset:hover { background: #fdf0f0; }
-        .success-banner { background: linear-gradient(135deg,#dc1f26,#a93226); color: #fff; padding: 14px 20px; border-radius: 8px; font-family: Georgia,serif; font-size:15px; text-align:center; margin-bottom:16px; box-shadow:0 3px 12px rgba(220,31,38,0.3); }
+        .row-main { background: #fff; }
+        .section-sub { background: #fff; }
+
+        .label { font-size: 13px; color: #1d1d1d; font-weight: 600; margin-bottom: 5px; display: inline-block; }
+        input, select, textarea { width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 8px; background: #fff; color: #333; font-size: 13px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.06); transition: all 0.2s ease; }
+        input:focus, select:focus, textarea:focus { border-color: #dc1f26; box-shadow: 0 0 0 3px rgba(220,31,38,0.14); outline: none; }
+
+        .section-title { margin: 10px 15px 10px; padding: 10px 14px; border: 2px solid #dc1f26; border-radius: 8px; background: #fff; color: #dc1f26; font-weight: 700; font-size: 15px; text-align: center; }
+
+        .radio-group { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-block: 8px; }
+        .radio-group label { display: flex; align-items: center; gap: 6px; cursor: pointer; color: #333; font-size: 13px; font-weight: 500; }
+        .radio-group input[type=radio] { accent-color: #dc1f26; width: 16px; height: 16px; }
+
+        .sib-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        .sib-table th, .sib-table td { border: 1px solid #f2d7d9; padding: 8px 6px; background: #fff; }
+        .sib-table th { background: #fee7ea; color: #c62828; font-weight: 700; }
+
+        .btn-submit, .btn-reset { border-radius: 8px; font-size: 14px; font-weight: 700; padding: 11px 22px; min-width: 130px; transition: all 0.2s ease; }
+        .btn-submit { background: #dc1f26; color: #fff; border: 1px solid #bd1e24; box-shadow: 0 4px 12px rgba(220,31,38,0.3); }
+        .btn-submit:hover { background: #b51b20; transform: translateY(-1px); }
+        .btn-reset { background: #fff; color: #dc1f26; border: 1px solid #dc1f26; }
+        .btn-reset:hover { background: #fff5f5; }
+
+        .success-banner { background: #dc1f26; color: #fff; padding: 14px 20px; border-radius: 8px; font-weight: 700; text-align: center; margin-bottom: 16px; box-shadow: 0 4px 16px rgba(220,31,38,0.25); }
+
+        .communication-image-wrapper { width: 100%; display: flex; justify-content: center; margin: 16px 0; }
+        .communication-image { width: 100%; max-width: 760px; border-radius: 10px; border: 1px solid #f0b5ba; }
+
+        @media (max-width: 990px) {
+          .form-table td { padding: 8px 8px; }
+          .btn-submit, .btn-reset { width: 100%; min-width: 0; }
+          .form-table tr { display: grid; grid-template-columns: 1fr; gap: 10px; }
+          .form-table td { width: 100%; display: block; }
+          .sib-table th, .sib-table td { font-size: 12px; }
+        }
         @media (max-width: 700px) {
-          .form-table td { display: block; width: 100%; padding: 5px 8px; }
-          .form-table tr { display: block; margin-bottom: 2px; }
-          .sib-table th, .sib-table td { padding: 5px 3px; font-size: 11px; }
-          .sib-table select { font-size: 11px; padding: 3px 4px; }
-          .time-row { flex-wrap: wrap; }
+          .form-table td { padding: 6px 6px; }
+          .section-title { font-size: 14px; padding: 10px; }
+          .heading-bar h1 { font-size: 18px; }
         }
       `}</style>
 
-      <div
-        style={{
-          minHeight: "100vh",
-          background:
-            "linear-gradient(160deg,#fff5f5 0%,#ffffff 50%,#fff0f0 100%)",
-          padding: "24px 12px",
-          fontFamily: "Georgia,serif",
-        }}
-      >
-        <div style={{ maxWidth: 920, margin: "0 auto" }}>
+      <div className="page-wrapper">
+        <div className="card">
           {submitted && (
             <div className="success-banner">
-              ✅ {t('registration.title')} submitted successfully!
+              ✅ Personal & Family Details submitted successfully!
               <button
                 onClick={handleReset}
                 style={{
@@ -329,21 +318,13 @@ export default function PersonalFamilyForm() {
                   fontFamily: "Georgia,serif",
                 }}
               >
-                {t('common.next')}
+                Submit Another
               </button>
             </div>
           )}
 
           {/* Card wrapper */}
-          <div
-            style={{
-              background: "#fff",
-              borderRadius: 10,
-              overflow: "hidden",
-              boxShadow:
-                "0 4px 30px rgba(0,0,0,0.12), 0 1px 4px rgba(192,57,43,0.08)",
-            }}
-          >
+          <div>
             {/* Header */}
             <div
               style={{
@@ -379,7 +360,7 @@ export default function PersonalFamilyForm() {
                   letterSpacing: 0.5,
                 }}
               >
-                {t('registration.title')}
+                Personal and Family Details
               </h1>
             </div>
 
@@ -390,21 +371,21 @@ export default function PersonalFamilyForm() {
                   <tr className="row-alt">
                     <td style={{ width: "18%" }}>
                       <label style={lbl}>
-                        <span style={req}>*</span>{t('registration.name')} :
+                        <span style={req}>*</span>Name :
                       </label>
                     </td>
                     <td style={{ width: "22%" }}>
                       <input
                         value={form.name}
                         onChange={(e) => set("name", e.target.value)}
-                        placeholder={t('registration.namePlaceholder')}
+                        placeholder="Full Name"
                         style={inp(errors.name)}
                       />
                       {errors.name && <div style={errMsg}>{errors.name}</div>}
                     </td>
                     <td style={{ width: "15%", textAlign: "right" }}>
                       <label style={lbl}>
-                        <span style={req}>*</span>{t('registration.gender')} :
+                        <span style={req}>*</span>Gender :
                       </label>
                     </td>
                     <td style={{ width: "22%" }}>
@@ -423,7 +404,7 @@ export default function PersonalFamilyForm() {
                     </td>
                     <td style={{ width: "10%", textAlign: "right" }}>
                       <label style={lbl}>
-                        <span style={req}>*</span>{t('registration.dob')} :
+                        <span style={req}>*</span>Date Of Birth :
                       </label>
                     </td>
                     <td>
@@ -440,7 +421,7 @@ export default function PersonalFamilyForm() {
                   {/* Row 2: Time of Birth, Place, Nativity */}
                   <tr className="row-main">
                     <td>
-                      <label style={lbl}>{t('registration.birthTime')} :</label>
+                      <label style={lbl}>Time of Birth :</label>
                     </td>
                     <td>
                       <div
@@ -456,7 +437,7 @@ export default function PersonalFamilyForm() {
                           onChange={(e) => set("birthHour", e.target.value)}
                           style={{ ...sel(false), width: 60 }}
                         >
-                          <option value="">{t('registration.hour')}</option>
+                          <option value="">HH</option>
                           {HOURS.map((h) => (
                             <option key={h}>{h}</option>
                           ))}
@@ -466,7 +447,7 @@ export default function PersonalFamilyForm() {
                           onChange={(e) => set("birthMin", e.target.value)}
                           style={{ ...sel(false), width: 60 }}
                         >
-                          <option value="">{t('registration.minute')}</option>
+                          <option value="">MM</option>
                           {MINUTES.map((m) => (
                             <option key={m}>{m}</option>
                           ))}
@@ -484,10 +465,10 @@ export default function PersonalFamilyForm() {
                     </td>
                     <td style={{ textAlign: "right" }}>
                       <label style={{ ...lbl, fontSize: 12 }}>
-                        {t('registration.placeBirth')}
+                        Place Of Birth
                         <br />
                         <span style={{ color: "#555", fontSize: 11 }}>
-                          ({t('registration.pleaseSpecify')})
+                          (Town/District)
                         </span>{" "}
                         <span style={req}>*</span>:
                       </label>
@@ -496,7 +477,7 @@ export default function PersonalFamilyForm() {
                       <input
                         value={form.placeBirth}
                         onChange={(e) => set("placeBirth", e.target.value)}
-                        placeholder={t('registration.pleaseSpecify')}
+                        placeholder="Town / District"
                         style={inp(errors.placeBirth)}
                       />
                       {errors.placeBirth && (
@@ -505,10 +486,10 @@ export default function PersonalFamilyForm() {
                     </td>
                     <td style={{ textAlign: "right" }}>
                       <label style={{ ...lbl, fontSize: 12 }}>
-                        {t('registration.nativity')}
+                        Nativity
                         <br />
                         <span style={{ color: "#555", fontSize: 11 }}>
-                          ({t('registration.pleaseSpecify')})
+                          (Town & District)
                         </span>{" "}
                         <span style={req}>*</span>:
                       </label>
@@ -517,7 +498,7 @@ export default function PersonalFamilyForm() {
                       <input
                         value={form.nativity}
                         onChange={(e) => set("nativity", e.target.value)}
-                        placeholder={t('registration.pleaseSpecify')}
+                        placeholder="Town & District"
                         style={inp(errors.nativity)}
                       />
                       {errors.nativity && (
@@ -530,7 +511,7 @@ export default function PersonalFamilyForm() {
                   <tr className="section-sub">
                     <td>
                       <label style={lbl}>
-                        <span style={req}>*</span>{t('registration.motherTongue')} :
+                        <span style={req}>*</span>MotherTongue :
                       </label>
                     </td>
                     <td>
@@ -548,7 +529,7 @@ export default function PersonalFamilyForm() {
                       )}
                     </td>
                     <td style={{ textAlign: "right" }}>
-                      <label style={lbl}>{t('registration.maritalStatus')} :</label>
+                      <label style={lbl}>Marital status :</label>
                     </td>
                     <td colSpan={3}>
                       <select
@@ -566,18 +547,18 @@ export default function PersonalFamilyForm() {
                   {/* Row 4: Father's details */}
                   <tr className="row-alt">
                     <td>
-                      <label style={lbl}>{t('registration.fatherName')} :</label>
+                      <label style={lbl}>Father's Name :</label>
                     </td>
                     <td>
                       <input
                         value={form.fatherName}
                         onChange={(e) => set("fatherName", e.target.value)}
-                        placeholder={t('registration.fatherName')}
+                        placeholder="Father's full name"
                         style={inp(false)}
                       />
                     </td>
                     <td style={{ textAlign: "right" }}>
-                      <label style={lbl}>{t('registration.fatherAlive')} :</label>
+                      <label style={lbl}>Father's Alive :</label>
                     </td>
                     <td>
                       <div className="radio-group">
@@ -589,7 +570,7 @@ export default function PersonalFamilyForm() {
                             checked={form.fatherAlive === "yes"}
                             onChange={(e) => set("fatherAlive", "yes")}
                           />{" "}
-                          {t('registration.fatherAliveYes')}
+                          Yes
                         </label>
                         <label>
                           <input
@@ -599,18 +580,18 @@ export default function PersonalFamilyForm() {
                             checked={form.fatherAlive === "no"}
                             onChange={(e) => set("fatherAlive", "no")}
                           />{" "}
-                          {t('registration.fatherAliveNo')}
+                          No
                         </label>
                       </div>
                     </td>
                     <td style={{ textAlign: "right" }}>
-                      <label style={lbl}>{t('registration.fatherOccupation')} :</label>
+                      <label style={lbl}>Father's Job :</label>
                     </td>
                     <td>
                       <input
                         value={form.fatherJob}
                         onChange={(e) => set("fatherJob", e.target.value)}
-                        placeholder={t('registration.occupation')}
+                        placeholder="Occupation"
                         style={inp(false)}
                       />
                     </td>
@@ -619,18 +600,18 @@ export default function PersonalFamilyForm() {
                   {/* Row 5: Mother's details */}
                   <tr className="row-main">
                     <td>
-                      <label style={lbl}>{t('registration.motherName')} :</label>
+                      <label style={lbl}>Mother's Name :</label>
                     </td>
                     <td>
                       <input
                         value={form.motherName}
                         onChange={(e) => set("motherName", e.target.value)}
-                        placeholder={t('registration.motherName')}
+                        placeholder="Mother's full name"
                         style={inp(false)}
                       />
                     </td>
                     <td style={{ textAlign: "right" }}>
-                      <label style={lbl}>{t('registration.motherAlive')} :</label>
+                      <label style={lbl}>Mother's Alive :</label>
                     </td>
                     <td>
                       <div className="radio-group">
@@ -642,7 +623,7 @@ export default function PersonalFamilyForm() {
                             checked={form.motherAlive === "yes"}
                             onChange={(e) => set("motherAlive", "yes")}
                           />{" "}
-                          {t('registration.motherAliveYes')}
+                          Yes
                         </label>
                         <label>
                           <input
@@ -652,18 +633,18 @@ export default function PersonalFamilyForm() {
                             checked={form.motherAlive === "no"}
                             onChange={(e) => set("motherAlive", "no")}
                           />{" "}
-                          {t('registration.motherAliveNo')}
+                          No
                         </label>
                       </div>
                     </td>
                     <td style={{ textAlign: "right" }}>
-                      <label style={lbl}>{t('registration.motherOccupation')} :</label>
+                      <label style={lbl}>Mother's Job :</label>
                     </td>
                     <td>
                       <input
                         value={form.motherJob}
                         onChange={(e) => set("motherJob", e.target.value)}
-                        placeholder={t('registration.occupation')}
+                        placeholder="Occupation"
                         style={inp(false)}
                       />
                     </td>
@@ -675,11 +656,11 @@ export default function PersonalFamilyForm() {
                       <table className="sib-table">
                         <thead>
                           <tr>
-                            <th style={{ width: "22%" }}>{t('registration.siblings')}</th>
-                            <th>{t('registration.elderBrother')}</th>
-                            <th>{t('registration.youngerBrother')}</th>
-                            <th>{t('registration.elderSister')}</th>
-                            <th>{t('registration.youngerSister')}</th>
+                            <th style={{ width: "22%" }}>Relationship</th>
+                            <th>Elder Brother</th>
+                            <th>Younger brother</th>
+                            <th>Elder Sister</th>
+                            <th>Younger Sister</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -691,7 +672,7 @@ export default function PersonalFamilyForm() {
                                 color: "#1a2a4a",
                               }}
                             >
-                              {t('registration.married')}
+                              Married
                             </td>
                             {[
                               "sibMarriedEB",
@@ -729,7 +710,7 @@ export default function PersonalFamilyForm() {
                                 color: "#1a2a4a",
                               }}
                             >
-                              {t('registration.unmarried')}
+                              UnMarried
                             </td>
                             {[
                               "sibUnmarriedEB",
@@ -768,10 +749,12 @@ export default function PersonalFamilyForm() {
                   <tr className="row-main">
                     <td style={{ verticalAlign: "top", paddingTop: 10 }}>
                       <label style={{ ...lbl, lineHeight: 1.6 }}>
-                        {t('registration.siblings')}
+                        Any Others Details
                         <br />
                         <span style={{ fontSize: 11, color: "#666" }}>
-                          {t('registration.siblings')}
+                          (Talents, Achievements, Likes,
+                          <br />
+                          Visa Status, Family details, God etc)
                         </span>
                         <span style={req}> *</span>:
                       </label>
@@ -781,7 +764,7 @@ export default function PersonalFamilyForm() {
                         value={form.others}
                         onChange={(e) => set("others", e.target.value)}
                         rows={4}
-                        placeholder={t('registration.siblings')}
+                        placeholder="Enter any additional details about talents, achievements, visa status, family details, deity/god preferences, etc."
                         style={{
                           ...inp(false),
                           resize: "vertical",
@@ -814,13 +797,13 @@ export default function PersonalFamilyForm() {
                           fontFamily: "Georgia,serif",
                         }}
                       >
-                        {t('registration.physicalAttributes')}
+                        Physical Attributes
                       </div>
                       <table className="form-table">
                         <tbody>
                           <tr className="row-main">
                             <td style={{ width: "18%" }}>
-                              <label style={lbl}>{t('registration.height')} :</label>
+                              <label style={lbl}>Height :</label>
                             </td>
                             <td style={{ width: "22%" }}>
                               <select
@@ -834,7 +817,7 @@ export default function PersonalFamilyForm() {
                               </select>
                             </td>
                             <td style={{ width: "15%", textAlign: "right" }}>
-                              <label style={lbl}>{t('registration.weight')} :</label>
+                              <label style={lbl}>Weight :</label>
                             </td>
                             <td style={{ width: "22%" }}>
                               <select
@@ -848,7 +831,7 @@ export default function PersonalFamilyForm() {
                               </select>
                             </td>
                             <td style={{ width: "18%", textAlign: "right" }}>
-                              <label style={lbl}>{t('registration.bloodGroup')} :</label>
+                              <label style={lbl}>Blood Group :</label>
                             </td>
                             <td>
                               <select
@@ -867,10 +850,10 @@ export default function PersonalFamilyForm() {
                           <tr className="section-sub">
                             <td colSpan={3}>
                               <div className="radio-group">
-                                <label style={lbl}>{t('registration.diet')} :</label>
+                                <label style={lbl}>Diet :</label>
                                 {[
-                                  t('registration.vegetarian'),
-                                  t('registration.nonVegetarian'),
+                                  "Vegetarian",
+                                  "Non-Vegetarian",
                                   "Eggetarian",
                                 ].map((d) => (
                                   <label key={d}>
@@ -887,8 +870,8 @@ export default function PersonalFamilyForm() {
                             </td>
                             <td colSpan={3} style={{ textAlign: "right" }}>
                               <div className="radio-group">
-                                <label style={lbl}>{t('registration.disability')} :</label>
-                                {[t('common.cancel'), t('common.next')].map((d) => (
+                                <label style={lbl}>Disability (If any) :</label>
+                                {["No", "Yes"].map((d) => (
                                   <label key={d}>
                                     <input
                                       type="radio"
@@ -909,7 +892,7 @@ export default function PersonalFamilyForm() {
                                 style={{ justifyContent: "center" }}
                               >
                                 <label style={{ ...lbl, marginRight: 16 }}>
-                                  {t('registration.complexion')} :
+                                  Complexion :
                                 </label>
                                 {[
                                   "Very Fair",
@@ -951,13 +934,13 @@ export default function PersonalFamilyForm() {
                           fontFamily: "Georgia,serif",
                         }}
                       >
-                        {t('registration.educationOccupation')}
+                        Education & Occupation Details
                       </div>
                       <table className="form-table">
                         <tbody>
                           <tr className="section-sub">
                             <td style={{ width: "18%" }}>
-                              <label style={lbl}>{t('registration.qualification')} :</label>
+                              <label style={lbl}>Qualification :</label>
                             </td>
                             <td style={{ width: "30%" }}>
                               <input
@@ -965,23 +948,23 @@ export default function PersonalFamilyForm() {
                                 onChange={(e) =>
                                   set("qualification", e.target.value)
                                 }
-                                placeholder={t('registration.qualification')}
+                                placeholder="Enter qualification"
                                 style={inp(false)}
                               />
                             </td>
                             <td style={{ width: "15%", textAlign: "right" }}>
-                              <label style={lbl}>{t('registration.occupation')} :</label>
+                              <label style={lbl}>Job :</label>
                             </td>
                             <td style={{ width: "22%" }}>
                               <input
                                 value={form.job}
                                 onChange={(e) => set("job", e.target.value)}
-                                placeholder={t('registration.occupation')}
+                                placeholder="Job title"
                                 style={inp(false)}
                               />
                             </td>
                             <td style={{ width: "15%", textAlign: "right" }}>
-                              <label style={lbl}>{t('registration.placeOfWork')} :</label>
+                              <label style={lbl}>Place Of Job :</label>
                             </td>
                             <td>
                               <input
@@ -989,14 +972,14 @@ export default function PersonalFamilyForm() {
                                 onChange={(e) =>
                                   set("placeJob", e.target.value)
                                 }
-                                placeholder={t('registration.placeOfWork')}
+                                placeholder="City/Location"
                                 style={inp(false)}
                               />
                             </td>
                           </tr>
                           <tr className="row-main">
                             <td style={{ width: "18%" }}>
-                              <label style={lbl}>{t('registration.monthlyIncome')} :</label>
+                              <label style={lbl}>Income Per Month :</label>
                             </td>
                             <td colSpan={5}>
                               <input
@@ -1004,7 +987,7 @@ export default function PersonalFamilyForm() {
                                 onChange={(e) =>
                                   set("incomeMonth", e.target.value)
                                 }
-                                placeholder={t('registration.monthlyIncome')}
+                                placeholder="Enter monthly income"
                                 style={inp(false)}
                               />
                             </td>
@@ -1029,14 +1012,14 @@ export default function PersonalFamilyForm() {
                           fontFamily: "Georgia,serif",
                         }}
                       >
-                        {t('registration.astrology')}
+                        Astrology Details
                       </div>
                       <table className="form-table">
                         <tbody>
                           <tr className="section-sub">
                             <td style={{ width: "18%" }}>
                               <label style={{ ...lbl }}>
-                                <span style={req}>*</span>{t('registration.caste')} :
+                                <span style={req}>*</span>Caste :
                               </label>
                             </td>
                             <td style={{ width: "22%" }}>
@@ -1052,7 +1035,7 @@ export default function PersonalFamilyForm() {
                             </td>
                             <td style={{ width: "15%", textAlign: "right" }}>
                               <label style={{ ...lbl }}>
-                                <span style={req}>*</span>{t('registration.subcaste')} :
+                                <span style={req}>*</span>Sub Caste :
                               </label>
                             </td>
                             <td style={{ width: "22%" }}>
@@ -1072,13 +1055,13 @@ export default function PersonalFamilyForm() {
                               </select>
                             </td>
                             <td style={{ width: "15%", textAlign: "right" }}>
-                              <label style={lbl}>{t('registration.gothram')} :</label>
+                              <label style={lbl}>Gothram :</label>
                             </td>
                             <td>
                               <input
                                 value={form.gothram}
                                 onChange={(e) => set("gothram", e.target.value)}
-                                placeholder={t('registration.gothram')}
+                                placeholder="Gothram"
                                 style={inp(false)}
                               />
                             </td>
@@ -1161,38 +1144,38 @@ export default function PersonalFamilyForm() {
                   <tr className="row-alt">
                     <td colSpan={6} style={{ padding: "12px 14px" }}>
                       <div style={{ background: "linear-gradient(135deg,#dc1f26,#a93226)", color: "#fff", padding: "8px 12px", borderRadius: 4, fontWeight: 700, fontSize: 14, marginBottom: 12, fontFamily: "Georgia,serif" }}>
-                        {t('registration.communicationDetails')}
+                        Communication Details
                       </div>
                       <table className="form-table">
                         <tbody>
                           <tr className="row-main">
                             <td style={{ width: "20%" }}>
-                              <label style={lbl}>{t('registration.permanentAddress')} :</label>
+                              <label style={lbl}>Permanent Address :</label>
                             </td>
                             <td style={{ width: "40%" }}>
-                              <textarea value={form.permanentAddress} onChange={(e) => set("permanentAddress", e.target.value)} placeholder={t('registration.permanentAddress')} rows={3} style={{...inp(false), resize: "vertical", minHeight: 70, padding: "8px 10px", lineHeight: 1.4 }} />
+                              <textarea value={form.permanentAddress} onChange={(e) => set("permanentAddress", e.target.value)} placeholder="Enter permanent address" rows={3} style={{...inp(false), resize: "vertical", minHeight: 70, padding: "8px 10px", lineHeight: 1.4 }} />
                             </td>
                             <td style={{ width: "20%" }}>
-                              <label style={lbl}>{t('registration.presentAddress')} :</label>
+                              <label style={lbl}>Present Address :</label>
                             </td>
                             <td>
-                              <textarea value={form.presentAddress} onChange={(e) => set("presentAddress", e.target.value)} placeholder={t('registration.presentAddress')} rows={3} style={{...inp(false), resize: "vertical", minHeight: 70, padding: "8px 10px", lineHeight: 1.4 }} />
+                              <textarea value={form.presentAddress} onChange={(e) => set("presentAddress", e.target.value)} placeholder="Enter present address" rows={3} style={{...inp(false), resize: "vertical", minHeight: 70, padding: "8px 10px", lineHeight: 1.4 }} />
                             </td>
                           </tr>
                           <tr className="section-sub">
                             <td style={{ width: "20%" }}>
-                              <label style={lbl}>{t('registration.contactPerson')} :</label>
+                              <label style={lbl}>Contact Person :</label>
                             </td>
                             <td style={{ width: "40%" }}>
-                              <input value={form.contactPerson} onChange={(e) => set("contactPerson", e.target.value)} placeholder={t('registration.contactPerson')} style={inp(false)} />
+                              <input value={form.contactPerson} onChange={(e) => set("contactPerson", e.target.value)} placeholder="Contact person name" style={inp(false)} />
                             </td>
                             <td style={{ width: "20%", textAlign: "right" }}>
                               <label style={{...lbl}}>
-                                <span style={req}>*</span>{t('registration.contactNumber')} :
+                                <span style={req}>*</span>Contact Number :
                               </label>
                             </td>
                             <td>
-                              <input value={form.contactNumber} onChange={(e) => set("contactNumber", e.target.value)} placeholder={t('registration.contactNumberPlaceholder')} maxLength={10} style={inp(errors.contactNumber)} />
+                              <input value={form.contactNumber} onChange={(e) => set("contactNumber", e.target.value)} placeholder="10-digit mobile number" maxLength={10} style={inp(errors.contactNumber)} />
                               {errors.contactNumber && <div style={errMsg}>{errors.contactNumber}</div>}
                             </td>
                           </tr>
@@ -1202,6 +1185,392 @@ export default function PersonalFamilyForm() {
                   </tr>
                 </tbody>
               </table>
+
+              {/* Horoscope Details Section */}
+              <div
+                style={{
+                  marginBottom: 20,
+                  marginLeft: 14,
+                  marginRight: 14,
+                }}
+              >
+                <div
+                  style={{
+                    background: "linear-gradient(135deg,#dc1f26,#a93226)",
+                    color: "#fff",
+                    padding: "8px 12px",
+                    borderRadius: 4,
+                    fontWeight: 700,
+                    fontSize: 14,
+                    marginBottom: 12,
+                    fontFamily: "Georgia,serif",
+                  }}
+                >
+                  Horoscope Details
+                </div>
+              </div>
+
+              {/* Partner Expectation Details Section */}
+              <div
+                style={{
+                  marginBottom: 20,
+                  marginLeft: 14,
+                  marginRight: 14,
+                }}
+              >
+                <div
+                  style={{
+                    background: "linear-gradient(135deg,#dc1f26,#a93226)",
+                    color: "#fff",
+                    padding: "8px 12px",
+                    borderRadius: 4,
+                    fontWeight: 700,
+                    fontSize: 14,
+                    marginBottom: 12,
+                    fontFamily: "Georgia,serif",
+                  }}
+                >
+                  Partner Expectation Details
+                </div>
+                <div
+                  style={{
+                    background: "#fff",
+                    border: "1px solid #f0b5ba",
+                    borderRadius: 8,
+                    padding: "10px 12px",
+                  }}
+                >
+                  <table className="form-table" style={{ marginTop: 10 }}>
+                    <tbody>
+                      <tr className="section-sub">
+                        <td style={{ width: "20%" }}>
+                          <label style={lbl}>Qualification :</label>
+                        </td>
+                        <td style={{ width: "30%" }}>
+                          <input
+                            value={form.partnerQualification}
+                            onChange={(e) =>
+                              set("partnerQualification", e.target.value)
+                            }
+                            placeholder="Expected qualification"
+                            style={inp(false)}
+                          />
+                        </td>
+                        <td style={{ width: "15%", textAlign: "right" }}>
+                          <label style={lbl}>Job :</label>
+                        </td>
+                        <td style={{ width: "35%" }}>
+                          <div
+                            style={{
+                              display: "grid",
+                              gridTemplateColumns: "1fr 128px",
+                              gap: 8,
+                            }}
+                          >
+                            <input
+                              value={form.partnerJob}
+                              onChange={(e) =>
+                                set("partnerJob", e.target.value)
+                              }
+                              placeholder="Job preference"
+                              style={inp(false)}
+                            />
+                            <select
+                              value={form.partnerJobRequirement}
+                              onChange={(e) =>
+                                set("partnerJobRequirement", e.target.value)
+                              }
+                              style={sel(false)}
+                            >
+                              <option>Must</option>
+                              <option>Optional</option>
+                              <option>Not Required</option>
+                            </select>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr className="row-main">
+                        <td style={{ width: "20%" }}>
+                          <label style={lbl}>Income Per Month :</label>
+                        </td>
+                        <td style={{ width: "30%" }}>
+                          <input
+                            value={form.partnerIncomeMonth}
+                            onChange={(e) =>
+                              set("partnerIncomeMonth", e.target.value)
+                            }
+                            placeholder="Preferred income"
+                            style={inp(false)}
+                          />
+                        </td>
+                        <td style={{ width: "15%", textAlign: "right" }}>
+                          <label style={lbl}>Preferred Age :</label>
+                        </td>
+                        <td
+                          style={{
+                            width: "35%",
+                            display: "flex",
+                            gap: 8,
+                          }}
+                        >
+                          <input
+                            value={form.partnerAgeFrom}
+                            onChange={(e) =>
+                              set("partnerAgeFrom", e.target.value)
+                            }
+                            placeholder="From"
+                            style={inp(false)}
+                          />
+                          <input
+                            value={form.partnerAgeTo}
+                            onChange={(e) =>
+                              set("partnerAgeTo", e.target.value)
+                            }
+                            placeholder="To"
+                            style={inp(false)}
+                          />
+                        </td>
+                      </tr>
+                      <tr className="section-sub">
+                        <td style={{ width: "20%" }}>
+                          <label style={lbl}>Diet :</label>
+                        </td>
+                        <td style={{ width: "30%" }}>
+                          <select
+                            value={form.partnerDiet}
+                            onChange={(e) => set("partnerDiet", e.target.value)}
+                            style={sel(false)}
+                          >
+                            <option>Vegetarian</option>
+                            <option>Non-Vegetarian</option>
+                            <option>Eggetarian</option>
+                          </select>
+                        </td>
+                        <td style={{ width: "15%", textAlign: "right" }}>
+                          <label style={lbl}>Horoscope Required :</label>
+                        </td>
+                        <td style={{ width: "35%" }}>
+                          <div className="radio-group">
+                            {["Yes", "No"].map((v) => (
+                              <label key={v}>
+                                <input
+                                  type="radio"
+                                  name="partnerHoroscope"
+                                  value={v}
+                                  checked={form.partnerHoroscopeRequired === v}
+                                  onChange={() =>
+                                    set("partnerHoroscopeRequired", v)
+                                  }
+                                />
+                                {v}
+                              </label>
+                            ))}
+                          </div>
+                        </td>
+                      </tr>
+                      <tr className="row-main">
+                        <td style={{ width: "20%" }}>
+                          <label style={lbl}>Caste :</label>
+                        </td>
+                        <td style={{ width: "30%" }}>
+                          <select
+                            value={form.partnerCaste}
+                            onChange={(e) =>
+                              set("partnerCaste", e.target.value)
+                            }
+                            style={sel(false)}
+                          >
+                            <option>Any</option>
+                            <option>Others</option>
+                          </select>
+                        </td>
+                        <td style={{ width: "15%", textAlign: "right" }}>
+                          <label style={lbl}>Sub Caste :</label>
+                        </td>
+                        <td style={{ width: "35%" }}>
+                          <select
+                            value={form.partnerSubCaste}
+                            onChange={(e) =>
+                              set("partnerSubCaste", e.target.value)
+                            }
+                            style={sel(false)}
+                          >
+                            <option>Any</option>
+                            <option>Others</option>
+                          </select>
+                        </td>
+                      </tr>
+                      <tr className="row-main">
+                        <td style={{ width: "20%" }}>
+                          <label style={lbl}>Marital Status :</label>
+                        </td>
+                        <td colSpan={5}>
+                          <select
+                            value={form.partnerMaritalStatus}
+                            onChange={(e) =>
+                              set("partnerMaritalStatus", e.target.value)
+                            }
+                            style={sel(false)}
+                          >
+                            <option>Unmarried</option>
+                            <option>Married</option>
+                            <option>Divorced</option>
+                            <option>Widowed</option>
+                            <option>Separated</option>
+                          </select>
+                        </td>
+                      </tr>
+                      <tr className="row-alt">
+                        <td style={{ verticalAlign: "top", paddingTop: 10 }}>
+                          <label style={lbl}>Any other requirement :</label>
+                        </td>
+                        <td colSpan={5}>
+                          <textarea
+                            value={form.partnerOtherRequirement}
+                            onChange={(e) =>
+                              set("partnerOtherRequirement", e.target.value)
+                            }
+                            rows={3}
+                            placeholder="Enter any specific additional preferences"
+                            style={{
+                              ...inp(false),
+                              resize: "vertical",
+                              minHeight: 72,
+                              padding: "8px 10px",
+                              lineHeight: 1.5,
+                            }}
+                          />
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+
+              <div
+                style={{
+                  marginBottom: 20,
+                  marginLeft: 14,
+                  marginRight: 14,
+                }}
+              >
+                <div
+                  style={{
+                    background: "linear-gradient(135deg,#dc1f26,#a93226)",
+                    color: "#fff",
+                    padding: "8px 12px",
+                    borderRadius: 4,
+                    fontWeight: 700,
+                    fontSize: 14,
+                    marginBottom: 12,
+                    fontFamily: "Georgia,serif",
+                  }}
+                >
+                  Scheme Details
+                </div>
+                <div
+                  style={{
+                    background: "#fff",
+                    border: "1px solid #dc1f26",
+                    borderRadius: 8,
+                    padding: "14px",
+                    display: "grid",
+                    gridTemplateColumns: "1fr 1fr",
+                    gap: 16,
+                  }}
+                >
+                  <div style={{ display: "grid", gap: 10 }}>
+                    <label style={{ color: "#c0392b", fontWeight: 700 }}>
+                      Scheme :
+                    </label>
+                    <select
+                      style={{
+                        ...inp(false),
+                        border: "1px solid #dc1f26",
+                        minHeight: 38,
+                      }}
+                    >
+                      <option>Select</option>
+                      <option>Basic</option>
+                      <option>Standard</option>
+                      <option>Premium</option>
+                    </select>
+                  </div>
+
+                  <div style={{ display: "grid", gap: 10 }}>
+                    <label style={{ color: "#c0392b", fontWeight: 700 }}>
+                      User Name (Login) :
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Enter login username"
+                      style={{
+                        ...inp(false),
+                        border: "1px solid #dc1f26",
+                        minHeight: 38,
+                      }}
+                    />
+                  </div>
+
+                  <div style={{ display: "grid", gap: 10 }}>
+                    <label style={{ color: "#c0392b", fontWeight: 700 }}>
+                      Password :
+                    </label>
+                    <input
+                      type="password"
+                      placeholder="Enter password"
+                      style={{
+                        ...inp(false),
+                        border: "1px solid #dc1f26",
+                        minHeight: 38,
+                      }}
+                    />
+                    <label
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "8px",
+                        fontSize: "13px",
+                      }}
+                    >
+                      <input
+                        type="checkbox"
+                        style={{
+                          width: "16px",
+                          height: "16px",
+                          flexShrink: 0,
+                        }}
+                      />
+                      I accept the{" "}
+                      <span style={{ color: "#dc1f26", fontWeight: 700 }}>
+                        Terms & Conditions
+                      </span>
+                    </label>
+                  </div>
+
+                  <div style={{ gridColumn: "1 / -1", marginTop: 8 }}>
+                    <p style={{ color: "#c0392b", fontWeight: 700, margin: 0 }}>
+                      For 3 Years, Registration Fees Rs.1000 to advertise your
+                      profile in our website & Mobile App.
+                    </p>
+                    <p
+                      style={{ color: "#333", margin: "6px 0 0", fontSize: 13 }}
+                    >
+                      Note : After registered your profile in our website, Your
+                      Profile will be maintain only if you pay the registration
+                      amount within 1 day or else we will delete your profile.
+                      Please send me your payment copy with Website registration
+                      number, name and mobile number by Email:{" "}
+                      <span style={{ color: "#007bff" }}>
+                        dumdumdummarriage@gmail.com
+                      </span>
+                      , For Enquiry Contact this Mobile :{" "}
+                      <span style={{ color: "#007bff" }}>+91-9489331973</span>
+                    </p>
+                  </div>
+                </div>
+              </div>
 
               {/* Footer */}
               <div
@@ -1216,14 +1585,14 @@ export default function PersonalFamilyForm() {
                 }}
               >
                 <button type="submit" className="btn-submit">
-                  ✔ {t('registration.submit')}
+                  ✔ Save Details
                 </button>
                 <button
                   type="button"
                   className="btn-reset"
                   onClick={handleReset}
                 >
-                  ↺ {t('registration.reset')}
+                  ↺ Reset Form
                 </button>
               </div>
             </form>
@@ -1239,7 +1608,8 @@ export default function PersonalFamilyForm() {
               fontFamily: "Georgia,serif",
             }}
           >
-            <span style={{ color: "#c0392b" }}>*</span> {t('registration.required')}
+            <span style={{ color: "#c0392b" }}>*</span> Fields marked with
+            asterisk are mandatory
           </p>
         </div>
       </div>
