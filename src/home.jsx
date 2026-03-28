@@ -1682,13 +1682,13 @@ export default function Home() {
           <div className="footer-section">
             <div className="footer-section-title">Quick Links</div>
             <div className="footer-item">
-              <a href="#">Terms & Conditions</a>
+              <a onClick={() => navigate('/terms-and-conditions')} style={{cursor: 'pointer'}}>Terms & Conditions</a>
             </div>
             <div className="footer-item">
-              <a href="#">Privacy Policy</a>
+              <a onClick={() => navigate('/privacy-policy')} style={{cursor: 'pointer'}}>Privacy Policy</a>
             </div>
             <div className="footer-item">
-              <a href="#">About Us</a>
+              <a onClick={() => navigate('/about-us')} style={{cursor: 'pointer'}}>About Us</a>
             </div>
             <div className="footer-item">
               <a href="#">Contact Support</a>
