@@ -283,18 +283,6 @@ export default function TermsAndConditions() {
       )}
 
       <div className="tc-wrap">
-        {/* Hero */}
-        <div className="tc-hero">
-          <div className="tc-hero-badge"><span>💍 MatrimonyConnect</span></div>
-          <h1>Terms &amp; Conditions</h1>
-          <p>Please read these terms carefully. By using our platform, you agree to be bound by the following conditions.</p>
-          <div className="tc-hero-meta">
-            <span>📅 Effective: 1st January 2025</span>
-            <span>🔄 Last Updated: 27th March 2026</span>
-            <span>📋 12 Sections</span>
-          </div>
-        </div>
-
         {/* Body */}
         <div className="tc-body">
           {/* Sidebar TOC */}
@@ -313,12 +301,6 @@ export default function TermsAndConditions() {
 
           {/* Main */}
           <main className="tc-main">
-            {/* Updated bar */}
-            <div className="tc-updated">
-              <div className="tc-updated-dot"/>
-              <p>These Terms were last updated on <strong>27th March 2026</strong>. Continued use of the Platform after this date implies acceptance of these terms.</p>
-            </div>
-
             {/* Sections */}
             {SECTIONS.map(s => {
               const isOpen = activeSection === s.id;
@@ -355,12 +337,6 @@ export default function TermsAndConditions() {
             </div>
           </main>
         </div>
-
-        {/* Footer */}
-        <footer className="tc-footer">
-          <p>© 2026 <strong>MatrimonyConnect Pvt. Ltd.</strong> · All rights reserved · Chennai, Tamil Nadu, India</p>
-          <p style={{ marginTop:6 }}>📧 legal@matrimonyconnect.in &nbsp;|&nbsp; 📞 +91-9876543210</p>
-        </footer>
       </div>
     </>
   );

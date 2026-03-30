@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 
 const CASTES = ["Any","Brahmin","Kshatriya","Vellalar","Nadar","Mudaliar","Pillai","Gounder","Naicker","Chettiar","Vishwakarma","Yadav","Vanniyar","Thevar","Agamudayar","Others"];
 const SUB_CASTES = ["Any","Iyer","Iyengar","Saiva Vellalar","Karkatta Vellalar","Kongu Vellalar","Senguntha Mudaliar","Arcot Mudaliar","Kondaikatti Vellalar","Sozhia Vellalar","Others"];
@@ -27,9 +28,19 @@ const DUMMY = [
 const INIT = { gender:"Any", language:"Any", caste:"Any", subCaste:"Any", sortId:"asc", ageFrom:"", ageTo:"", marital:"Any" };
 
 export default function MatrimonySearch() {
+  const navigate = useNavigate();
   const [filters, setFilters] = useState(INIT);
   const [applied, setApplied] = useState(INIT);
   const [preview, setPreview] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [viewMode, setViewMode] = useState('card');
+  const itemsPerPage = 10;
+
+  // Save viewMode to localStorage (but always default to 'card')
+  const handleViewModeChange = (mode) => {
+    setViewMode(mode);
+    localStorage.setItem('viewMode', mode);
+  };
 
   const set = (k, v) => setFilters(f => ({ ...f, [k]: v }));
 
@@ -82,7 +93,7 @@ export default function MatrimonySearch() {
         .rtable tr:nth-child(even) td{background:#fffafa;}
         .rtable tr:nth-child(odd)  td{background:#fff;}
         .rtable tbody tr:hover td{background:#fdecea;transition:background 0.15s;}
-        .thumb{width:46px;height:46px;border-radius:50%;object-fit:cover;border:2.5px solid #e74c3c;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s;display:block;}
+        .thumb{width:120px;height:120px;border-radius:8px;object-fit:cover;border:2.5px solid #e74c3c;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s;display:block;}
         .thumb:hover{transform:scale(1.14);box-shadow:0 4px 16px rgba(192,57,43,0.4);}
         .regbadge{background:#fdecea;color:#c0392b;padding:3px 9px;border-radius:4px;font-size:12px;font-weight:700;}
         .gbadge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;}
@@ -96,6 +107,192 @@ export default function MatrimonySearch() {
         .no-res{text-align:center;padding:52px 20px;color:#ccc;}
         .twrap{overflow-x:auto;border-radius:8px;box-shadow:0 2px 18px rgba(192,57,43,0.1);}
         .divider{width:4px;height:22px;background:linear-gradient(#c0392b,#e74c3c);border-radius:2px;flex-shrink:0;}
+        
+        /* ── CARD GRID ── */
+        .card-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+          gap: 20px;
+          margin-bottom: 30px;
+        }
+        
+        .profile-card {
+          background: #fff;
+          border-radius: 12px;
+          overflow: hidden;
+          box-shadow: 0 4px 12px rgba(192,57,43,0.1);
+          border: 1px solid rgba(192,57,43,0.12);
+          transition: all 0.3s ease;
+          cursor: pointer;
+          display: flex;
+          flex-direction: column;
+        }
+        
+        .profile-card:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 8px 24px rgba(192,57,43,0.2);
+          border-color: rgba(192,57,43,0.25);
+        }
+        
+        .card-photo {
+          width: 100%;
+          height: 240px;
+          object-fit: cover;
+          background: linear-gradient(135deg, #fdecea, #fff);
+        }
+        
+        .card-content {
+          padding: 16px 14px;
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+        }
+        
+        .card-name {
+          font-family: 'Merriweather', serif;
+          font-size: 16px;
+          font-weight: 700;
+          color: #1a1a1a;
+          margin-bottom: 4px;
+        }
+        
+        .card-regid {
+          font-size: 11px;
+          color: #999;
+          font-family: Georgia, serif;
+          margin-bottom: 10px;
+        }
+        
+        .card-badges {
+          display: flex;
+          gap: 6px;
+          flex-wrap: wrap;
+          margin-bottom: 12px;
+        }
+        
+        .card-badge {
+          display: inline-block;
+          padding: 4px 10px;
+          border-radius: 16px;
+          font-size: 11px;
+          font-weight: 600;
+          font-family: Georgia, serif;
+        }
+        
+        .card-info {
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+          margin-bottom: 12px;
+          flex: 1;
+        }
+        
+        .card-info-row {
+          font-size: 12px;
+          color: #666;
+          font-family: Georgia, serif;
+        }
+        
+        .card-info-label {
+          font-weight: 700;
+          color: #c0392b;
+          display: inline;
+        }
+        
+        .card-actions {
+          display: flex;
+          gap: 8px;
+          padding-top: 10px;
+          border-top: 1px solid #f0f0f0;
+        }
+        
+        .card-btn {
+          flex: 1;
+          padding: 8px 12px;
+          border-radius: 6px;
+          border: none;
+          font-size: 12px;
+          font-family: Georgia, serif;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+        
+        .card-btn-primary {
+          background: linear-gradient(135deg, #c0392b, #e74c3c);
+          color: #fff;
+        }
+        
+        .card-btn-primary:hover {
+          background: linear-gradient(135deg, #a93226, #c0392b);
+        }
+        
+        /* ── PAGINATION ── */
+        .pagination {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          gap: 12px;
+          margin-top: 20px;
+        }
+        
+        .pagination-btn {
+          padding: 8px 16px;
+          border-radius: 6px;
+          border: 1.5px solid #e0c8c8;
+          background: #fff;
+          color: #c0392b;
+          font-family: Georgia, serif;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+        
+        .pagination-btn:hover:not(:disabled) {
+          background: linear-gradient(135deg, #c0392b, #e74c3c);
+          color: #fff;
+          border-color: #c0392b;
+        }
+        
+        .pagination-btn:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+        
+        .pagination-info {
+          font-size: 13px;
+          color: #999;
+          font-family: Georgia, serif;
+        }
+        
+        @media(max-width: 1024px) {
+          .card-grid {
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+          }
+        }
+        
+        @media(max-width: 768px) {
+          .card-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+          }
+          .card-photo {
+            height: 180px;
+          }
+          .card-content {
+            padding: 12px 10px;
+          }
+        }
+        
+        @media(max-width: 480px) {
+          .card-grid {
+            grid-template-columns: 1fr;
+            gap: 12px;
+          }
+          .pagination {
+            flex-wrap: wrap;
+          }
+        }
         @media(max-width:880px){.fg{grid-template-columns:repeat(2,1fr);}}
         @media(max-width:768px){
           .fg{grid-template-columns:1fr;}
@@ -103,20 +300,20 @@ export default function MatrimonySearch() {
           .btn-row button{width:100%;margin-bottom:8px;}
           .rtable{font-size:12px;}
           .rtable th,.rtable td{padding:8px 6px;font-size:11px;}
-          .thumb{width:36px;height:36px;}
+          .thumb{width:100px;height:100px;}
           .modal{max-width:90vw;padding:20px 18px;}
           .modal img{width:100px;height:100px;}
         }
         @media(max-width:540px){
           .fg{grid-template-columns:1fr;}
-          .fg2{grid-template-columns:1fr;}.btn-row button{width:100%;}.rtable th,.rtable td{padding:8px 9px;font-size:11.5px;}.thumb{width:38px;height:38px;}
+          .fg2{grid-template-columns:1fr;}.btn-row button{width:100%;}.rtable th,.rtable td{padding:8px 9px;font-size:11.5px;}.thumb{width:90px;height:90px;}
         }
         @media(max-width:480px){
           .fg{grid-template-columns:1fr;}
           padding:16px 8px !important;
           .rtable{font-size:10px;}
           .rtable th, .rtable td{padding:6px 4px;font-size:9px;}
-          .thumb{width:32px;height:32px;}
+          .thumb{width:80px;height:80px;}
           body {font-size:13px;}
           .btn-s, .btn-r {padding:8px 16px;font-size:12px;}
           .modal{max-width:95vw;padding:16px 14px;}
@@ -126,7 +323,7 @@ export default function MatrimonySearch() {
         }
         @media(max-width:360px){
           .rtable th, .rtable td{padding:4px 3px;font-size:8px;}
-          .thumb{width:28px;height:28px;border-width:2px;}
+          .thumb{width:70px;height:70px;border-width:2px;}
         }
       `}</style>
 
@@ -201,8 +398,8 @@ export default function MatrimonySearch() {
             </div>
 
             <div className="btn-row">
-              <button className="btn-s" onClick={()=>setApplied({...filters})}>🔍 Search Profiles</button>
-              <button className="btn-r" onClick={()=>{ setFilters(INIT); setApplied(INIT); }}>↺ Reset Filters</button>
+              <button className="btn-s" onClick={()=>{ setApplied({...filters}); setCurrentPage(1); }}>🔍 Search Profiles</button>
+              <button className="btn-r" onClick={()=>{ setFilters(INIT); setApplied(INIT); setCurrentPage(1); }}>↺ Reset Filters</button>
             </div>
           </div>
 
@@ -213,8 +410,39 @@ export default function MatrimonySearch() {
                 <div className="divider"/>
                 <h2 style={{ margin:0, fontSize:15, color:"#c0392b", fontFamily:"'Merriweather',serif", fontWeight:700 }}>📋 Results</h2>
               </div>
+              
+              {/* View Toggle */}
+              <div style={{ display:"flex", gap:8 }}>
+                <button 
+                  className="btn-r"
+                  onClick={() => handleViewModeChange('card')}
+                  style={{
+                    background: viewMode === 'card' ? '#c0392b' : '#fff',
+                    color: viewMode === 'card' ? '#fff' : '#c0392b',
+                    border: `1.5px solid ${viewMode === 'card' ? '#c0392b' : '#c0392b'}`,
+                    padding: '8px 14px',
+                    fontSize: '12px'
+                  }}
+                >
+                  🃏 Card View
+                </button>
+                <button 
+                  className="btn-r"
+                  onClick={() => handleViewModeChange('table')}
+                  style={{
+                    background: viewMode === 'table' ? '#c0392b' : '#fff',
+                    color: viewMode === 'table' ? '#fff' : '#c0392b',
+                    border: `1.5px solid ${viewMode === 'table' ? '#c0392b' : '#c0392b'}`,
+                    padding: '8px 14px',
+                    fontSize: '12px'
+                  }}
+                >
+                  📋 Table View
+                </button>
+              </div>
+              
               <div style={{ fontSize:13, color:"#999", fontFamily:"Georgia,serif" }}>
-                Showing&nbsp;<strong style={{ color:"#c0392b" }}>{results.length}</strong>&nbsp;of&nbsp;<strong style={{ color:"#c0392b" }}>{DUMMY.length}</strong>&nbsp;profiles
+                Showing&nbsp;<strong style={{ color:"#c0392b" }}>{Math.min(itemsPerPage, results.length - (currentPage - 1) * itemsPerPage)}</strong>&nbsp;of&nbsp;<strong style={{ color:"#c0392b" }}>{results.length}</strong>&nbsp;profiles
               </div>
             </div>
 
@@ -224,45 +452,127 @@ export default function MatrimonySearch() {
                   <div style={{ fontSize:16, color:"#bbb", marginBottom:6, fontFamily:"Georgia,serif" }}>No profiles match your criteria</div>
                   <div style={{ fontSize:13, color:"#ddd", fontFamily:"Georgia,serif" }}>Adjust the filters above and try again</div>
                 </div>
-              : <div className="twrap">
-                  <table className="rtable">
-                    <thead>
-                      <tr>
-                        <th>S.No</th>
-                        <th>Reg ID</th>
-                        <th>Name</th>
-                        <th>Caste</th>
-                        <th>Sub Caste</th>
-                        <th>Photo</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {results.map((r, i) => {
-                        const [bg, fg] = maritalColor(r.marital);
-                        return (
-                          <tr key={r.id}>
-                            <td style={{ color:"#bbb", fontWeight:600, fontSize:12 }}>{i+1}</td>
-                            <td><span className="regbadge">{r.regId}</span></td>
-                            <td>
-                              <div style={{ fontWeight:700, color:"#1a1a1a", marginBottom:3 }}>{r.name}</div>
-                              <div style={{ display:"flex", gap:6, flexWrap:"wrap" }}>
-                                <span className="gbadge" style={{ background:r.gender==="Male"?"#e8f4fd":"#fde8f0", color:r.gender==="Male"?"#1a6ea8":"#c0392b" }}>{r.gender}</span>
-                                <span className="gbadge" style={{ background:"#f5f5f5", color:"#666" }}>{r.age} yrs</span>
-                                <span className="gbadge" style={{ background:bg, color:fg }}>{r.marital}</span>
-                              </div>
-                            </td>
-                            <td style={{ color:"#444", fontWeight:500 }}>{r.caste}</td>
-                            <td style={{ color:"#888", fontSize:12 }}>{r.subCaste}</td>
-                            <td>
-                              <img src={r.photo} alt={r.name} className="thumb" onClick={()=>setPreview(r)}
-                                onError={e=>{ e.target.src=`https://ui-avatars.com/api/?name=${encodeURIComponent(r.name)}&background=e74c3c&color=fff&size=80`; }}/>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
+              : <>
+                  {(() => {
+                    const totalPages = Math.ceil(results.length / itemsPerPage);
+                    const startIdx = (currentPage - 1) * itemsPerPage;
+                    const endIdx = startIdx + itemsPerPage;
+                    const paginatedResults = results.slice(startIdx, endIdx);
+
+                    return (
+                      <>
+                        {viewMode === 'card' ? (
+                          // ── CARD VIEW (EXISTING UI) ──
+                          <div className="card-grid">
+                            {paginatedResults.map((r) => {
+                              const [bg, fg] = maritalColor(r.marital);
+                              return (
+                                <div key={r.id} className="profile-card">
+                                  <img 
+                                    src={r.photo} 
+                                    alt={r.name} 
+                                    className="card-photo"
+                                    onError={e=>{ e.target.src=`https://ui-avatars.com/api/?name=${encodeURIComponent(r.name)}&background=c0392b&color=fff&size=280`; }}
+                                  />
+                                  <div className="card-content">
+                                    <div className="card-name">{r.name}</div>
+                                    <div className="card-regid">{r.regId}</div>
+                                    
+                                    <div className="card-badges">
+                                      <span className="card-badge" style={{ background:r.gender==="Male"?"#e8f4fd":"#fde8f0", color:r.gender==="Male"?"#1a6ea8":"#c0392b" }}>{r.gender}</span>
+                                      <span className="card-badge" style={{ background:"#f5f5f5", color:"#666" }}>{r.age} yrs</span>
+                                      <span className="card-badge" style={{ background:bg, color:fg }}>{r.marital}</span>
+                                    </div>
+                                    
+                                    <div className="card-info">
+                                      <div className="card-info-row"><span className="card-info-label">Caste:</span> {r.caste}</div>
+                                      <div className="card-info-row"><span className="card-info-label">Language:</span> {r.language}</div>
+                                      <div className="card-info-row"><span className="card-info-label">Sub Caste:</span> {r.subCaste}</div>
+                                    </div>
+                                    
+                                    <div className="card-actions">
+                                      <button 
+                                        className="card-btn card-btn-primary"
+                                        onClick={() => navigate(`/detail/${r.id}`, { state: { profile: r } })}
+                                      >
+                                        More Details →
+                                      </button>
+                                    </div>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        ) : (
+                          // ── TABLE VIEW ──
+                          <div className="twrap">
+                            <table className="rtable">
+                              <thead>
+                                <tr>
+                                  <th>Photo</th>
+                                  <th>Reg ID</th>
+                                  <th>Name</th>
+                                  <th>Age</th>
+                                  <th>Gender</th>
+                                  <th>Caste</th>
+                                  <th>Language</th>
+                                  <th>Marital</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {paginatedResults.map((r) => {
+                                  const [bg, fg] = maritalColor(r.marital);
+                                  return (
+                                    <tr key={r.id}>
+                                      <td style={{ textAlign: 'center' }}>
+                                        <img 
+                                          src={r.photo} 
+                                          alt={r.name} 
+                                          className="thumb"
+                                          onClick={() => setPreview(r)}
+                                          onError={e=>{ e.target.src=`https://ui-avatars.com/api/?name=${encodeURIComponent(r.name)}&background=e74c3c&color=fff&size=80`; }}
+                                        />
+                                      </td>
+                                      <td><span className="regbadge">{r.regId}</span></td>
+                                      <td style={{ fontWeight:700, color:"#1a1a1a" }}>{r.name}</td>
+                                      <td>{r.age}</td>
+                                      <td><span className="gbadge" style={{ background:r.gender==="Male"?"#e8f4fd":"#fde8f0", color:r.gender==="Male"?"#1a6ea8":"#c0392b" }}>{r.gender}</span></td>
+                                      <td>{r.caste}</td>
+                                      <td>{r.language}</td>
+                                      <td><span className="gbadge" style={{ background:bg, color:fg }}>{r.marital}</span></td>
+                                    </tr>
+                                  );
+                                })}
+                              </tbody>
+                            </table>
+                          </div>
+                        )}
+                        
+                        {totalPages > 1 && (
+                          <div className="pagination">
+                            <button 
+                              className="pagination-btn"
+                              onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                              disabled={currentPage === 1}
+                            >
+                              ← Previous
+                            </button>
+                            <span className="pagination-info">
+                              Page <strong>{currentPage}</strong> of <strong>{totalPages}</strong>
+                            </span>
+                            <button 
+                              className="pagination-btn"
+                              onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                              disabled={currentPage === totalPages}
+                            >
+                              Next →
+                            </button>
+                          </div>
+                        )}
+                      </>
+                    );
+                  })()}
+                </>
             }
           </div>
 
