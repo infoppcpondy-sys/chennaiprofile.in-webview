@@ -137,24 +137,34 @@ export default function Home() {
           z-index: 2;
           max-width: 1100px;
           margin: 0 auto;
-          padding: clamp(16px, 4vw, 28px) clamp(16px, 5vw, 32px) clamp(12px, 3vw, 20px);
+          padding: clamp(20px, 5vw, 36px) clamp(16px, 5vw, 32px);
           display: flex;
           align-items: center;
-          gap: clamp(12px, 3vw, 20px);
-          flex-wrap: wrap;
           justify-content: center;
+          gap: clamp(16px, 4vw, 32px);
+          flex-wrap: wrap;
+        }
+
+        .header-logo-container {
+          display: flex;
+          align-items: center;
+          gap: clamp(16px, 3vw, 24px);
+          flex-shrink: 0;
         }
 
         .header-logo {
-          width: 48px;
-          height: 48px;
+          width: 64px;
+          height: 64px;
           border-radius: 50%;
-          border: 3px solid var(--gold-light);
-          padding: 6px;
+          border: 4px solid var(--gold-light);
+          padding: 8px;
           background: rgba(255,255,255,0.12);
           flex-shrink: 0;
-          box-shadow: 0 8px 24px rgba(232, 183, 106, 0.2), inset 0 1px 2px rgba(255,255,255,0.2);
+          box-shadow: 0 12px 32px rgba(232, 183, 106, 0.3), inset 0 1px 2px rgba(255,255,255,0.2);
           animation: float 3s ease-in-out infinite;
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
 
         @keyframes float {
@@ -162,19 +172,24 @@ export default function Home() {
           50% { transform: translateY(-8px); }
         }
 
-        .header-text { flex: 1; }
+        .header-text { 
+          flex: 0 1 auto;
+          text-align: center;
+        }
 
         .header-title {
           font-family: 'Cormorant Garamond', serif;
-          font-size: clamp(1.6rem, 3vw, 2.2rem);
+          font-size: clamp(2rem, 5vw, 2.8rem);
           font-weight: 700;
           color: #fff;
-          letter-spacing: 0.02em;
+          letter-spacing: 0.03em;
           line-height: 1.1;
+          text-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
 
         .header-title span {
           color: var(--gold-light);
+          display: block;
         }
 
         .header-sub {
@@ -192,6 +207,7 @@ export default function Home() {
           height: 48px;
           background: linear-gradient(to bottom, transparent, rgba(201,145,58,0.5), transparent);
           flex-shrink: 0;
+          display: none;
         }
 
         .header-tagline {
@@ -203,40 +219,47 @@ export default function Home() {
           line-height: 1.5;
         }
 
-        .header-whatsapp-container {
+        .whatsapp-card {
+          background: linear-gradient(135deg, #ffffff 0%, #fafbfc 100%);
+          border-radius: 16px;
+          padding: clamp(20px, 5vw, 32px);
+          border: 1px solid rgba(201,145,58,0.15);
+          box-shadow: var(--shadow-md);
           display: flex;
           flex-direction: column;
           align-items: center;
-          gap: 8px;
-          cursor: pointer;
+          gap: 16px;
+          text-align: center;
           transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+          cursor: pointer;
         }
 
-        .header-whatsapp-container:hover {
-          transform: scale(1.05) translateY(-2px);
+        .whatsapp-card:hover {
+          transform: translateY(-4px);
+          box-shadow: var(--shadow-lg);
+          border-color: rgba(201,145,58,0.3);
         }
 
-        .header-whatsapp-container:hover .header-whatsapp-image {
-          transform: scale(1.05);
+        .whatsapp-card:hover .whatsapp-card-image {
+          transform: scale(1.08);
         }
 
-        .header-whatsapp-text {
-          font-size: clamp(14px, 1.2vw, 16px);
-          color: white;
+        .whatsapp-card:hover .whatsapp-card-text {
+          color: var(--maroon);
+        }
+
+        .whatsapp-card-text {
+          font-size: clamp(14px, 2vw, 16px);
+          color: var(--text-dark);
           font-weight: 600;
           font-family: 'Jost', sans-serif;
-          text-align: center;
-          white-space: nowrap;
+          letter-spacing: 0.05em;
           transition: color 0.35s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .header-whatsapp-container:hover .header-whatsapp-text {
-          color: var(--gold);
-        }
-
-        .header-whatsapp-image {
+        .whatsapp-card-image {
           width: auto;
-          height: 50px;
+          height: 60px;
           object-fit: contain;
           display: block;
           transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
@@ -326,7 +349,7 @@ export default function Home() {
           display: grid;
           grid-template-columns: 1fr 1fr;
           gap: 40px;
-          align-items: start;
+          align-items: end;
           max-width: 100%;
           margin: 0;
         }
@@ -345,7 +368,8 @@ export default function Home() {
 
         @media (max-width: 720px) {
           .cards-grid { grid-template-columns: 1fr; gap: 28px; }
-          .header-inner { flex-direction: column; text-align: center; gap: 20px; padding: 32px 16px 24px; }
+          .header-inner { flex-direction: column; text-align: center; gap: 28px; padding: 40px 16px 28px; }
+          .header-logo-container { flex-direction: column; gap: 16px; }
           .header-divider { display: none; }
           .header-tagline { max-width: 100%; text-align: center; }
           .stats-grid { grid-template-columns: 1fr; }
@@ -359,9 +383,10 @@ export default function Home() {
         }
 
         @media (max-width: 480px) {
-          .header-inner { gap: 12px; padding: 24px 12px 16px; }
+          .header-inner { gap: 16px; padding: 28px 12px 20px; }
           .header-logo { width: 56px; height: 56px; }
-          .header-title { font-size: clamp(1.6rem, 3vw, 2.2rem); }
+          .header-title { font-size: clamp(1.6rem, 4vw, 2.2rem); }
+          .header-logo-container { gap: 12px; }
           .main { padding: 24px 12px 32px; }
           .section-heading { font-size: clamp(1.2rem, 2.5vw, 1.6rem); margin-bottom: 16px; }
           .section-label { font-size: 0.65rem; }
@@ -385,7 +410,7 @@ export default function Home() {
         @media (max-width: 360px) {
           .header-logo { display: none; }
           .header-inner { padding: 16px 8px 12px; }
-          .header-title { font-size: clamp(1.4rem, 2.5vw, 1.8rem); }
+          .header-title { font-size: clamp(1.4rem, 3vw, 1.8rem); }
           .main { padding: 16px 8px 24px; }
           .card { padding: 16px 12px; }
           .field select, .field input { font-size: 13px; }
@@ -1437,30 +1462,98 @@ export default function Home() {
         .ad-nav-btn.next {
           right: 16px;
         }
+
+        /* ── ANNOUNCEMENT BAR ── */
+        .top-scroll-bar {
+          width: 100%;
+          overflow: hidden;
+          background: linear-gradient(135deg, var(--maroon) 0%, var(--maroon-dark) 100%);
+          padding: 10px 0;
+          box-shadow: 0 4px 12px rgba(123, 28, 46, 0.2);
+        }
+
+        .top-scroll-bar:hover .scroll-text {
+          animation-play-state: paused;
+        }
+
+        .scroll-row {
+          display: flex;
+          gap: 0;
+          white-space: nowrap;
+          overflow: hidden;
+          width: 100%;
+        }
+
+        .scroll-text {
+          font-family: 'Jost', sans-serif;
+          font-size: clamp(0.75rem, 1.5vw, 0.9rem);
+          color: var(--gold-light);
+          font-weight: 500;
+          letter-spacing: 0.05em;
+          padding-left: 100%;
+          padding-right: 30px;
+          will-change: transform;
+          animation: scrollLeft 50s linear infinite;
+          flex-shrink: 0;
+          display: inline-block;
+        }
+
+        @keyframes scrollLeft {
+          from {
+            transform: translateX(0%);
+          }
+          to {
+            transform: translateX(-100%);
+          }
+        }
+
+        @media (max-width: 768px) {
+          .top-scroll-bar {
+            padding: 8px 0;
+          }
+
+          .scroll-text {
+            font-size: clamp(0.65rem, 1.2vw, 0.8rem);
+            padding-right: 40px;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .top-scroll-bar {
+            padding: 6px 0;
+          }
+
+          .scroll-text {
+            font-size: clamp(0.6rem, 1vw, 0.75rem);
+            padding-right: 30px;
+          }
+        }
       `}</style>
 
-      {/* Header */}
+      {/* Header - Commented Out */}
+      {/* 
       <header className="header">
         <div className="header-pattern" />
         <div className="header-inner">
-          <img src="/assets/chennai_profiles.png" alt="Logo" className="header-logo"
-            onError={(e) => { e.target.style.display = 'none'; }} />
-          <div className="header-text">
-            <div className="header-title">
-              Chennai <span>Profiles</span>
+          <div className="header-logo-container">
+            <img src="/assets/chennai_profiles.png" alt="Logo" className="header-logo"
+              onError={(e) => { e.target.style.display = 'none'; }} />
+            <div className="header-text">
+              <div className="header-title">
+                Chennai<span>Profiles</span>
+              </div>
             </div>
-            {/* <div className="header-sub">Trusted Matchmaking Since 2010</div> */}
           </div>
-          <div className="header-divider" />
-          {/* <div className="header-tagline">
-            Where hearts find their <em>perfect home</em>
-          </div> */}
-          <a href="https://wa.me/9715976299" target="_blank" rel="noopener noreferrer" className="header-whatsapp-container" title="Contact us on WhatsApp">
-            <span className="header-whatsapp-text">For chat on whatsapp Click This Image</span>
-            <img src="/assets/whatsapp_contact_edit.png" alt="WhatsApp Contact" className="header-whatsapp-image" />
-          </a>
         </div>
       </header>
+      */}
+
+      {/* Combined Announcement Bar */}
+      <div className="top-scroll-bar">
+        <div className="scroll-row">
+          <span className="scroll-text">✨ Chennai Profiles – Find your perfect life partner ❤️ | Verified Profiles | 100% Secure | Tamil & English Support | Register Now ✨ | சென்னை ப்ரொஃபைல்ஸ் – உங்கள் வாழ்க்கை துணையை இன்று கண்டுபிடிக்கவும் ❤️ | உறுதிப்படுத்தப்பட்ட ப்ரொஃபைல்கள் | பாதுகாப்பான சேவை | இப்போது பதிவு செய்யுங்கள் ✨</span>
+        </div>
+      </div>
 
       {/* Toast */}
       {feedbackMessage && (
@@ -1530,6 +1623,13 @@ export default function Home() {
                 ))}
               </div>
             </div>
+
+            {/* WhatsApp Contact Card */}
+            <a href="https://wa.me/9715976299" target="_blank" rel="noopener noreferrer" className="whatsapp-card" title="Contact us on WhatsApp">
+              <span className="whatsapp-card-text">For chat on WhatsApp Click This Image</span>
+              <img src="/assets/whatsapp_contact_edit.png" alt="WhatsApp Contact" className="whatsapp-card-image" 
+                onError={(e) => { e.target.style.display = 'none'; }} />
+            </a>
           </div>
 
           {/* Right Column - Quick Search */}
