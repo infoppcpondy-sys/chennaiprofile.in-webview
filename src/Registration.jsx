@@ -1,24 +1,26 @@
 // RegisterForm.jsx
-import { useState } from "react";
-
-const GENDERS = ["-Select-", "Male", "Female"];
-const HOURS = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, "0"));
-const MINUTES = ["00", "15", "30", "45"];
-const AMPM = ["AM", "PM"];
-const MOTHER_TONGUES = ["Select", "Tamil", "Telugu", "Kannada", "Malayalam", "Hindi", "Marathi", "English"];
-const MARITAL_STATUSES = ["Unmarried", "Married", "Divorced", "Widowed"];
-const SIBLING_COUNTS = ["-", "0", "1", "2", "3", "4", "5"];
-const HEIGHTS = ["4'8\"","4'9\"","4'10\"","4'11\"","5'0\"","5'1\"","5'2\"","5'3\"","5'4\"","5'5\"","5'6\"","5'7\"","5'8\"","5'9\"","5'10\"","5'11\"","6'0\""];
-const WEIGHTS = ["40kg","45kg","50kg","55kg","60kg","65kg","70kg","75kg","80kg","85kg","90kg"];
-const BLOOD_GROUPS = ["-Select-","O+","O-","A+","A-","B+","B-","AB+","AB-"];
-const CASTES = ["-Select-","Brahmin","Kshatriya","Vaishya","Shudra","Others"];
-const STARS = ["-Select-","Ashwini","Bharani","Krithika","Rohini","Mrigasira","Aridra","Punarvasu"];
-const LAKNAM = ["-Select Laknam-","Laknam 1","Laknam 2"];
-
-const RASI_LIST = ["-Select Rasi-","Mesha","Vrishabha","Mithuna","Kataka","Simha","Kanya","Tula","Vrischika","Dhanu","Makara","Kumbha","Meena"];
-const PADAM_LIST = ["-Select Padam-","Padam 1","Padam 2","Padam 3","Padam 4"];
+import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 export default function PersonalFamilyForm() {
+  const { t, i18n } = useTranslation();
+
+  const GENDERS = [t("registration.genderSelect"), t("registration.genderMale"), t("registration.genderFemale")];
+  const HOURS = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, "0"));
+  const MINUTES = ["00", "15", "30", "45"];
+  const AMPM = ["AM", "PM"];
+  const MOTHER_TONGUES = [t("common.select"), "Tamil", "Telugu", "Kannada", "Malayalam", "Hindi", "Marathi", "English"];
+  const MARITAL_STATUSES = [t("registration.unmarried"), t("registration.married"), t("registration.divorced"), t("registration.widowed")];
+  const SIBLING_COUNTS = ["-", "0", "1", "2", "3", "4", "5"];
+  const HEIGHTS = ["4'8\"","4'9\"","4'10\"","4'11\"","5'0\"","5'1\"","5'2\"","5'3\"","5'4\"","5'5\"","5'6\"","5'7\"","5'8\"","5'9\"","5'10\"","5'11\"","6'0\""];
+  const WEIGHTS = ["40kg","45kg","50kg","55kg","60kg","65kg","70kg","75kg","80kg","85kg","90kg"];
+  const BLOOD_GROUPS = [t("registration.genderSelect"), "O+", "O-", "A+", "A-", "B+", "B-", "AB+", "AB-"];
+  const CASTES = [t("registration.genderSelect"), "Brahmin", "Kshatriya", "Vaishya", "Shudra", "Others"];
+  const STARS = [t("registration.genderSelect"), "Ashwini", "Bharani", "Krithika", "Rohini", "Mrigasira", "Aridra", "Punarvasu"];
+  const LAKNAM = [t("registration.genderSelect"), "Laknam 1", "Laknam 2"];
+  const RASI_LIST = [t("registration.genderSelect"), "Mesha", "Vrishabha", "Mithuna", "Kataka", "Simha", "Kanya", "Tula", "Vrischika", "Dhanu", "Makara", "Kumbha", "Meena"];
+  const PADAM_LIST = [t("registration.genderSelect"), "Padam 1", "Padam 2", "Padam 3", "Padam 4"];
+
   const [form, setForm] = useState({
     name: "", gender: "-Select-", dob: "", birthHour: "", birthMin: "", birthAmPm: "AM",
     placeBirth: "", nativity: "", motherTongue: "Select", maritalStatus: "Unmarried",
@@ -49,6 +51,8 @@ export default function PersonalFamilyForm() {
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [activeSection, setActiveSection] = useState(null);
+
+  useEffect(() => {}, [i18n.language]);
 
   const set = (k, v) => {
     setForm(f => ({ ...f, [k]: v }));
@@ -93,14 +97,14 @@ export default function PersonalFamilyForm() {
 
   const validate = () => {
     const e = {};
-    if (!form.name.trim()) e.name = "Name is required";
-    if (form.gender === "-Select-") e.gender = "Gender is required";
-    if (!form.dob) e.dob = "Date of Birth is required";
-    if (form.motherTongue === "Select") e.motherTongue = "Mother Tongue is required";
-    if (!form.placeBirth.trim()) e.placeBirth = "Place of Birth is required";
-    if (!form.nativity.trim()) e.nativity = "Nativity is required";
-    if (!form.contactNumber.trim()) e.contactNumber = "Contact Number is required";
-    if (form.contactNumber && !/^\d{10}$/.test(form.contactNumber)) e.contactNumber = "Enter valid 10-digit number";
+    if (!form.name.trim()) e.name = t("registration.validationNameRequired");
+    if (form.gender === t("registration.genderSelect")) e.gender = t("registration.validationGenderRequired");
+    if (!form.dob) e.dob = t("registration.validationDobRequired");
+    if (form.motherTongue === t("common.select")) e.motherTongue = t("registration.validationMotherTongueRequired");
+    if (!form.placeBirth.trim()) e.placeBirth = t("registration.validationPlaceBirthRequired");
+    if (!form.nativity.trim()) e.nativity = t("registration.validationNativityRequired");
+    if (!form.contactNumber.trim()) e.contactNumber = t("registration.validationContactRequired");
+    if (form.contactNumber && !/^\d{10}$/.test(form.contactNumber)) e.contactNumber = t("registration.validationPhoneInvalid");
     return e;
   };
 
@@ -278,31 +282,13 @@ export default function PersonalFamilyForm() {
 
       <div className="form-outer" style={{ minHeight:"100vh", background:"linear-gradient(160deg,#F9EEF0 0%,#FFF8F0 50%,#F9EEF0 100%)", padding:"0 16px 48px" }}>
 
-        {/* Hero Header */}
-        <div style={{ background:"linear-gradient(135deg,#5A0010 0%,#8B0000 45%,#C41E3A 100%)", padding:"40px 24px 32px", marginBottom:32, position:"relative", overflow:"hidden" }}>
-          <div style={{ position:"absolute", top:0, left:0, right:0, bottom:0, backgroundImage:"radial-gradient(circle at 20% 50%, rgba(255,255,255,0.04) 0%, transparent 60%), radial-gradient(circle at 80% 20%, rgba(255,255,255,0.06) 0%, transparent 50%)", pointerEvents:"none" }} />
-          <div style={{ position:"absolute", top:-40, right:-40, width:180, height:180, borderRadius:"50%", border:"1px solid rgba(255,255,255,0.08)" }} />
-          <div style={{ position:"absolute", bottom:-60, left:-30, width:200, height:200, borderRadius:"50%", border:"1px solid rgba(255,255,255,0.05)" }} />
-          <div style={{ maxWidth:860, margin:"0 auto", textAlign:"center", position:"relative" }}>
-            <div style={{ display:"inline-block", background:"rgba(255,255,255,0.1)", borderRadius:50, padding:"6px 20px", marginBottom:14, fontSize:"0.75rem", letterSpacing:"0.15em", color:"rgba(255,220,200,0.9)", textTransform:"uppercase", border:"1px solid rgba(255,255,255,0.15)" }}>
-              Matrimony Profile Registration
-            </div>
-            <h1 style={{ fontFamily:"'Playfair Display',serif", color:"white", fontSize:"clamp(1.8rem,4vw,2.8rem)", fontWeight:700, marginBottom:8, textShadow:"0 2px 20px rgba(0,0,0,0.3)" }}>
-              Begin Your Sacred Journey
-            </h1>
-            <p style={{ color:"rgba(255,220,210,0.85)", fontSize:"1rem", fontWeight:300, letterSpacing:"0.03em" }}>
-              Fill in your details carefully — every field helps us find your perfect match
-            </p>
-          </div>
-        </div>
-
         <div style={{ maxWidth:860, margin:"0 auto" }}>
 
           {/* Photo Upload Section */}
           <div style={{ ...sectionBox, marginBottom:20 }}>
-            <SectionHeader icon="📸" title="Profile Photographs" />
+            <SectionHeader icon="📸" title={t("registration.profilePhotographs")} />
             <p style={{ fontSize:"0.82rem", color:"#8A5060", marginBottom:20, fontStyle:"italic" }}>
-              Upload 2–3 recent photographs. Clear face photos work best for matches.
+              {t("registration.photoDesc")}
             </p>
             <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(150px, 1fr))", gap:"clamp(12px, 3vw, 16px)" }}>
               {[0,1,2].map(index => (
@@ -313,7 +299,7 @@ export default function PersonalFamilyForm() {
                       <div style={{ padding:"clamp(8px, 2vw, 10px) clamp(10px, 2vw, 12px)", background:"linear-gradient(135deg,#8B0000,#C41E3A)", display:"flex", justifyContent:"space-between", alignItems:"center" }}>
                         <span style={{ color:"rgba(255,255,255,0.85)", fontSize:"clamp(0.7rem, 2vw, 0.78rem)" }}>Photo {index+1}</span>
                         <button type="button" onClick={() => removePhoto(index)} style={{ background:"rgba(255,255,255,0.2)", color:"white", border:"none", padding:"3px 10px", borderRadius:20, cursor:"pointer", fontSize:"0.75rem", fontWeight:600 }}>
-                          Remove
+                          {t("registration.removePhoto")}
                         </button>
                       </div>
                     </div>
@@ -327,7 +313,7 @@ export default function PersonalFamilyForm() {
                         <div style={{ color:"#B08090", fontSize:"clamp(0.65rem, 1.5vw, 0.72rem)", marginTop:4 }}>Click to upload · Max 5MB</div>
                       </div>
                       <div style={{ background:"linear-gradient(135deg,#8B0000,#C41E3A)", color:"white", padding:"6px 16px", borderRadius:20, fontSize:"clamp(0.7rem, 1.5vw, 0.78rem)", fontWeight:700, letterSpacing:"0.05em" }}>
-                        Browse
+                        {t("registration.browsePhoto")}
                       </div>
                       <input type="file" accept="image/*" onChange={e => handlePhotoUpload(index, e.target.files[0])} style={{ display:"none" }} />
                     </label>
@@ -339,31 +325,31 @@ export default function PersonalFamilyForm() {
 
           {/* Personal Details */}
           <div style={sectionBox}>
-            <SectionHeader icon="👤" title="Personal Details" />
+            <SectionHeader icon="👤" title={t("registration.personalInfo")} />
             <div style={{ display:"flex", flexDirection:"column", gap:20 }}>
               <div className="row-3">
-                <FormField label="Full Name" required error={errors.name}>
-                  <input value={form.name} onChange={e => set("name", e.target.value)} placeholder="Enter your full name" style={inputStyle(errors.name)} />
+                <FormField label={t("registration.name")} required error={errors.name}>
+                  <input value={form.name} onChange={e => set("name", e.target.value)} placeholder={t("registration.namePlaceholder")} style={inputStyle(errors.name)} />
                 </FormField>
-                <FormField label="Gender" required error={errors.gender}>
+                <FormField label={t("registration.gender")} required error={errors.gender}>
                   <select value={form.gender} onChange={e => set("gender", e.target.value)} style={selectStyle(errors.gender)}>
                     {GENDERS.map(g => <option key={g}>{g}</option>)}
                   </select>
                 </FormField>
-                <FormField label="Date of Birth" required error={errors.dob}>
+                <FormField label={t("registration.dob")} required error={errors.dob}>
                   <input type="date" value={form.dob} onChange={e => set("dob", e.target.value)} style={inputStyle(errors.dob)} />
                 </FormField>
               </div>
 
               <div className="row-3">
-                <FormField label="Time of Birth">
+                <FormField label={t("registration.birthTime")}>
                   <div style={{ display:"flex", gap:8 }}>
                     <select value={form.birthHour} onChange={e => set("birthHour", e.target.value)} style={{ ...selectStyle(false), flex:1 }}>
-                      <option value="">HH</option>
+                      <option value="">{t("registration.hour")}</option>
                       {HOURS.map(h => <option key={h}>{h}</option>)}
                     </select>
                     <select value={form.birthMin} onChange={e => set("birthMin", e.target.value)} style={{ ...selectStyle(false), flex:1 }}>
-                      <option value="">MM</option>
+                      <option value="">{t("registration.minute")}</option>
                       {MINUTES.map(m => <option key={m}>{m}</option>)}
                     </select>
                     <select value={form.birthAmPm} onChange={e => set("birthAmPm", e.target.value)} style={{ ...selectStyle(false), flex:1 }}>
@@ -371,21 +357,21 @@ export default function PersonalFamilyForm() {
                     </select>
                   </div>
                 </FormField>
-                <FormField label="Place of Birth (Town/District)" required error={errors.placeBirth}>
-                  <input value={form.placeBirth} onChange={e => set("placeBirth", e.target.value)} placeholder="Town / District" style={inputStyle(errors.placeBirth)} />
+                <FormField label={t("registration.placeBirth")} required error={errors.placeBirth}>
+                  <input value={form.placeBirth} onChange={e => set("placeBirth", e.target.value)} placeholder={t("registration.pleaseSpecify")} style={inputStyle(errors.placeBirth)} />
                 </FormField>
-                <FormField label="Nativity (Town & District)" required error={errors.nativity}>
-                  <input value={form.nativity} onChange={e => set("nativity", e.target.value)} placeholder="Town & District" style={inputStyle(errors.nativity)} />
+                <FormField label={t("registration.nativity")} required error={errors.nativity}>
+                  <input value={form.nativity} onChange={e => set("nativity", e.target.value)} placeholder={t("registration.pleaseSpecify")} style={inputStyle(errors.nativity)} />
                 </FormField>
               </div>
 
               <div className="row-2">
-                <FormField label="Mother Tongue" required error={errors.motherTongue}>
+                <FormField label={t("registration.motherTongue")} required error={errors.motherTongue}>
                   <select value={form.motherTongue} onChange={e => set("motherTongue", e.target.value)} style={selectStyle(errors.motherTongue)}>
                     {MOTHER_TONGUES.map(m => <option key={m}>{m}</option>)}
                   </select>
                 </FormField>
-                <FormField label="Marital Status">
+                <FormField label={t("registration.maritalStatus")}>
                   <select value={form.maritalStatus} onChange={e => set("maritalStatus", e.target.value)} style={selectStyle(false)}>
                     {MARITAL_STATUSES.map(m => <option key={m}>{m}</option>)}
                   </select>
@@ -393,61 +379,61 @@ export default function PersonalFamilyForm() {
               </div>
 
               <FormField label="Additional Details">
-                <textarea value={form.others} onChange={e => set("others", e.target.value)} rows={4} placeholder="Talents, achievements, visa status, family deity, any other important information..." style={{ ...inputStyle(false), resize:"vertical", minHeight:100, lineHeight:1.7 }} />
+                <textarea value={form.others} onChange={e => set("others", e.target.value)} rows={4} placeholder={t("registration.additionalDetailsPlaceholder")} style={{ ...inputStyle(false), resize:"vertical", minHeight:100, lineHeight:1.7 }} />
               </FormField>
             </div>
           </div>
 
           {/* Family Details */}
           <div style={sectionBox}>
-            <SectionHeader icon="👨‍👩‍👧‍👦" title="Family Details" />
+            <SectionHeader icon="👨‍👩‍👧‍👦" title={t("registration.familyInfo")} />
             <div style={{ display:"flex", flexDirection:"column", gap:20 }}>
               <div className="row-3">
-                <FormField label="Father's Name">
-                  <input value={form.fatherName} onChange={e => set("fatherName", e.target.value)} placeholder="Father's full name" style={inputStyle(false)} />
+                <FormField label={t("registration.fatherName")}>
+                  <input value={form.fatherName} onChange={e => set("fatherName", e.target.value)} placeholder={t("registration.fatherNamePlaceholder")} style={inputStyle(false)} />
                 </FormField>
-                <FormField label="Father's Occupation">
-                  <input value={form.fatherJob} onChange={e => set("fatherJob", e.target.value)} placeholder="Occupation" style={inputStyle(false)} />
+                <FormField label={t("registration.fatherOccupation")}>
+                  <input value={form.fatherJob} onChange={e => set("fatherJob", e.target.value)} placeholder={t("registration.fatherOccupationPlaceholder")} style={inputStyle(false)} />
                 </FormField>
-                <FormField label="Father Alive">
+                <FormField label={t("registration.fatherAlive")}>
                   <div style={radioStyle}>
-                    <RadioOpt name="fatherAlive" value="yes" checked={form.fatherAlive==="yes"} onChange={() => set("fatherAlive","yes")} label="Yes" />
-                    <RadioOpt name="fatherAlive" value="no" checked={form.fatherAlive==="no"} onChange={() => set("fatherAlive","no")} label="No" />
+                    <RadioOpt name="fatherAlive" value="yes" checked={form.fatherAlive==="yes"} onChange={() => set("fatherAlive","yes")} label={t("registration.fatherAliveYes")} />
+                    <RadioOpt name="fatherAlive" value="no" checked={form.fatherAlive==="no"} onChange={() => set("fatherAlive","no")} label={t("registration.fatherAliveNo")} />
                   </div>
                 </FormField>
               </div>
               <div className="row-3">
-                <FormField label="Mother's Name">
-                  <input value={form.motherName} onChange={e => set("motherName", e.target.value)} placeholder="Mother's full name" style={inputStyle(false)} />
+                <FormField label={t("registration.motherName")}>
+                  <input value={form.motherName} onChange={e => set("motherName", e.target.value)} placeholder={t("registration.motherNamePlaceholder")} style={inputStyle(false)} />
                 </FormField>
-                <FormField label="Mother's Occupation">
-                  <input value={form.motherJob} onChange={e => set("motherJob", e.target.value)} placeholder="Occupation" style={inputStyle(false)} />
+                <FormField label={t("registration.motherOccupation")}>
+                  <input value={form.motherJob} onChange={e => set("motherJob", e.target.value)} placeholder={t("registration.motherOccupationPlaceholder")} style={inputStyle(false)} />
                 </FormField>
-                <FormField label="Mother Alive">
+                <FormField label={t("registration.motherAlive")}>
                   <div style={radioStyle}>
-                    <RadioOpt name="motherAlive" value="yes" checked={form.motherAlive==="yes"} onChange={() => set("motherAlive","yes")} label="Yes" />
-                    <RadioOpt name="motherAlive" value="no" checked={form.motherAlive==="no"} onChange={() => set("motherAlive","no")} label="No" />
+                    <RadioOpt name="motherAlive" value="yes" checked={form.motherAlive==="yes"} onChange={() => set("motherAlive","yes")} label={t("registration.motherAliveYes")} />
+                    <RadioOpt name="motherAlive" value="no" checked={form.motherAlive==="no"} onChange={() => set("motherAlive","no")} label={t("registration.motherAliveNo")} />
                   </div>
                 </FormField>
               </div>
 
               {/* Siblings Table */}
               <div>
-                <label style={{ fontSize:"0.72rem", fontWeight:700, color:"#7A1020", textTransform:"uppercase", letterSpacing:"0.08em", display:"block", marginBottom:10 }}>Siblings</label>
+                <label style={{ fontSize:"0.72rem", fontWeight:700, color:"#7A1020", textTransform:"uppercase", letterSpacing:"0.08em", display:"block", marginBottom:10 }}>{t("registration.siblings")}</label>
                 <div style={{ overflowX:"auto", borderRadius:10, border:"1px solid rgba(196,30,58,0.15)" }}>
                   <table style={{ width:"100%", borderCollapse:"collapse", fontSize:"0.84rem" }}>
                     <thead>
                       <tr style={{ background:"linear-gradient(135deg,#8B0000,#C41E3A)" }}>
                         <th style={{ padding:"12px 16px", color:"white", fontWeight:700, textAlign:"left", fontSize:"0.8rem", letterSpacing:"0.05em" }}>Status</th>
-                        {["Elder Brother","Younger Brother","Elder Sister","Younger Sister"].map(h => (
+                        {[t("registration.elderBrother"), t("registration.youngerBrother"), t("registration.elderSister"), t("registration.youngerSister")].map(h => (
                           <th key={h} style={{ padding:"12px 16px", color:"white", fontWeight:600, textAlign:"center", fontSize:"0.78rem" }}>{h}</th>
                         ))}
                       </tr>
                     </thead>
                     <tbody>
                       {[
-                        { label:"Married", keys:["sibMarriedEB","sibMarriedYB","sibMarriedES","sibMarriedYS"] },
-                        { label:"Unmarried", keys:["sibUnmarriedEB","sibUnmarriedYB","sibUnmarriedES","sibUnmarriedYS"] },
+                        { label: t("registration.sibMarried"), keys:["sibMarriedEB","sibMarriedYB","sibMarriedES","sibMarriedYS"] },
+                        { label: t("registration.sibUnmarried"), keys:["sibUnmarriedEB","sibUnmarriedYB","sibUnmarriedES","sibUnmarriedYS"] },
                       ].map((row, ri) => (
                         <tr key={ri} style={{ background: ri%2===0 ? "#FFF8F9" : "white" }}>
                           <td style={{ padding:"10px 16px", fontWeight:700, color:"#5A0010", fontSize:"0.82rem" }}>{row.label}</td>
@@ -469,44 +455,44 @@ export default function PersonalFamilyForm() {
 
           {/* Physical Attributes */}
           <div style={sectionBox}>
-            <SectionHeader icon="⚖️" title="Physical Attributes" />
+            <SectionHeader icon="⚖️" title={t("registration.physicalAttributes")} />
             <div style={{ display:"flex", flexDirection:"column", gap:20 }}>
               <div className="row-3">
-                <FormField label="Height">
+                <FormField label={t("registration.height")}>
                   <select value={form.height} onChange={e => set("height", e.target.value)} style={selectStyle(false)}>
-                    {["-Select-",...HEIGHTS].map(h => <option key={h}>{h}</option>)}
+                    {[t("registration.genderSelect"),...HEIGHTS].map(h => <option key={h}>{h}</option>)}
                   </select>
                 </FormField>
-                <FormField label="Weight">
+                <FormField label={t("registration.weight")}>
                   <select value={form.weight} onChange={e => set("weight", e.target.value)} style={selectStyle(false)}>
-                    {["-Select-",...WEIGHTS].map(w => <option key={w}>{w}</option>)}
+                    {[t("registration.genderSelect"),...WEIGHTS].map(w => <option key={w}>{w}</option>)}
                   </select>
                 </FormField>
-                <FormField label="Blood Group">
+                <FormField label={t("registration.bloodGroup")}>
                   <select value={form.bloodGroup} onChange={e => set("bloodGroup", e.target.value)} style={selectStyle(false)}>
                     {BLOOD_GROUPS.map(b => <option key={b}>{b}</option>)}
                   </select>
                 </FormField>
               </div>
               <div className="row-2">
-                <FormField label="Diet Preference">
+                <FormField label={t("registration.diet")}>
                   <div style={radioStyle}>
-                    {["Vegetarian","Non-Vegetarian","Eggetarian"].map(d => (
+                    {[t("registration.dietVegetarian"), t("registration.dietNonVegetarian"), t("registration.dietEggetarian")].map(d => (
                       <RadioOpt key={d} name="diet" value={d} checked={form.diet===d} onChange={() => set("diet",d)} label={d} />
                     ))}
                   </div>
                 </FormField>
-                <FormField label="Any Disability">
+                <FormField label={t("registration.disability")}>
                   <div style={radioStyle}>
-                    {["No","Yes"].map(d => (
+                    {[t("registration.disabilityNo"), t("registration.disabilityYes")].map(d => (
                       <RadioOpt key={d} name="disability" value={d} checked={form.disability===d} onChange={() => set("disability",d)} label={d} />
                     ))}
                   </div>
                 </FormField>
               </div>
-              <FormField label="Complexion">
+              <FormField label={t("registration.complexion")}>
                 <div style={{ ...radioStyle, flexWrap:"wrap" }}>
-                  {["Very Fair","Fair","Wheatish","Wheatish Brown","Dark"].map(c => (
+                  {[t("registration.complexionVeryFair"), t("registration.complexionFair"), t("registration.complexionWheatish"), t("registration.complexionWheatishBrown"), t("registration.complexionDark")].map(c => (
                     <RadioOpt key={c} name="complexion" value={c} checked={form.complexion===c} onChange={() => set("complexion",c)} label={c} />
                   ))}
                 </div>
@@ -516,22 +502,22 @@ export default function PersonalFamilyForm() {
 
           {/* Education & Occupation */}
           <div style={sectionBox}>
-            <SectionHeader icon="🎓" title="Education & Occupation" />
+            <SectionHeader icon="🎓" title={t("registration.educationOccupation")} />
             <div style={{ display:"flex", flexDirection:"column", gap:20 }}>
               <div className="row-3">
-                <FormField label="Qualification">
-                  <input value={form.qualification} onChange={e => set("qualification", e.target.value)} placeholder="Highest qualification" style={inputStyle(false)} />
+                <FormField label={t("registration.qualification")}>
+                  <input value={form.qualification} onChange={e => set("qualification", e.target.value)} placeholder={t("registration.qualificationPlaceholder")} style={inputStyle(false)} />
                 </FormField>
-                <FormField label="Job / Occupation">
-                  <input value={form.job} onChange={e => set("job", e.target.value)} placeholder="Job title or role" style={inputStyle(false)} />
+                <FormField label={t("registration.occupation")}>
+                  <input value={form.job} onChange={e => set("job", e.target.value)} placeholder={t("registration.occupationPlaceholder")} style={inputStyle(false)} />
                 </FormField>
-                <FormField label="Place of Job">
-                  <input value={form.placeJob} onChange={e => set("placeJob", e.target.value)} placeholder="City / Location" style={inputStyle(false)} />
+                <FormField label={t("registration.placeOfWork")}>
+                  <input value={form.placeJob} onChange={e => set("placeJob", e.target.value)} placeholder={t("registration.placeOfWorkPlaceholder")} style={inputStyle(false)} />
                 </FormField>
               </div>
               <div style={{ maxWidth:300 }}>
-                <FormField label="Monthly Income">
-                  <input value={form.incomeMonth} onChange={e => set("incomeMonth", e.target.value)} placeholder="e.g. ₹50,000" style={inputStyle(false)} />
+                <FormField label={t("registration.monthlyIncome")}>
+                  <input value={form.incomeMonth} onChange={e => set("incomeMonth", e.target.value)} placeholder={t("registration.monthlyIncomePlaceholder")} style={inputStyle(false)} />
                 </FormField>
               </div>
             </div>
@@ -539,41 +525,41 @@ export default function PersonalFamilyForm() {
 
           {/* Astrology Details */}
           <div style={sectionBox}>
-            <SectionHeader icon="🪐" title="Astrology Details" />
+            <SectionHeader icon="🪐" title={t("registration.astrology")} />
             <div style={{ display:"flex", flexDirection:"column", gap:20 }}>
               <div className="row-3">
-                <FormField label="Caste" required>
+                <FormField label={t("registration.caste")} required>
                   <select value={form.caste} onChange={e => set("caste", e.target.value)} style={selectStyle(false)}>
                     {CASTES.map(c => <option key={c}>{c}</option>)}
                   </select>
                 </FormField>
-                <FormField label="Sub Caste" required>
+                <FormField label={t("registration.subcaste")} required>
                   <select value={form.subCaste} onChange={e => set("subCaste", e.target.value)} style={selectStyle(false)}>
-                    <option>-select-</option>
+                    <option>{t("registration.selectSubCaste")}</option>
                     {["Subgroup 1","Subgroup 2","Subgroup 3"].map(s => <option key={s}>{s}</option>)}
                   </select>
                 </FormField>
-                <FormField label="Gothram">
-                  <input value={form.gothram} onChange={e => set("gothram", e.target.value)} placeholder="Gothram" style={inputStyle(false)} />
+                <FormField label={t("registration.gothram")}>
+                  <input value={form.gothram} onChange={e => set("gothram", e.target.value)} placeholder={t("registration.gothramPlaceholder")} style={inputStyle(false)} />
                 </FormField>
               </div>
               <div className="row-4">
-                <FormField label="Star (Nakshatra)">
+                <FormField label={t("registration.star")}>
                   <select value={form.star} onChange={e => set("star", e.target.value)} style={selectStyle(false)}>
                     {STARS.map(s => <option key={s}>{s}</option>)}
                   </select>
                 </FormField>
-                <FormField label="Raasi / Moon Sign">
+                <FormField label={t("registration.raasi")}>
                   <select value={form.raasi} onChange={e => set("raasi", e.target.value)} style={selectStyle(false)}>
                     {RASI_LIST.map(r => <option key={r}>{r}</option>)}
                   </select>
                 </FormField>
-                <FormField label="Padam">
+                <FormField label={t("registration.padam")}>
                   <select value={form.padam} onChange={e => set("padam", e.target.value)} style={selectStyle(false)}>
                     {PADAM_LIST.map(p => <option key={p}>{p}</option>)}
                   </select>
                 </FormField>
-                <FormField label="Laknam">
+                <FormField label={t("registration.laknam")}>
                   <select value={form.laknam} onChange={e => set("laknam", e.target.value)} style={selectStyle(false)}>
                     {LAKNAM.map(l => <option key={l}>{l}</option>)}
                   </select>
@@ -584,14 +570,14 @@ export default function PersonalFamilyForm() {
 
           {/* Horoscope Photos */}
           <div style={sectionBox}>
-            <SectionHeader icon="🔮" title="Horoscope Details" />
+            <SectionHeader icon="🔮" title={t("registration.horoscopeDetails")} />
             <p style={{ fontSize:"0.82rem", color:"#8A5060", marginBottom:20, fontStyle:"italic" }}>
-              Upload your Rasi chart and Amsam chart for horoscope matching.
+              {t("registration.horoscopeDesc")}
             </p>
             <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(200px, 1fr))", gap:"clamp(12px, 3vw, 20px)" }}>
               {[
-                { key:"rasi", label:"Rasi Chart", icon:"♈", desc:"Janma Kundali" },
-                { key:"amsam", label:"Amsam Chart", icon:"⭐", desc:"Navamsa Chart" },
+                { key:"rasi", label: t("registration.rasiChart"), icon:"♈", desc: t("registration.janmaKundali") },
+                { key:"amsam", label: t("registration.amsamChart"), icon:"⭐", desc: t("registration.navamsaChart") },
               ].map(({ key, label, icon, desc }) => (
                 <div key={key}>
                   {horoscopePreview[key] ? (
@@ -600,7 +586,7 @@ export default function PersonalFamilyForm() {
                       <div style={{ padding:"clamp(8px, 2vw, 10px) clamp(10px, 2vw, 12px)", background:"linear-gradient(135deg,#8B0000,#C41E3A)", display:"flex", justifyContent:"space-between", alignItems:"center" }}>
                         <span style={{ color:"white", fontSize:"clamp(0.75rem, 2vw, 0.82rem)", fontWeight:600 }}>{label}</span>
                         <button type="button" onClick={() => removeHoroscopePhoto(key)} style={{ background:"rgba(255,255,255,0.2)", color:"white", border:"none", padding:"3px 12px", borderRadius:20, cursor:"pointer", fontSize:"0.75rem", fontWeight:600 }}>
-                          Remove
+                          {t("registration.removePhoto")}
                         </button>
                       </div>
                     </div>
@@ -612,7 +598,7 @@ export default function PersonalFamilyForm() {
                         <div style={{ color:"#B08090", fontSize:"clamp(0.65rem, 1.5vw, 0.72rem)", marginTop:2 }}>{desc} · Click to upload</div>
                       </div>
                       <div style={{ background:"linear-gradient(135deg,#8B0000,#C41E3A)", color:"white", padding:"6px 16px", borderRadius:20, fontSize:"clamp(0.7rem, 1.5vw, 0.78rem)", fontWeight:700 }}>
-                        Upload Chart
+                        {t("registration.uploadChart")}
                       </div>
                       <input type="file" accept="image/*" onChange={e => handleHoroscopePhotoUpload(key, e.target.files[0])} style={{ display:"none" }} />
                     </label>
@@ -624,87 +610,100 @@ export default function PersonalFamilyForm() {
 
           {/* Partner Expectations */}
           <div style={sectionBox}>
-            <SectionHeader icon="💑" title="Partner Expectations" />
+            <SectionHeader icon="💑" title={t("registration.partnerExpectations")} />
             <div style={{ display:"flex", flexDirection:"column", gap:20 }}>
               <div className="row-2">
-                <FormField label="Partner Qualification">
-                  <input value={form.partnerQualification} onChange={e => set("partnerQualification", e.target.value)} placeholder="Expected qualification" style={inputStyle(false)} />
+                <FormField label={t("registration.partnerQualification")}>
+                  <input value={form.partnerQualification} onChange={e => set("partnerQualification", e.target.value)} placeholder={t("registration.partnerQualificationPlaceholder")} style={inputStyle(false)} />
                 </FormField>
-                <FormField label="Partner Job Preference">
+                <FormField label={t("registration.partnerJobPreference")}>
                   <div style={{ display:"flex", gap:8 }}>
-                    <input value={form.partnerJob} onChange={e => set("partnerJob", e.target.value)} placeholder="Job preference" style={{ ...inputStyle(false), flex:1 }} />
+                    <input value={form.partnerJob} onChange={e => set("partnerJob", e.target.value)} placeholder={t("registration.partnerJobPlaceholder")} style={{ ...inputStyle(false), flex:1 }} />
                     <select value={form.partnerJobRequirement} onChange={e => set("partnerJobRequirement", e.target.value)} style={{ ...selectStyle(false), width:130, flexShrink:0 }}>
-                      <option>Must</option><option>Optional</option><option>Not Required</option>
+                      <option>{t("registration.mustRequired")}</option>
+                      <option>{t("registration.optional")}</option>
+                      <option>{t("registration.notRequired")}</option>
                     </select>
                   </div>
                 </FormField>
               </div>
               <div className="row-3">
-                <FormField label="Monthly Income Expectation">
-                  <input value={form.partnerIncomeMonth} onChange={e => set("partnerIncomeMonth", e.target.value)} placeholder="e.g. ₹40,000+" style={inputStyle(false)} />
+                <FormField label={t("registration.partnerIncomeExpectation")}>
+                  <input value={form.partnerIncomeMonth} onChange={e => set("partnerIncomeMonth", e.target.value)} placeholder={t("registration.partnerIncomeMonthPlaceholder")} style={inputStyle(false)} />
                 </FormField>
-                <FormField label="Preferred Age (From)">
-                  <input value={form.partnerAgeFrom} onChange={e => set("partnerAgeFrom", e.target.value)} placeholder="From age" style={inputStyle(false)} />
+                <FormField label={t("registration.preferredAgeFrom")}>
+                  <input value={form.partnerAgeFrom} onChange={e => set("partnerAgeFrom", e.target.value)} placeholder={t("registration.partnerAgeFromPlaceholder")} style={inputStyle(false)} />
                 </FormField>
-                <FormField label="Preferred Age (To)">
-                  <input value={form.partnerAgeTo} onChange={e => set("partnerAgeTo", e.target.value)} placeholder="To age" style={inputStyle(false)} />
+                <FormField label={t("registration.preferredAgeTo")}>
+                  <input value={form.partnerAgeTo} onChange={e => set("partnerAgeTo", e.target.value)} placeholder={t("registration.partnerAgePlaceholder")} style={inputStyle(false)} />
                 </FormField>
               </div>
               <div className="row-3">
-                <FormField label="Preferred Diet">
+                <FormField label={t("registration.preferredDiet")}>
                   <select value={form.partnerDiet} onChange={e => set("partnerDiet", e.target.value)} style={selectStyle(false)}>
-                    <option>Vegetarian</option><option>Non-Vegetarian</option><option>Eggetarian</option><option>No Preference</option>
+                    <option>{t("registration.dietVegetarian")}</option>
+                    <option>{t("registration.dietNonVegetarian")}</option>
+                    <option>{t("registration.dietEggetarian")}</option>
+                    <option>{t("registration.dietNoPreference")}</option>
                   </select>
                 </FormField>
-                <FormField label="Preferred Caste">
+                <FormField label={t("registration.preferredCaste")}>
                   <select value={form.partnerCaste} onChange={e => set("partnerCaste", e.target.value)} style={selectStyle(false)}>
-                    <option>Any</option><option>Same Caste</option><option>Others</option>
+                    <option>{t("registration.casteAny")}</option>
+                    <option>{t("registration.casteSame")}</option>
+                    <option>{t("registration.casteOthers")}</option>
                   </select>
                 </FormField>
-                <FormField label="Partner Marital Status">
+                <FormField label={t("registration.partnerMaritalStatus")}>
                   <select value={form.partnerMaritalStatus} onChange={e => set("partnerMaritalStatus", e.target.value)} style={selectStyle(false)}>
-                    <option>Unmarried</option><option>Divorced</option><option>Widowed</option><option>Separated</option><option>Any</option>
+                    <option>{t("registration.unmarried")}</option>
+                    <option>{t("registration.divorced")}</option>
+                    <option>{t("registration.widowed")}</option>
+                    <option>{t("registration.separated")}</option>
+                    <option>{t("registration.casteAny")}</option>
                   </select>
                 </FormField>
               </div>
               <div className="row-2">
-                <FormField label="Horoscope Required">
+                <FormField label={t("registration.horoscopeRequired")}>
                   <div style={radioStyle}>
                     {["Yes","No"].map(v => (
                       <RadioOpt key={v} name="partnerHoroscope" value={v} checked={form.partnerHoroscopeRequired===v} onChange={() => set("partnerHoroscopeRequired",v)} label={v} />
                     ))}
                   </div>
                 </FormField>
-                <FormField label="Sub Caste Preference">
+                <FormField label={t("registration.subCastePreference")}>
                   <select value={form.partnerSubCaste} onChange={e => set("partnerSubCaste", e.target.value)} style={selectStyle(false)}>
-                    <option>Any</option><option>Same Sub-Caste</option><option>Others</option>
+                    <option>{t("registration.casteAny")}</option>
+                    <option>{t("registration.subCasteSame")}</option>
+                    <option>{t("registration.casteOthers")}</option>
                   </select>
                 </FormField>
               </div>
               <FormField label="Any Other Requirements">
-                <textarea value={form.partnerOtherRequirement} onChange={e => set("partnerOtherRequirement", e.target.value)} rows={3} placeholder="Describe any other specific preferences or requirements..." style={{ ...inputStyle(false), resize:"vertical", minHeight:80, lineHeight:1.7 }} />
+                <textarea value={form.partnerOtherRequirement} onChange={e => set("partnerOtherRequirement", e.target.value)} rows={3} placeholder={t("registration.partnerRequirementsPlaceholder")} style={{ ...inputStyle(false), resize:"vertical", minHeight:80, lineHeight:1.7 }} />
               </FormField>
             </div>
           </div>
 
           {/* Communication Details */}
           <div style={sectionBox}>
-            <SectionHeader icon="📞" title="Communication Details" />
+            <SectionHeader icon="📞" title={t("registration.communicationDetails")} />
             <div style={{ display:"flex", flexDirection:"column", gap:20 }}>
               <div className="row-2">
-                <FormField label="Permanent Address">
-                  <textarea value={form.permanentAddress} onChange={e => set("permanentAddress", e.target.value)} placeholder="Enter permanent address" rows={3} style={{ ...inputStyle(false), resize:"vertical", minHeight:88, lineHeight:1.6 }} />
+                <FormField label={t("registration.permanentAddress")}>
+                  <textarea value={form.permanentAddress} onChange={e => set("permanentAddress", e.target.value)} placeholder={t("registration.permanentAddressPlaceholder")} rows={3} style={{ ...inputStyle(false), resize:"vertical", minHeight:88, lineHeight:1.6 }} />
                 </FormField>
-                <FormField label="Present Address">
-                  <textarea value={form.presentAddress} onChange={e => set("presentAddress", e.target.value)} placeholder="Enter present address" rows={3} style={{ ...inputStyle(false), resize:"vertical", minHeight:88, lineHeight:1.6 }} />
+                <FormField label={t("registration.presentAddress")}>
+                  <textarea value={form.presentAddress} onChange={e => set("presentAddress", e.target.value)} placeholder={t("registration.presentAddressPlaceholder")} rows={3} style={{ ...inputStyle(false), resize:"vertical", minHeight:88, lineHeight:1.6 }} />
                 </FormField>
               </div>
               <div className="row-2">
-                <FormField label="Contact Person">
-                  <input value={form.contactPerson} onChange={e => set("contactPerson", e.target.value)} placeholder="Person to contact" style={inputStyle(false)} />
+                <FormField label={t("registration.contactPerson")}>
+                  <input value={form.contactPerson} onChange={e => set("contactPerson", e.target.value)} placeholder={t("registration.contactPersonPlaceholder")} style={inputStyle(false)} />
                 </FormField>
-                <FormField label="Contact Number" required error={errors.contactNumber}>
-                  <input value={form.contactNumber} onChange={e => set("contactNumber", e.target.value)} placeholder="10-digit mobile number" maxLength={10} style={inputStyle(errors.contactNumber)} />
+                <FormField label={t("registration.contactNumber")} required error={errors.contactNumber}>
+                  <input value={form.contactNumber} onChange={e => set("contactNumber", e.target.value)} placeholder={t("registration.contactNumberPlaceholder")} maxLength={10} style={inputStyle(errors.contactNumber)} />
                 </FormField>
               </div>
             </div>
@@ -712,30 +711,33 @@ export default function PersonalFamilyForm() {
 
           {/* Scheme / Account */}
           <div style={{ ...sectionBox, background:"linear-gradient(135deg,#FFF8F0,white)", border:"1px solid rgba(139,0,0,0.15)" }}>
-            <SectionHeader icon="💎" title="Scheme & Account Details" />
+            <SectionHeader icon="💎" title={t("registration.schemeDetails")} />
             <div style={{ display:"flex", flexDirection:"column", gap:20 }}>
               <div className="row-3">
                 <FormField label="Membership Scheme">
                   <select value={form.scheme} onChange={e => set("scheme", e.target.value)} style={selectStyle(false)}>
-                    <option>Select</option><option>Basic</option><option>Standard</option><option>Premium</option>
+                    <option>{t("registration.schemePlaceholder")}</option>
+                    <option>{t("registration.schemeBasic")}</option>
+                    <option>{t("registration.schemeStandard")}</option>
+                    <option>{t("registration.schemePremium")}</option>
                   </select>
                 </FormField>
                 <FormField label="Login Username">
-                  <input type="text" value={form.username} onChange={e => set("username", e.target.value)} placeholder="Choose a username" style={inputStyle(false)} />
+                  <input type="text" value={form.username} onChange={e => set("username", e.target.value)} placeholder={t("registration.usernamePlaceholder")} style={inputStyle(false)} />
                 </FormField>
                 <FormField label="Password">
-                  <input type="password" value={form.password} onChange={e => set("password", e.target.value)} placeholder="Create password" style={inputStyle(false)} />
+                  <input type="password" value={form.password} onChange={e => set("password", e.target.value)} placeholder={t("registration.passwordPlaceholder")} style={inputStyle(false)} />
                 </FormField>
               </div>
 
               <div style={{ background:"rgba(139,0,0,0.04)", borderRadius:10, padding:18, border:"1px solid rgba(139,0,0,0.1)" }}>
                 <p style={{ fontSize:"0.88rem", color:"#5A0010", fontWeight:700, marginBottom:6 }}>
-                  💰 Registration Fee: ₹999 for 1 Year
+                  💰 {t("registration.registrationFee")}
                 </p>
                 <p style={{ fontSize:"0.8rem", color:"#6A3040", lineHeight:1.7, marginBottom:12 }}>
-                  After registering, your profile will be activated once the fee is paid within 1 day. Send your payment copy along with your registration number, name, and mobile number to{" "}
+                  {t("registration.feeDescription")}{" "}
                   <span style={{ color:"#C41E3A", fontWeight:600 }}>dumdumdummarriage@gmail.com</span>.
-                  For enquiries, call <span style={{ color:"#C41E3A", fontWeight:600 }}>+91-9489331973</span>.
+                  {t("registration.enquiries")}{" "}<span style={{ color:"#C41E3A", fontWeight:600 }}>+91-9489331973</span>.
                 </p>
                 <label style={{ display:"flex", alignItems:"center", gap:10, cursor:"pointer" }}>
                   <div style={{ position:"relative", width:18, height:18, flexShrink:0 }}>
@@ -745,7 +747,7 @@ export default function PersonalFamilyForm() {
                     </div>
                   </div>
                   <span style={{ fontSize:"0.85rem", color:"#3D0010" }}>
-                    I accept the <span style={{ color:"#8B0000", fontWeight:700, textDecoration:"underline", cursor:"pointer" }}>Terms & Conditions</span>
+                    {t("registration.termsAcceptance")}{" "}<span style={{ color:"#8B0000", fontWeight:700, textDecoration:"underline", cursor:"pointer" }}>{t("registration.termsLink")}</span>
                   </span>
                 </label>
               </div>
@@ -755,10 +757,10 @@ export default function PersonalFamilyForm() {
           {/* Footer Buttons */}
           <div style={{ display:"flex", gap:14, justifyContent:"center", padding:"10px 0 8px", flexWrap:"wrap" }}>
             <button type="button" onClick={handleReset} style={{ background:"white", color:"#8B0000", border:"2px solid #8B0000", padding:"13px 36px", borderRadius:10, fontWeight:700, cursor:"pointer", fontSize:"0.95rem", letterSpacing:"0.06em", transition:"all 0.2s", minWidth:160 }}>
-              ↺ Reset Form
+              ↺ {t("registration.reset")}
             </button>
             <button onClick={handleSubmit} disabled={submitting} style={{ background: submitting ? "#aaa" : "linear-gradient(135deg,#5A0010,#8B0000 40%,#C41E3A)", color:"white", border:"none", padding:"13px 44px", borderRadius:10, fontWeight:700, cursor: submitting ? "not-allowed" : "pointer", fontSize:"0.95rem", letterSpacing:"0.06em", boxShadow:"0 6px 20px rgba(139,0,0,0.35)", transition:"all 0.2s", minWidth:200 }}>
-              {submitting ? "Submitting..." : "✦ Save Profile"}
+              {submitting ? "Submitting..." : `✦ ${t("registration.submit")}`}
             </button>
           </div>
           <p style={{ textAlign:"center", color:"#C4A0A8", fontSize:"0.75rem", marginTop:12 }}>
