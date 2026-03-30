@@ -48,6 +48,9 @@ export default function Navbar() {
             padding: 0;
             box-shadow: 0 8px 24px rgba(0,0,0,0.2);
             animation: slideDown 0.3s ease;
+            z-index: 999;
+            max-height: 80vh;
+            overflow-y: auto;
           }
           
           @keyframes slideDown {
@@ -67,20 +70,20 @@ export default function Navbar() {
           
           .mobile-menu a,
           .mobile-menu div {
-            padding: 16px 20px !important;
+            padding: clamp(12px, 3vw, 16px) clamp(16px, 4vw, 20px) !important;
             border-bottom: 1px solid rgba(232,183,106,0.1);
             color: #fdf8f2 !important;
             text-decoration: none !important;
             cursor: pointer !important;
             text-align: left;
-            font-size: 16px !important;
+            font-size: clamp(13px, 3vw, 16px) !important;
             transition: all 0.2s ease;
           }
           
           .mobile-menu a:hover,
           .mobile-menu div:hover {
             background: rgba(232,183,106,0.15);
-            padding-left: 24px !important;
+            padding-left: clamp(20px, 5vw, 24px) !important;
           }
           
           .hamburger {
@@ -88,10 +91,11 @@ export default function Navbar() {
             flex-direction: column;
             gap: 5px;
             cursor: pointer;
+            padding: 8px;
           }
           
           .hamburger span {
-            width: 25px;
+            width: 24px;
             height: 2.5px;
             background: #E8B76A;
             transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
@@ -113,6 +117,18 @@ export default function Navbar() {
           
           .desktop-nav {
             display: none !important;
+          }
+        }
+        
+        @media (max-width: 480px) {
+          .mobile-menu {
+            top: 56px;
+          }
+          
+          .mobile-menu a,
+          .mobile-menu div {
+            padding: 12px 14px !important;
+            font-size: 14px !important;
           }
         }
         
@@ -251,7 +267,6 @@ export default function Navbar() {
         <div 
           className={`hamburger ${menuOpen ? 'open' : ''}`}
           onClick={() => setMenuOpen(!menuOpen)}
-          style={{ display: 'none' }}
         >
           <span></span>
           <span></span>
@@ -260,13 +275,13 @@ export default function Navbar() {
 
         {/* Mobile Navigation Menu */}
         <div className={`mobile-menu ${!menuOpen ? 'closed' : ''}`}>
-          <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }}>{t('navbar.home')}</Link>
-          <Link to="/registration" style={{ textDecoration: 'none', color: 'inherit' }}>{t('navbar.registration')}</Link>
-          <Link to="/search" style={{ textDecoration: 'none', color: 'inherit' }}>Search</Link>
-          <Link to="/contact" style={{ textDecoration: 'none', color: 'inherit' }}>{t('navbar.contact')}</Link>
+          <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }} onClick={() => setMenuOpen(false)}>{t('navbar.home')}</Link>
+          <Link to="/registration" style={{ textDecoration: 'none', color: 'inherit' }} onClick={() => setMenuOpen(false)}>{t('navbar.registration')}</Link>
+          <Link to="/search" style={{ textDecoration: 'none', color: 'inherit' }} onClick={() => setMenuOpen(false)}>Search</Link>
+          <Link to="/contact" style={{ textDecoration: 'none', color: 'inherit' }} onClick={() => setMenuOpen(false)}>{t('navbar.contact')}</Link>
           <select 
             value={i18n.language}
-            onChange={(e) => handleLanguageChange(e.target.value)}
+            onChange={(e) => { handleLanguageChange(e.target.value); setMenuOpen(false); }}
             style={{
               padding: '10px 15px',
               borderRadius: '4px',

@@ -79,6 +79,8 @@ CREATE TABLE IF NOT EXISTS registrations (
     -- Photos
     photo1 VARCHAR(500),
     photo2 VARCHAR(500),
+    rasi_photo VARCHAR(500),
+    amsam_photo VARCHAR(500),
 
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP

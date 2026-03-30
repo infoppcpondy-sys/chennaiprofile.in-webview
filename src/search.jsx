@@ -97,7 +97,37 @@ export default function MatrimonySearch() {
         .twrap{overflow-x:auto;border-radius:8px;box-shadow:0 2px 18px rgba(192,57,43,0.1);}
         .divider{width:4px;height:22px;background:linear-gradient(#c0392b,#e74c3c);border-radius:2px;flex-shrink:0;}
         @media(max-width:880px){.fg{grid-template-columns:repeat(2,1fr);}}
-        @media(max-width:540px){.fg{grid-template-columns:1fr;}.fg2{grid-template-columns:1fr;}.btn-row button{width:100%;}.rtable th,.rtable td{padding:8px 9px;font-size:11.5px;}.thumb{width:38px;height:38px;}}
+        @media(max-width:768px){
+          .fg{grid-template-columns:1fr;}
+          .fg2{grid-template-columns:1fr;}
+          .btn-row button{width:100%;margin-bottom:8px;}
+          .rtable{font-size:12px;}
+          .rtable th,.rtable td{padding:8px 6px;font-size:11px;}
+          .thumb{width:36px;height:36px;}
+          .modal{max-width:90vw;padding:20px 18px;}
+          .modal img{width:100px;height:100px;}
+        }
+        @media(max-width:540px){
+          .fg{grid-template-columns:1fr;}
+          .fg2{grid-template-columns:1fr;}.btn-row button{width:100%;}.rtable th,.rtable td{padding:8px 9px;font-size:11.5px;}.thumb{width:38px;height:38px;}
+        }
+        @media(max-width:480px){
+          .fg{grid-template-columns:1fr;}
+          padding:16px 8px !important;
+          .rtable{font-size:10px;}
+          .rtable th, .rtable td{padding:6px 4px;font-size:9px;}
+          .thumb{width:32px;height:32px;}
+          body {font-size:13px;}
+          .btn-s, .btn-r {padding:8px 16px;font-size:12px;}
+          .modal{max-width:95vw;padding:16px 14px;}
+          .modal img{width:90px;height:90px;}
+          .modal-name{font-size:16px;}
+          .modal-sub{font-size:11px;}
+        }
+        @media(max-width:360px){
+          .rtable th, .rtable td{padding:4px 3px;font-size:8px;}
+          .thumb{width:28px;height:28px;border-width:2px;}
+        }
       `}</style>
 
       <div style={{ minHeight:"100vh", background:"linear-gradient(150deg,#fff8f8 0%,#fff 55%,#fdf0f0 100%)", padding:"28px 14px" }}>

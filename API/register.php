@@ -21,11 +21,14 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
 
 // Read input (supports both JSON and form-urlencoded)
 $contentType = $_SERVER["CONTENT_TYPE"] ?? "";
-if (strpos($contentType, "application/json") !== false) {
+if (strpos($contentType, "multipart/form-data") !== false) {
+    $input = $_POST;
+} else if (strpos($contentType, "application/json") !== false) {
     $input = json_decode(file_get_contents("php://input"), true);
 } else {
     $input = $_POST;
 }
+
 if (!$input || count($input) === 0) {
     http_response_code(400);
     echo json_encode(["success" => false, "message" => "Invalid input"]);
@@ -57,6 +60,67 @@ if (!empty($errors)) {
     exit;
 }
 
+// Handle photo uploads
+$uploadDir = __DIR__ . "/uploads/";
+if (!is_dir($uploadDir)) {
+    mkdir($uploadDir, 0755, true);
+}
+
+$photo1 = null;
+$photo2 = null;
+$photo3 = null;
+$rasiPhoto = null;
+$amsamPhoto = null;
+
+for ($i = 1; $i <= 3; $i++) {
+    $photoKey = "photo" . $i;
+    if (isset($_FILES[$photoKey]) && $_FILES[$photoKey]['error'] === UPLOAD_ERR_OK) {
+        $file = $_FILES[$photoKey];
+        $fileExt = pathinfo($file['name'], PATHINFO_EXTENSION);
+        $allowedExts = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+        
+        if (in_array(strtolower($fileExt), $allowedExts) && $file['size'] <= 5242880) { // 5MB
+            $filename = uniqid() . "_" . basename($file['name']);
+            $filepath = $uploadDir . $filename;
+            
+            if (move_uploaded_file($file['tmp_name'], $filepath)) {
+                ${"photo" . $i} = "uploads/" . $filename;
+            }
+        }
+    }
+}
+
+// Handle horoscope photos
+if (isset($_FILES["rasiPhoto"]) && $_FILES["rasiPhoto"]['error'] === UPLOAD_ERR_OK) {
+    $file = $_FILES["rasiPhoto"];
+    $fileExt = pathinfo($file['name'], PATHINFO_EXTENSION);
+    $allowedExts = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+    
+    if (in_array(strtolower($fileExt), $allowedExts) && $file['size'] <= 5242880) {
+        $filename = uniqid() . "_rasi_" . basename($file['name']);
+        $filepath = $uploadDir . $filename;
+        
+        if (move_uploaded_file($file['tmp_name'], $filepath)) {
+            $rasiPhoto = "uploads/" . $filename;
+        }
+    }
+}
+
+if (isset($_FILES["amsamPhoto"]) && $_FILES["amsamPhoto"]['error'] === UPLOAD_ERR_OK) {
+    $file = $_FILES["amsamPhoto"];
+    $fileExt = pathinfo($file['name'], PATHINFO_EXTENSION);
+    $allowedExts = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+    
+    if (in_array(strtolower($fileExt), $allowedExts) && $file['size'] <= 5242880) {
+        $filename = uniqid() . "_amsam_" . basename($file['name']);
+        $filepath = $uploadDir . $filename;
+        
+        if (move_uploaded_file($file['tmp_name'], $filepath)) {
+            $amsamPhoto = "uploads/" . $filename;
+        }
+    }
+}
+
 // Insert into database
 try {
     $sql = "INSERT INTO registrations (
@@ -74,7 +138,8 @@ try {
         partner_diet, partner_horoscope_required, partner_marital_status,
         partner_caste, partner_sub_caste, partner_other_requirement,
         caste, sub_caste, gothram, star, raasi, padam, laknam,
-        permanent_address, present_address, contact_person, contact_number
+        permanent_address, present_address, contact_person, contact_number,
+        photo1, photo2, rasi_photo, amsam_photo
     ) VALUES (
         :name, :gender, :dob, :birth_hour, :birth_min, :birth_ampm,
         :place_birth, :nativity, :mother_tongue, :marital_status,
@@ -90,7 +155,8 @@ try {
         :partner_diet, :partner_horoscope_required, :partner_marital_status,
         :partner_caste, :partner_sub_caste, :partner_other_requirement,
         :caste, :sub_caste, :gothram, :star, :raasi, :padam, :laknam,
-        :permanent_address, :present_address, :contact_person, :contact_number
+        :permanent_address, :present_address, :contact_person, :contact_number,
+        :photo1, :photo2, :rasi_photo, :amsam_photo
     )";
 
     $stmt = $pdo->prepare($sql);
@@ -153,6 +219,10 @@ try {
         ":present_address" => $input["presentAddress"] ?? null,
         ":contact_person" => $input["contactPerson"] ?? null,
         ":contact_number" => $contactNumber,
+        ":photo1" => $photo1,
+        ":photo2" => $photo2,
+        ":rasi_photo" => $rasiPhoto,
+        ":amsam_photo" => $amsamPhoto,
     ]);
 
     $id = $pdo->lastInsertId();

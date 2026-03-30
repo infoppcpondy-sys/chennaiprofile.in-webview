@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
@@ -15,12 +15,28 @@ export default function Home() {
   const [regNumber, setRegNumber] = useState('');
   const [feedbackMessage, setFeedbackMessage] = useState('');
   const [showRegistrationModal, setShowRegistrationModal] = useState(false);
+  const [adIndex, setAdIndex] = useState(0);
   const [registrationData, setRegistrationData] = useState({
     createdFor: '',
     name: '',
     countryCode: '+91',
     phone: '',
   });
+
+  // Advertisement images array
+  const adImages = [
+    '/assets/addcarimg.png',
+    '/assets/coming.png',
+    '/assets/pondymatri_Ads.jpeg',
+  ];
+
+  // Auto-rotate ads every 5 seconds
+  useEffect(() => {
+    const adTimer = setInterval(() => {
+      setAdIndex((prevIndex) => (prevIndex + 1) % adImages.length);
+    }, 5000);
+    return () => clearInterval(adTimer);
+  }, [adImages.length]);
 
   // Profile data
   const maleProfiles = [
@@ -1314,6 +1330,113 @@ export default function Home() {
           color: rgba(255,255,255,0.3);
           letter-spacing: 0.06em;
         }
+
+        /* ── AD CAROUSEL ── */
+        .ad-carousel {
+          position: relative;
+          height: 400px;
+          border-radius: 16px;
+          overflow: hidden;
+          box-shadow: var(--shadow-md);
+          cursor: pointer;
+          transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+          border: 1px solid rgba(201,145,58,0.15);
+          background: linear-gradient(135deg, #ffffff 0%, #fafbfc 100%);
+        }
+
+        .ad-carousel:hover {
+          box-shadow: var(--shadow-lg);
+          transform: translateY(-6px);
+          border-color: rgba(201,145,58,0.3);
+        }
+
+        .ad-image-container {
+          position: relative;
+          width: 100%;
+          height: 100%;
+          overflow: hidden;
+        }
+
+        .ad-image {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+          object-position: center;
+          transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+          opacity: 1;
+          background: linear-gradient(135deg, #ffffff 0%, #fafbfc 100%);
+        }
+
+        .ad-image.fade-out {
+          opacity: 0;
+          position: absolute;
+          top: 0;
+          left: 0;
+        }
+
+        .ad-dots {
+          position: absolute;
+          bottom: 16px;
+          left: 50%;
+          transform: translateX(-50%);
+          display: flex;
+          gap: 10px;
+          z-index: 10;
+        }
+
+        .ad-dot {
+          width: 10px;
+          height: 10px;
+          border-radius: 50%;
+          background: rgba(255, 255, 255, 0.4);
+          border: 2px solid rgba(255, 255, 255, 0.6);
+          cursor: pointer;
+          transition: all 0.3s ease;
+        }
+
+        .ad-dot.active {
+          background: rgba(201, 145, 58, 0.8);
+          border-color: rgba(201, 145, 58, 1);
+          transform: scale(1.2);
+        }
+
+        .ad-dot:hover {
+          background: rgba(255, 255, 255, 0.7);
+        }
+
+        .ad-nav-btn {
+          position: absolute;
+          top: 50%;
+          transform: translateY(-50%);
+          width: 44px;
+          height: 44px;
+          border-radius: 50%;
+          background: rgba(255, 255, 255, 0.2);
+          backdrop-filter: blur(4px);
+          border: 2px solid rgba(255, 255, 255, 0.4);
+          color: #fff;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 1.2rem;
+          transition: all 0.3s ease;
+          z-index: 5;
+        }
+
+        .ad-nav-btn:hover {
+          background: rgba(255, 255, 255, 0.4);
+          border-color: rgba(255, 255, 255, 0.7);
+          transform: translateY(-50%) scale(1.1);
+        }
+
+        .ad-nav-btn.prev {
+          left: 16px;
+        }
+
+        .ad-nav-btn.next {
+          right: 16px;
+        }
       `}</style>
 
       {/* Header */}
@@ -1357,9 +1480,56 @@ export default function Home() {
 
         <div className="cards-grid">
 
-          {/* Left Column - Space for future content */}
+          {/* Left Column - Advertisement Carousel */}
           <div className="cards-column-left">
-            {/* Reserved for new content */}
+            <div className="ad-carousel">
+              <div className="ad-image-container">
+                {adImages.map((image, index) => (
+                  <img
+                    key={index}
+                    src={image}
+                    alt={`Advertisement ${index + 1}`}
+                    className="ad-image"
+                    style={{
+                      opacity: index === adIndex ? 1 : 0,
+                      position: index === adIndex ? 'relative' : 'absolute',
+                      transition: 'opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
+                    }}
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                    }}
+                  />
+                ))}
+              </div>
+
+              {/* Navigation Buttons */}
+              <button
+                className="ad-nav-btn prev"
+                onClick={() => setAdIndex((prev) => (prev - 1 + adImages.length) % adImages.length)}
+                aria-label="Previous ad"
+              >
+                ‹
+              </button>
+              <button
+                className="ad-nav-btn next"
+                onClick={() => setAdIndex((prev) => (prev + 1) % adImages.length)}
+                aria-label="Next ad"
+              >
+                ›
+              </button>
+
+              {/* Indicator Dots */}
+              <div className="ad-dots">
+                {adImages.map((_, index) => (
+                  <button
+                    key={index}
+                    className={`ad-dot ${index === adIndex ? 'active' : ''}`}
+                    onClick={() => setAdIndex(index)}
+                    aria-label={`Go to ad ${index + 1}`}
+                  />
+                ))}
+              </div>
+            </div>
           </div>
 
           {/* Right Column - Quick Search */}
