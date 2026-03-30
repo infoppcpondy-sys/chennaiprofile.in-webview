@@ -127,15 +127,6 @@ export default function Detail() {
 
       <div style={{ minHeight:'100vh', background:'linear-gradient(160deg,#F9EEF0 0%,#FFF8F0 50%,#F9EEF0 100%)', paddingBottom:60, fontFamily:"'Lato',sans-serif" }}>
 
-        {/* Top Nav Bar */}
-        <div style={{ background:'linear-gradient(135deg,#5A0010,#8B0000)', padding:'14px 24px', display:'flex', alignItems:'center', justifyContent:'space-between', position:'sticky', top:0, zIndex:100, boxShadow:'0 4px 20px rgba(0,0,0,0.2)' }}>
-          <button onClick={() => navigate('/')} style={{ background:'rgba(255,255,255,0.12)', color:'white', border:'1px solid rgba(255,255,255,0.2)', padding:'8px 18px', borderRadius:8, cursor:'pointer', fontWeight:600, fontSize:'0.85rem', display:'flex', alignItems:'center', gap:8, letterSpacing:'0.04em', backdropFilter:'blur(10px)', transition:'all 0.2s' }}>
-            ← Profiles
-          </button>
-          <div style={{ color:'rgba(255,220,200,0.9)', fontSize:'0.75rem', letterSpacing:'0.12em', textTransform:'uppercase' }}>Profile Details</div>
-          <div style={{ width:100 }} />
-        </div>
-
         {/* Hero Banner */}
         <div style={{ background:'linear-gradient(135deg,#5A0010 0%,#8B0000 45%,#C41E3A 100%)', padding:'40px 24px 50px', position:'relative', overflow:'hidden' }}>
           <div style={{ position:'absolute', inset:0, backgroundImage:'radial-gradient(circle at 15% 50%, rgba(255,255,255,0.04) 0%, transparent 60%), radial-gradient(circle at 85% 20%, rgba(255,255,255,0.06) 0%, transparent 50%)', pointerEvents:'none' }} />
@@ -359,19 +350,6 @@ export default function Detail() {
               <InfoCard label="Contact Person" value={p.contactPerson} icon="👤" />
               <InfoCard label="Contact Number" value={p.contactNumber ? `📱 ${p.contactNumber}` : null} icon="📞" />
             </div>
-          </div>
-
-          {/* Action Buttons */}
-          <div style={{ display:'flex', gap:14, justifyContent:'center', padding:'8px 0 0', flexWrap:'wrap' }}>
-            <button onClick={() => navigate('/')} style={{ background:'white', color:'#8B0000', border:'2px solid #8B0000', padding:'13px 36px', borderRadius:10, fontWeight:700, cursor:'pointer', fontSize:'0.95rem', letterSpacing:'0.06em', transition:'all 0.2s' }}>
-              ← Back to Profiles
-            </button>
-            <button style={{ background:'linear-gradient(135deg,#5A0010,#8B0000 40%,#C41E3A)', color:'white', border:'none', padding:'13px 36px', borderRadius:10, fontWeight:700, cursor:'pointer', fontSize:'0.95rem', letterSpacing:'0.06em', boxShadow:'0 6px 20px rgba(139,0,0,0.3)', transition:'all 0.2s' }}>
-              💌 Express Interest
-            </button>
-            <button style={{ background:'linear-gradient(135deg,#7A5C00,#C9913A)', color:'white', border:'none', padding:'13px 36px', borderRadius:10, fontWeight:700, cursor:'pointer', fontSize:'0.95rem', letterSpacing:'0.06em', boxShadow:'0 6px 20px rgba(201,145,58,0.25)', transition:'all 0.2s' }}>
-              ⭐ Save Profile
-            </button>
           </div>
 
           <p style={{ textAlign:'center', color:'#C4A0A8', fontSize:'0.75rem', marginTop:16 }}>
