@@ -133,18 +133,6 @@ export default function MatrimonySearch() {
       <div style={{ minHeight:"100vh", background:"linear-gradient(150deg,#fff8f8 0%,#fff 55%,#fdf0f0 100%)", padding:"28px 14px" }}>
         <div style={{ maxWidth:1120, margin:"0 auto" }}>
 
-          {/* ── HEADER ── */}
-          <div style={{ textAlign:"center", marginBottom:34 }}>
-            <div style={{ display:"inline-flex", alignItems:"center", gap:10, background:"rgba(192,57,43,0.06)", border:"1.5px solid rgba(192,57,43,0.18)", borderRadius:50, padding:"6px 22px", marginBottom:18 }}>
-              <span>💍</span>
-              <span style={{ fontSize:11, color:"#c0392b", letterSpacing:2, fontWeight:700, textTransform:"uppercase", fontFamily:"Georgia,serif" }}>Matrimony Portal</span>
-            </div>
-            <h1 style={{ fontFamily:"'Merriweather',serif", fontSize:"clamp(24px,5vw,38px)", fontWeight:900, color:"#1a1a1a", margin:"0 0 10px", lineHeight:1.15 }}>
-              Find Your <span style={{ color:"#c0392b" }}>Perfect Match</span>
-            </h1>
-            <p style={{ color:"#aaa", fontSize:14, fontFamily:"'Lora',serif", fontStyle:"italic" }}>Search from thousands of verified profiles across India</p>
-          </div>
-
           {/* ── FILTER CARD ── */}
           <div style={{ background:"#fff", borderRadius:14, boxShadow:"0 4px 32px rgba(192,57,43,0.1)", border:"1px solid rgba(192,57,43,0.12)", padding:"26px 24px", marginBottom:26 }}>
             <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:22, paddingBottom:14, borderBottom:"2px solid #fdecea" }}>
