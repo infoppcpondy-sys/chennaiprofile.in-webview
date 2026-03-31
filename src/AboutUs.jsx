@@ -303,11 +303,6 @@ export default function AboutUs() {
             </div>
           </div>
         </section>
-
-        {/* ── FOOTER ── */}
-        <footer className="au-footer">
-          <p>© 2026 <strong>Chennai Matrimony Pvt. Ltd.</strong> · All rights reserved · Made with ❤️ in Chennai</p>
-        </footer>
       </div>
     </>
   );

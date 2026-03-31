@@ -1,10 +1,176 @@
 // RegisterForm.jsx
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { checkIfFaceExists } from "./utils/faceDetection";
 
+// ─── Helper Components (defined outside to prevent recreation on re-render) ───
+const SectionHeader = ({ icon, title }) => (
+  <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 24, paddingBottom: 14, borderBottom: "1px solid rgba(139,0,0,0.12)" }}>
+    <div style={{ width: 38, height: 38, borderRadius: "50%", background: "linear-gradient(135deg,#8B0000,#C41E3A)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, flexShrink: 0, boxShadow: "0 4px 12px rgba(139,0,0,0.25)" }}>{icon}</div>
+    <h2 style={{ margin: 0, fontSize: "1.15rem", fontFamily: "'Playfair Display',serif", fontWeight: 700, color: "#5A0010", letterSpacing: "0.03em" }}>{title}</h2>
+    <div style={{ flex: 1, height: 1, background: "linear-gradient(90deg,rgba(139,0,0,0.2),transparent)" }} />
+  </div>
+);
+
+const FormField = ({ label, required, error, children }) => (
+  <div style={{ display: "flex", flexDirection: "column", gap: 6, width: "100%" }}>
+    <label style={{ fontSize: "0.72rem", fontWeight: 700, color: "#7A1020", textTransform: "uppercase", letterSpacing: "0.08em", display: "flex", alignItems: "center", gap: 4 }}>
+      {required && <span style={{ color: "#C41E3A" }}>✦</span>}{label}
+    </label>
+    {children}
+    {error && <span style={{ fontSize: "0.72rem", color: "#C41E3A", fontStyle: "italic" }}>{error}</span>}
+  </div>
+);
+
+const RadioOpt = ({ name, value, checked, onChange, label }) => (
+  <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", fontSize: "0.875rem", color: "#3D0010", fontFamily: "'Lato',sans-serif" }}>
+    <div style={{ position: "relative", width: 18, height: 18 }}>
+      <input type="radio" name={name} value={value} checked={checked} onChange={onChange} style={{ position: "absolute", opacity: 0, width: "100%", height: "100%", cursor: "pointer", margin: 0 }} />
+      <div style={{ width: 18, height: 18, border: `2px solid ${checked ? "#8B0000" : "#C4A0A8"}`, borderRadius: "50%", background: checked ? "#8B0000" : "white", transition: "all 0.2s", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        {checked && <div style={{ width: 6, height: 6, background: "white", borderRadius: "50%" }} />}
+      </div>
+    </div>
+    {label}
+  </label>
+);
+
+const CustomSelect = ({ id, value, onChange, options, hasErr, compact, openDropdownId, setOpenDropdownId }) => {
+  const isOpen = openDropdownId === id;
+
+  const toggle = (e) => {
+    e.stopPropagation();
+    setOpenDropdownId(isOpen ? null : id);
+  };
+
+  const select = (opt, e) => {
+    e.stopPropagation();
+    onChange(opt);
+    setOpenDropdownId(null);
+  };
+
+  return (
+    <div data-custom-select style={{ position: "relative", width: "100%" }}>
+      {/* Trigger */}
+      <div
+        onClick={toggle}
+        style={{
+          padding: compact ? "7px 10px" : "10px 14px",
+          border: `1.5px solid ${hasErr ? "#C41E3A" : isOpen ? "#8B0000" : "#D4A0A8"}`,
+          borderRadius: 8,
+          fontSize: compact ? "0.82rem" : "0.88rem",
+          fontFamily: "'Lato',sans-serif",
+          background: "#FFFAF9",
+          color: "#2A0A0E",
+          cursor: "pointer",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          boxShadow: hasErr
+            ? "0 0 0 3px rgba(196,30,58,0.1)"
+            : isOpen
+            ? "0 0 0 3px rgba(139,0,0,0.12)"
+            : "none",
+          transition: "all 0.2s ease",
+          userSelect: "none",
+          minWidth: compact ? 60 : undefined,
+        }}
+      >
+        <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+          {value || "-Select-"}
+        </span>
+        <span
+          style={{
+            fontSize: 11,
+            color: "#8B0000",
+            marginLeft: 6,
+            flexShrink: 0,
+            transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
+            transition: "transform 0.2s ease",
+            display: "inline-block",
+          }}
+        >
+          ▼
+        </span>
+      </div>
+
+      {/* Dropdown list */}
+      {isOpen && (
+        <div
+          style={{
+            position: "absolute",
+            top: "calc(100% + 4px)",
+            left: 0,
+            right: 0,
+            background: "#fff",
+            border: "1.5px solid #D4A0A8",
+            borderRadius: 8,
+            maxHeight: 240,
+            overflowY: "auto",
+            zIndex: 9999,
+            boxShadow: "0 8px 24px rgba(139,0,0,0.15)",
+            minWidth: compact ? 80 : undefined,
+          }}
+        >
+          {options.map((opt) => {
+            const isSelected = value === opt;
+            return (
+              <div
+                key={opt}
+                onClick={(e) => select(opt, e)}
+                style={{
+                  padding: compact ? "8px 10px" : "10px 14px",
+                  cursor: "pointer",
+                  background: isSelected ? "#FFF0F2" : "white",
+                  color: isSelected ? "#8B0000" : "#2A0A0E",
+                  fontWeight: isSelected ? 700 : 400,
+                  fontSize: compact ? "0.82rem" : "0.88rem",
+                  fontFamily: "'Lato',sans-serif",
+                  borderBottom: "1px solid rgba(139,0,0,0.07)",
+                  transition: "background 0.12s, color 0.12s",
+                  whiteSpace: "nowrap",
+                }}
+                onMouseEnter={(e) => {
+                  if (!isSelected) {
+                    e.currentTarget.style.background = "#FFF0F2";
+                    e.currentTarget.style.color = "#8B0000";
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!isSelected) {
+                    e.currentTarget.style.background = "white";
+                    e.currentTarget.style.color = "#2A0A0E";
+                  }
+                }}
+              >
+                {opt}
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+};
+
 export default function PersonalFamilyForm() {
   const { t, i18n } = useTranslation();
+
+  // Helper function to build dropdown lists from translation keys
+  const getTranslationList = (keyMapping) => {
+    return [t("registration.genderSelect"), ...keyMapping.map(key => t(`registration.rasiList.${key}`))];
+  };
+
+  const getStarList = (keyMapping) => {
+    return [t("registration.genderSelect"), ...keyMapping.map(key => t(`registration.nakshatraList.${key}`))];
+  };
+
+  const getLagnamList = (keyMapping) => {
+    return [t("registration.genderSelect"), ...keyMapping.map(key => t(`registration.lagnamList.${key}`))];
+  };
+
+  const getDoshamList = (keyMapping) => {
+    return [t("registration.genderSelect"), ...keyMapping.map(key => t(`registration.doshamList.${key}`))];
+  };
 
   const GENDERS = [t("registration.genderSelect"), t("registration.genderMale"), t("registration.genderFemale")];
   const HOURS = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, "0"));
@@ -13,23 +179,42 @@ export default function PersonalFamilyForm() {
   const MOTHER_TONGUES = [t("common.select"), "Tamil", "Telugu", "Kannada", "Malayalam", "Hindi", "Marathi", "English"];
   const MARITAL_STATUSES = [t("registration.unmarried"), t("registration.married"), t("registration.divorced"), t("registration.widowed")];
   const SIBLING_COUNTS = ["-", "0", "1", "2", "3", "4", "5"];
-  const HEIGHTS = [t("registration.genderSelect"),"4'8\"","4'9\"","4'10\"","4'11\"","5'0\"","5'1\"","5'2\"","5'3\"","5'4\"","5'5\"","5'6\"","5'7\"","5'8\"","5'9\"","5'10\"","5'11\"","6'0\""];
-  const WEIGHTS = [t("registration.genderSelect"),"40kg","45kg","50kg","55kg","60kg","65kg","70kg","75kg","80kg","85kg","90kg"];
+  const HEIGHTS = [t("registration.genderSelect"), "4'8\"", "4'9\"", "4'10\"", "4'11\"", "5'0\"", "5'1\"", "5'2\"", "5'3\"", "5'4\"", "5'5\"", "5'6\"", "5'7\"", "5'8\"", "5'9\"", "5'10\"", "5'11\"", "6'0\""];
+  const WEIGHTS = [t("registration.genderSelect"), "40kg", "45kg", "50kg", "55kg", "60kg", "65kg", "70kg", "75kg", "80kg", "85kg", "90kg"];
   const BLOOD_GROUPS = [t("registration.genderSelect"), "O+", "O-", "A+", "A-", "B+", "B-", "AB+", "AB-"];
   const CASTES = [t("registration.genderSelect"), "Brahmin", "Kshatriya", "Vaishya", "Shudra", "Others"];
-  const STARS = [t("registration.genderSelect"), "Ashwini", "Bharani", "Krittika", "Rohini", "Mrigashirsha", "Ardra", "Punarvasu", "Pushya", "Ashlesha", "Magha", "Purva Phalguni", "Uttara Phalguni", "Hasta", "Chitra", "Swati", "Vishakha", "Anuradha", "Jyeshtha", "Moola", "Purva Ashadha", "Uttara Ashadha", "Shravana", "Dhanishta", "Shatabhisha", "Purva Bhadrapada", "Uttara Bhadrapada", "Revati"];
-  const LAKNAM = [t("registration.genderSelect"), "Mesha Lagnam", "Rishaba Lagnam", "Mithuna Lagnam", "Kataka Lagnam", "Simha Lagnam", "Kanya Lagnam", "Tula Lagnam", "Vrischika Lagnam", "Dhanu Lagnam", "Makara Lagnam", "Kumbha Lagnam", "Meena Lagnam"];
-  const RASI_LIST = [t("registration.genderSelect"), "Mesham", "Rishabam", "Mithunam", "Kadagam", "Simmam", "Kanni", "Thulam", "Viruchigam", "Dhanusu", "Magaram", "Kumbam", "Meenam"];
+  const SUB_CASTES = [t("registration.selectSubCaste"), "Subgroup 1", "Subgroup 2", "Subgroup 3"];
+  
+  // Rasi keys in order
+  const rasiKeys = ["mesham", "rishabam", "mithunam", "kadagam", "simmam", "kanni", "thulam", "viruchigam", "dhanusu", "magaram", "kumbam", "meenam"];
+  const RASI_LIST = getTranslationList(rasiKeys);
+  
+  // Star/Nakshatra keys in order
+  const starKeys = ["ashwini", "bharani", "krittika", "rohini", "mrigashirsha", "ardra", "punarvasu", "pushya", "ashlesha", "magha", "purva_phalguni", "uttara_phalguni", "hasta", "chitra", "swati", "vishakha", "anuradha", "jyeshtha", "moola", "purva_ashadha", "uttara_ashadha", "shravana", "dhanishta", "shatabhisha", "purva_bhadrapada", "uttara_bhadrapada", "revati"];
+  const STARS = getStarList(starKeys);
+  
+  // Lagnam keys in order
+  const lagnamKeys = ["mesha", "rishaba", "mithuna", "kataka", "simha", "kanya", "tula", "vrischika", "dhanu", "makara", "kumbha", "meena"];
+  const LAKNAM = getLagnamList(lagnamKeys);
+  
+  // Dosham keys in order
+  const doshamKeys = ["no_dosham", "mangal_dosham", "rahu_ketu_dosham"];
+  const DOSHAM_LIST = getDoshamList(doshamKeys);
+  
   const PADAM_LIST = [t("registration.genderSelect"), "Padam 1", "Padam 2", "Padam 3", "Padam 4"];
-  const DOSHAM_LIST = [t("registration.genderSelect"), "Sevvai", "Ragu"];
+  const DIET_OPTIONS = [t("registration.dietVegetarian"), t("registration.dietNonVegetarian"), t("registration.dietEggetarian"), t("registration.dietNoPreference")];
+  const PARTNER_CASTE_OPTIONS = [t("registration.casteAny"), t("registration.casteSame"), t("registration.casteOthers")];
+  const PARTNER_SUB_CASTE_OPTIONS = [t("registration.casteAny"), t("registration.subCasteSame"), t("registration.casteOthers")];
+  const PARTNER_MARITAL_OPTIONS = [t("registration.unmarried"), t("registration.divorced"), t("registration.widowed"), t("registration.separated"), t("registration.casteAny")];
+  const JOB_REQUIREMENT_OPTIONS = [t("registration.mustRequired"), t("registration.optional"), t("registration.notRequired")];
 
   const INITIAL_FORM = {
     name: "", gender: "-Select-", dob: "", birthHour: "", birthMin: "", birthAmPm: "AM",
     placeBirth: "", nativity: "", motherTongue: "Select", maritalStatus: "Unmarried",
     fatherName: "", fatherAlive: "yes", fatherJob: "",
     motherName: "", motherAlive: "yes", motherJob: "",
-    sibMarriedEB: "-", sibMarriedYB: "-", sibMarriedES: "-", sibMarriedYS: "-",
-    sibUnmarriedEB: "-", sibUnmarriedYB: "-", sibUnmarriedES: "-", sibUnmarriedYS: "-",
+    sibMarriedEB: "", sibMarriedYB: "", sibMarriedES: "", sibMarriedYS: "",
+    sibUnmarriedEB: "", sibUnmarriedYB: "", sibUnmarriedES: "", sibUnmarriedYS: "",
     others: "",
     height: "-Select-", weight: "-Select-", bloodGroup: "-Select-",
     diet: "Vegetarian", disability: "No", complexion: "Very Fair",
@@ -50,12 +235,26 @@ export default function PersonalFamilyForm() {
   const [photos, setPhotos] = useState([null, null, null]);
   const [photoPreviews, setPhotoPreviews] = useState([null, null, null]);
   const [photoValidating, setPhotoValidating] = useState(false);
-  const [photoProgress, setPhotoProgress] = useState(0); // ← FIX: was missing, caused blank page
+  const [photoProgress, setPhotoProgress] = useState(0);
   const [horoscopePhotos, setHoroscopePhotos] = useState({ rasi: null, amsam: null });
   const [horoscopePreview, setHoroscopePreview] = useState({ rasi: null, amsam: null });
   const [errors, setErrors] = useState({});
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+
+  // Global open dropdown tracker — only one open at a time
+  const [openDropdownId, setOpenDropdownId] = useState(null);
+
+  // Close all dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (!e.target.closest("[data-custom-select]")) {
+        setOpenDropdownId(null);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   useEffect(() => {}, [i18n.language]);
 
@@ -77,61 +276,45 @@ export default function PersonalFamilyForm() {
         alert("You have already uploaded 3 photos. Remove one to add more.");
         return;
       }
-
       const filesToProcess = Array.from(files).slice(0, remaining);
       setPhotoValidating(true);
       setPhotoProgress(0);
-
       const newPhotos = [...photos];
       const newPreviews = [...photoPreviews];
       const total = filesToProcess.length;
       let done = 0;
-
       for (const file of filesToProcess) {
         try {
           if (file.size > 5 * 1024 * 1024) {
             alert(`"${file.name}" exceeds 5MB. Please choose a smaller image.`);
-            done++;
-            setPhotoProgress(Math.round((done / total) * 100));
-            continue;
+            done++; setPhotoProgress(Math.round((done / total) * 100)); continue;
           }
           if (!file.type.startsWith("image/")) {
             alert(`"${file.name}" is not a valid image file.`);
-            done++;
-            setPhotoProgress(Math.round((done / total) * 100));
-            continue;
+            done++; setPhotoProgress(Math.round((done / total) * 100)); continue;
           }
-
           const isHuman = await validateHumanPhoto(file);
           if (!isHuman) {
             alert("Please upload your photo correctly");
-            done++;
-            setPhotoProgress(Math.round((done / total) * 100));
-            continue;
+            done++; setPhotoProgress(Math.round((done / total) * 100)); continue;
           }
-
           const slotIndex = newPhotos.findIndex(p => p === null);
           if (slotIndex === -1) break;
-
           await new Promise((resolve) => {
             const reader = new FileReader();
             reader.onload = (e) => {
               newPhotos[slotIndex] = file;
               newPreviews[slotIndex] = e.target.result;
-              done++;
-              setPhotoProgress(Math.round((done / total) * 100));
-              resolve();
+              done++; setPhotoProgress(Math.round((done / total) * 100)); resolve();
             };
             reader.onerror = () => { done++; setPhotoProgress(Math.round((done / total) * 100)); resolve(); };
             reader.readAsDataURL(file);
           });
         } catch (err) {
           console.error(`Error processing file ${file.name}:`, err);
-          done++;
-          setPhotoProgress(Math.round((done / total) * 100));
+          done++; setPhotoProgress(Math.round((done / total) * 100));
         }
       }
-
       setPhotos(newPhotos);
       setPhotoPreviews(newPreviews);
     } catch (err) {
@@ -172,6 +355,7 @@ export default function PersonalFamilyForm() {
     if (form.gender === t("registration.genderSelect")) e.gender = t("registration.validationGenderRequired");
     if (!form.dob) e.dob = t("registration.validationDobRequired");
     if (form.motherTongue === t("common.select")) e.motherTongue = t("registration.validationMotherTongueRequired");
+    if (!form.maritalStatus.trim()) e.maritalStatus = t("registration.validationMaritalStatusRequired");
     if (!form.placeBirth.trim()) e.placeBirth = t("registration.validationPlaceBirthRequired");
     if (!form.nativity.trim()) e.nativity = t("registration.validationNativityRequired");
     if (!form.contactNumber.trim()) e.contactNumber = t("registration.validationContactRequired");
@@ -204,133 +388,36 @@ export default function PersonalFamilyForm() {
     setHoroscopePhotos({ rasi: null, amsam: null });
     setHoroscopePreview({ rasi: null, amsam: null });
     setPhotoProgress(0);
+    setOpenDropdownId(null);
   };
 
-  const SectionHeader = ({ icon, title }) => (
-    <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 24, paddingBottom: 14, borderBottom: "1px solid rgba(139,0,0,0.12)" }}>
-      <div style={{ width: 38, height: 38, borderRadius: "50%", background: "linear-gradient(135deg,#8B0000,#C41E3A)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, flexShrink: 0, boxShadow: "0 4px 12px rgba(139,0,0,0.25)" }}>{icon}</div>
-      <h2 style={{ margin: 0, fontSize: "1.15rem", fontFamily: "'Playfair Display',serif", fontWeight: 700, color: "#5A0010", letterSpacing: "0.03em" }}>{title}</h2>
-      <div style={{ flex: 1, height: 1, background: "linear-gradient(90deg,rgba(139,0,0,0.2),transparent)" }} />
-    </div>
-  );
-
-  const FormField = ({ label, required, error, children }) => (
-    <div style={{ display: "flex", flexDirection: "column", gap: 6, width: "100%" }}>
-      <label style={{ fontSize: "0.72rem", fontWeight: 700, color: "#7A1020", textTransform: "uppercase", letterSpacing: "0.08em", display: "flex", alignItems: "center", gap: 4 }}>
-        {required && <span style={{ color: "#C41E3A" }}>✦</span>}{label}
-      </label>
-      {children}
-      {error && <span style={{ fontSize: "0.72rem", color: "#C41E3A", fontStyle: "italic" }}>{error}</span>}
-    </div>
-  );
+  // ─── Helpers ─────────────────────────────────────────────────────────────
 
   const inputStyle = (hasErr) => ({
-    padding: "10px 14px", border: `1.5px solid ${hasErr ? "#C41E3A" : "#D4A0A8"}`,
-    borderRadius: 8, fontSize: "0.88rem", fontFamily: "'Lato',sans-serif", background: "#FFFAF9",
-    color: "#2A0A0E", outline: "none", width: "100%", boxSizing: "border-box",
-    transition: "all 0.2s ease", boxShadow: hasErr ? "0 0 0 3px rgba(196,30,58,0.1)" : "none",
-  });
-
-  const selectStyle = (hasErr) => ({
-    ...inputStyle(hasErr), cursor: "pointer",
-    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%238B0000' d='M6 8L0 0h12z'/%3E%3C/svg%3E")`,
-    backgroundRepeat: "no-repeat", backgroundPosition: "right 12px center", paddingRight: 32, appearance: "none",
+    padding: "10px 14px",
+    border: `1.5px solid ${hasErr ? "#C41E3A" : "#D4A0A8"}`,
+    borderRadius: 8,
+    fontSize: "0.88rem",
+    fontFamily: "'Lato',sans-serif",
+    background: "#FFFAF9",
+    color: "#2A0A0E",
+    outline: "none",
+    width: "100%",
+    boxSizing: "border-box",
+    transition: "all 0.2s ease",
+    boxShadow: hasErr ? "0 0 0 3px rgba(196,30,58,0.1)" : "none",
   });
 
   const radioStyle = { display: "flex", flexWrap: "wrap", gap: 12 };
 
-  const RadioOpt = ({ name, value, checked, onChange, label }) => (
-    <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", fontSize: "0.875rem", color: "#3D0010", fontFamily: "'Lato',sans-serif" }}>
-      <div style={{ position: "relative", width: 18, height: 18 }}>
-        <input type="radio" name={name} value={value} checked={checked} onChange={onChange} style={{ position: "absolute", opacity: 0, width: "100%", height: "100%", cursor: "pointer", margin: 0 }} />
-        <div style={{ width: 18, height: 18, border: `2px solid ${checked ? "#8B0000" : "#C4A0A8"}`, borderRadius: "50%", background: checked ? "#8B0000" : "white", transition: "all 0.2s", display: "flex", alignItems: "center", justifyContent: "center" }}>
-          {checked && <div style={{ width: 6, height: 6, background: "white", borderRadius: "50%" }} />}
-        </div>
-      </div>
-      {label}
-    </label>
-  );
-
-  const CustomSelect = ({ value, onChange, options, hasErr }) => {
-    const [isOpen, setIsOpen] = useState(false);
-    return (
-      <div style={{ position: "relative", width: "100%" }}>
-        <div
-          onClick={() => setIsOpen(!isOpen)}
-          style={{
-            padding: "10px 14px",
-            border: `1.5px solid ${hasErr ? "#C41E3A" : "#D4A0A8"}`,
-            borderRadius: 8,
-            fontSize: "0.88rem",
-            fontFamily: "'Lato',sans-serif",
-            background: "#FFFAF9",
-            color: "#2A0A0E",
-            cursor: "pointer",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            boxShadow: hasErr ? "0 0 0 3px rgba(196,30,58,0.1)" : "none",
-            transition: "all 0.2s ease",
-            userSelect: "none"
-          }}
-        >
-          <span>{value || "-Select-"}</span>
-          <span style={{ fontSize: "12px", color: "#8B0000" }}>▼</span>
-        </div>
-        {isOpen && (
-          <div
-            style={{
-              position: "absolute",
-              top: "100%",
-              left: 0,
-              right: 0,
-              background: "#fff",
-              border: `1.5px solid #D4A0A8`,
-              borderRadius: 8,
-              marginTop: 4,
-              maxHeight: "240px",
-              overflowY: "auto",
-              zIndex: 1000,
-              boxShadow: "0 8px 20px rgba(139,0,0,0.15)"
-            }}
-          >
-            {options.map((opt) => (
-              <div
-                key={opt}
-                onClick={() => {
-                  onChange(opt);
-                  setIsOpen(false);
-                }}
-                style={{
-                  padding: "10px 14px",
-                  cursor: "pointer",
-                  background: value === opt ? "#FFF0F2" : "white",
-                  color: value === opt ? "#8B0000" : "#2A0A0E",
-                  fontWeight: value === opt ? 600 : 400,
-                  borderBottom: "1px solid rgba(139,0,0,0.08)",
-                  transition: "all 0.15s",
-                }}
-                onMouseEnter={(e) => {
-                  e.target.style.background = "#FFF0F2";
-                  e.target.style.color = "#8B0000";
-                }}
-                onMouseLeave={(e) => {
-                  e.target.style.background = value === opt ? "#FFF0F2" : "white";
-                  e.target.style.color = value === opt ? "#8B0000" : "#2A0A0E";
-                }}
-              >
-                {opt}
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-    );
+  const sectionBox = {
+    background: "white", borderRadius: 16, padding: "28px 30px", marginBottom: 20,
+    boxShadow: "0 2px 20px rgba(139,0,0,0.06)", border: "1px solid rgba(196,30,58,0.1)",
   };
 
-  const sectionBox = { background: "white", borderRadius: 16, padding: "28px 30px", marginBottom: 20, boxShadow: "0 2px 20px rgba(139,0,0,0.06)", border: "1px solid rgba(196,30,58,0.1)" };
   const uploadedCount = photos.filter(Boolean).length;
 
+  // ─── Submitted screen ────────────────────────────────────────────────────
   if (submitted) {
     return (
       <>
@@ -349,13 +436,14 @@ export default function PersonalFamilyForm() {
     );
   }
 
+  // ─── Main form ───────────────────────────────────────────────────────────
   return (
     <>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Lato:wght@300;400;700&display=swap');
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         body { background: #F9F0F2; font-family: 'Lato', sans-serif; }
-        input:focus, select:focus, textarea:focus { border-color: #8B0000 !important; box-shadow: 0 0 0 3px rgba(139,0,0,0.12) !important; outline: none; }
+        input:focus, textarea:focus { border-color: #8B0000 !important; box-shadow: 0 0 0 3px rgba(139,0,0,0.12) !important; outline: none; }
         input::placeholder, textarea::placeholder { color: #C0A0A8; font-style: italic; }
         .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
@@ -365,15 +453,14 @@ export default function PersonalFamilyForm() {
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .spinner { width: 24px; height: 24px; border-radius: 50%; border: 2.5px solid #e0e0e0; border-top-color: #C41E3A; animation: spin 0.8s linear infinite; }
         @media (max-width: 768px) { .row-2, .row-3, .row-4 { grid-template-columns: 1fr; gap: 16px; } .form-outer { padding: 0 12px 40px; } }
-        @media (max-width: 600px) { .form-outer { padding: 0 10px 32px; } input, select, textarea { font-size: 16px !important; } table th, table td { padding: 8px 6px !important; font-size: 12px !important; } }
+        @media (max-width: 600px) { .form-outer { padding: 0 10px 32px; } input, textarea { font-size: 16px !important; } table th, table td { padding: 8px 6px !important; font-size: 12px !important; } }
         @media (max-width: 480px) { .form-outer { padding: 0 8px 24px; } h1 { font-size: clamp(1.4rem,4vw,2rem) !important; } h2 { font-size: clamp(1rem,3vw,1.3rem) !important; } label { font-size: 0.7rem !important; } table th, table td { padding: 6px 4px !important; font-size: 11px !important; } button { padding: 8px 16px !important; font-size: 0.8rem !important; } }
-        select option { background: white; color: #2A0A0E; }
       `}</style>
 
       <div className="form-outer" style={{ minHeight: "100vh", background: "linear-gradient(160deg,#F9EEF0 0%,#FFF8F0 50%,#F9EEF0 100%)", padding: "0 16px 48px" }}>
         <div style={{ maxWidth: 860, margin: "0 auto" }}>
 
-          {/* Photo Upload */}
+          {/* ── Photo Upload ───────────────────────────────────────────── */}
           <div style={{ ...sectionBox, marginBottom: 20 }}>
             <SectionHeader icon="📸" title={t("registration.profilePhotographs")} />
             <p style={{ fontSize: "0.82rem", color: "#8A5060", marginBottom: 20, fontStyle: "italic" }}>{t("registration.photoDesc")}</p>
@@ -395,7 +482,7 @@ export default function PersonalFamilyForm() {
                   ) : (
                     <div>
                       <div style={{ color: "#5A0010", fontSize: 14, fontWeight: 700, marginBottom: 3 }}>Upload Profile Photos</div>
-                      <div style={{ color: "#8A5060", fontSize: 12, lineHeight: 1.4 }}>Select up to {3 - uploadedCount} photo{3 - uploadedCount > 1 ? "s" : ""} • Max 5MB each </div>
+                      <div style={{ color: "#8A5060", fontSize: 12, lineHeight: 1.4 }}>Select up to {3 - uploadedCount} photo{3 - uploadedCount > 1 ? "s" : ""} • Max 5MB each</div>
                     </div>
                   )}
                 </div>
@@ -434,7 +521,7 @@ export default function PersonalFamilyForm() {
             </div>
           </div>
 
-          {/* Personal Details */}
+          {/* ── Personal Details ────────────────────────────────────────── */}
           <div style={sectionBox}>
             <SectionHeader icon="👤" title={t("registration.personalInfo")} />
             <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
@@ -443,28 +530,33 @@ export default function PersonalFamilyForm() {
                   <input value={form.name} onChange={e => set("name", e.target.value)} placeholder={t("registration.namePlaceholder")} style={inputStyle(errors.name)} />
                 </FormField>
                 <FormField label={t("registration.gender")} required error={errors.gender}>
-                  <select value={form.gender} onChange={e => set("gender", e.target.value)} style={selectStyle(errors.gender)}>
-                    {GENDERS.map(g => <option key={g}>{g}</option>)}
-                  </select>
+                  <CustomSelect
+                    id="gender"
+                    value={form.gender}
+                    onChange={v => set("gender", v)}
+                    options={GENDERS}
+                    hasErr={!!errors.gender}
+                    openDropdownId={openDropdownId}
+                    setOpenDropdownId={setOpenDropdownId}
+                  />
                 </FormField>
                 <FormField label={t("registration.dob")} required error={errors.dob}>
                   <input type="date" value={form.dob} onChange={e => set("dob", e.target.value)} style={inputStyle(errors.dob)} />
                 </FormField>
               </div>
+
               <div className="row-3">
                 <FormField label={t("registration.birthTime")}>
                   <div style={{ display: "flex", gap: 8 }}>
-                    <select value={form.birthHour} onChange={e => set("birthHour", e.target.value)} style={{ ...selectStyle(false), flex: 1 }}>
-                      <option value="">{t("registration.hour")}</option>
-                      {HOURS.map(h => <option key={h}>{h}</option>)}
-                    </select>
-                    <select value={form.birthMin} onChange={e => set("birthMin", e.target.value)} style={{ ...selectStyle(false), flex: 1 }}>
-                      <option value="">{t("registration.minute")}</option>
-                      {MINUTES.map(m => <option key={m}>{m}</option>)}
-                    </select>
-                    <select value={form.birthAmPm} onChange={e => set("birthAmPm", e.target.value)} style={{ ...selectStyle(false), flex: 1 }}>
-                      {AMPM.map(a => <option key={a}>{a}</option>)}
-                    </select>
+                    <div style={{ flex: 1 }}>
+                      <CustomSelect id="birthHour" value={form.birthHour || t("registration.hour")} onChange={v => set("birthHour", v)} options={[t("registration.hour"), ...HOURS]} hasErr={false} openDropdownId={openDropdownId} setOpenDropdownId={setOpenDropdownId} />
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <CustomSelect id="birthMin" value={form.birthMin || t("registration.minute")} onChange={v => set("birthMin", v)} options={[t("registration.minute"), ...MINUTES]} hasErr={false} openDropdownId={openDropdownId} setOpenDropdownId={setOpenDropdownId} />
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <CustomSelect id="birthAmPm" value={form.birthAmPm} onChange={v => set("birthAmPm", v)} options={AMPM} hasErr={false} openDropdownId={openDropdownId} setOpenDropdownId={setOpenDropdownId} />
+                    </div>
                   </div>
                 </FormField>
                 <FormField label={t("registration.placeBirth")} required error={errors.placeBirth}>
@@ -474,25 +566,39 @@ export default function PersonalFamilyForm() {
                   <input value={form.nativity} onChange={e => set("nativity", e.target.value)} placeholder={t("registration.pleaseSpecify")} style={inputStyle(errors.nativity)} />
                 </FormField>
               </div>
+
               <div className="row-2">
                 <FormField label={t("registration.motherTongue")} required error={errors.motherTongue}>
-                  <select value={form.motherTongue} onChange={e => set("motherTongue", e.target.value)} style={selectStyle(errors.motherTongue)}>
-                    {MOTHER_TONGUES.map(m => <option key={m}>{m}</option>)}
-                  </select>
+                  <CustomSelect
+                    id="motherTongue"
+                    value={form.motherTongue}
+                    onChange={v => set("motherTongue", v)}
+                    options={MOTHER_TONGUES}
+                    hasErr={!!errors.motherTongue}
+                    openDropdownId={openDropdownId}
+                    setOpenDropdownId={setOpenDropdownId}
+                  />
                 </FormField>
-                <FormField label={t("registration.maritalStatus")}>
-                  <select value={form.maritalStatus} onChange={e => set("maritalStatus", e.target.value)} style={selectStyle(false)}>
-                    {MARITAL_STATUSES.map(m => <option key={m}>{m}</option>)}
-                  </select>
+                <FormField label={t("registration.maritalStatus")} required error={errors.maritalStatus}>
+                  <CustomSelect
+                    id="maritalStatus"
+                    value={form.maritalStatus}
+                    onChange={v => set("maritalStatus", v)}
+                    options={MARITAL_STATUSES}
+                    hasErr={!!errors.maritalStatus}
+                    openDropdownId={openDropdownId}
+                    setOpenDropdownId={setOpenDropdownId}
+                  />
                 </FormField>
               </div>
+
               <FormField label="Additional Details">
                 <textarea value={form.others} onChange={e => set("others", e.target.value)} rows={4} placeholder={t("registration.additionalDetailsPlaceholder")} style={{ ...inputStyle(false), resize: "vertical", minHeight: 100, lineHeight: 1.7 }} />
               </FormField>
             </div>
           </div>
 
-          {/* Family Details */}
+          {/* ── Family Details ──────────────────────────────────────────── */}
           <div style={sectionBox}>
             <SectionHeader icon="👨‍👩‍👧‍👦" title={t("registration.familyInfo")} />
             <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
@@ -524,6 +630,8 @@ export default function PersonalFamilyForm() {
                   </div>
                 </FormField>
               </div>
+
+              {/* Siblings table — uses compact CustomSelect */}
               <div>
                 <label style={{ fontSize: "0.72rem", fontWeight: 700, color: "#7A1020", textTransform: "uppercase", letterSpacing: "0.08em", display: "block", marginBottom: 10 }}>{t("registration.siblings")}</label>
                 <div style={{ overflowX: "auto", borderRadius: 10, border: "1px solid rgba(196,30,58,0.15)" }}>
@@ -545,9 +653,26 @@ export default function PersonalFamilyForm() {
                           <td style={{ padding: "10px 16px", fontWeight: 700, color: "#5A0010", fontSize: "0.82rem" }}>{row.label}</td>
                           {row.keys.map(k => (
                             <td key={k} style={{ padding: "8px 12px", textAlign: "center" }}>
-                              <select value={form[k]} onChange={e => set(k, e.target.value)} style={{ ...selectStyle(false), textAlign: "center", width: 70 }}>
-                                {SIBLING_COUNTS.map(s => <option key={s}>{s}</option>)}
-                              </select>
+                              <input
+                                type="text"
+                                value={form[k]}
+                                onChange={e => set(k, e.target.value)}
+                                placeholder=""
+                                style={{
+                                  padding: "8px 10px",
+                                  border: "1.5px solid #D4A0A8",
+                                  borderRadius: 6,
+                                  fontSize: "0.82rem",
+                                  fontFamily: "'Lato',sans-serif",
+                                  background: "#FFFAF9",
+                                  color: "#2A0A0E",
+                                  outline: "none",
+                                  width: "100%",
+                                  boxSizing: "border-box",
+                                  textAlign: "center",
+                                  transition: "all 0.2s ease"
+                                }}
+                              />
                             </td>
                           ))}
                         </tr>
@@ -559,25 +684,19 @@ export default function PersonalFamilyForm() {
             </div>
           </div>
 
-          {/* Physical Attributes */}
+          {/* ── Physical Attributes ─────────────────────────────────────── */}
           <div style={sectionBox}>
             <SectionHeader icon="⚖️" title={t("registration.physicalAttributes")} />
             <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
               <div className="row-3">
                 <FormField label={t("registration.height")}>
-                  <select value={form.height} onChange={e => set("height", e.target.value)} style={selectStyle(false)}>
-                    {HEIGHTS.map(h => <option key={h}>{h}</option>)}
-                  </select>
+                  <CustomSelect id="height" value={form.height} onChange={v => set("height", v)} options={HEIGHTS} hasErr={false} openDropdownId={openDropdownId} setOpenDropdownId={setOpenDropdownId} />
                 </FormField>
                 <FormField label={t("registration.weight")}>
-                  <select value={form.weight} onChange={e => set("weight", e.target.value)} style={selectStyle(false)}>
-                    {WEIGHTS.map(w => <option key={w}>{w}</option>)}
-                  </select>
+                  <CustomSelect id="weight" value={form.weight} onChange={v => set("weight", v)} options={WEIGHTS} hasErr={false} openDropdownId={openDropdownId} setOpenDropdownId={setOpenDropdownId} />
                 </FormField>
                 <FormField label={t("registration.bloodGroup")}>
-                  <select value={form.bloodGroup} onChange={e => set("bloodGroup", e.target.value)} style={selectStyle(false)}>
-                    {BLOOD_GROUPS.map(b => <option key={b}>{b}</option>)}
-                  </select>
+                  <CustomSelect id="bloodGroup" value={form.bloodGroup} onChange={v => set("bloodGroup", v)} options={BLOOD_GROUPS} hasErr={false} openDropdownId={openDropdownId} setOpenDropdownId={setOpenDropdownId} />
                 </FormField>
               </div>
               <div className="row-2">
@@ -606,7 +725,7 @@ export default function PersonalFamilyForm() {
             </div>
           </div>
 
-          {/* Education & Occupation */}
+          {/* ── Education & Occupation ──────────────────────────────────── */}
           <div style={sectionBox}>
             <SectionHeader icon="🎓" title={t("registration.educationOccupation")} />
             <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
@@ -629,49 +748,42 @@ export default function PersonalFamilyForm() {
             </div>
           </div>
 
-          {/* Astrology */}
+          {/* ── Astrology ───────────────────────────────────────────────── */}
           <div style={sectionBox}>
             <SectionHeader icon="🪐" title={t("registration.astrology")} />
             <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
               <div className="row-4">
                 <FormField label={t("registration.caste")} required>
-                  <select value={form.caste} onChange={e => set("caste", e.target.value)} style={selectStyle(false)}>
-                    {CASTES.map(c => <option key={c}>{c}</option>)}
-                  </select>
+                  <CustomSelect id="caste" value={form.caste} onChange={v => set("caste", v)} options={CASTES} hasErr={false} openDropdownId={openDropdownId} setOpenDropdownId={setOpenDropdownId} />
                 </FormField>
                 <FormField label={t("registration.subcaste")} required>
-                  <select value={form.subCaste} onChange={e => set("subCaste", e.target.value)} style={selectStyle(false)}>
-                    <option>{t("registration.selectSubCaste")}</option>
-                    {["Subgroup 1", "Subgroup 2", "Subgroup 3"].map(s => <option key={s}>{s}</option>)}
-                  </select>
+                  <CustomSelect id="subCaste" value={form.subCaste} onChange={v => set("subCaste", v)} options={SUB_CASTES} hasErr={false} openDropdownId={openDropdownId} setOpenDropdownId={setOpenDropdownId} />
                 </FormField>
                 <FormField label={t("registration.gothram")}>
                   <input value={form.gothram} onChange={e => set("gothram", e.target.value)} placeholder={t("registration.gothramPlaceholder")} style={inputStyle(false)} />
                 </FormField>
                 <FormField label={t("registration.star")}>
-                  <select value={form.star} onChange={e => set("star", e.target.value)} style={selectStyle(false)}>
-                    {STARS.map(s => <option key={s}>{s}</option>)}
-                  </select>
+                  <CustomSelect id="star" value={form.star} onChange={v => set("star", v)} options={STARS} hasErr={false} openDropdownId={openDropdownId} setOpenDropdownId={setOpenDropdownId} />
                 </FormField>
               </div>
               <div className="row-4">
                 <FormField label={t("registration.raasi")}>
-                  <CustomSelect value={form.raasi} onChange={(val) => set("raasi", val)} options={RASI_LIST} hasErr={false} />
+                  <CustomSelect id="raasi" value={form.raasi} onChange={v => set("raasi", v)} options={RASI_LIST} hasErr={false} openDropdownId={openDropdownId} setOpenDropdownId={setOpenDropdownId} />
                 </FormField>
                 <FormField label={t("registration.padam")}>
-                  <CustomSelect value={form.padam} onChange={(val) => set("padam", val)} options={PADAM_LIST} hasErr={false} />
+                  <CustomSelect id="padam" value={form.padam} onChange={v => set("padam", v)} options={PADAM_LIST} hasErr={false} openDropdownId={openDropdownId} setOpenDropdownId={setOpenDropdownId} />
                 </FormField>
                 <FormField label={t("registration.laknam")}>
-                  <CustomSelect value={form.laknam} onChange={(val) => set("laknam", val)} options={LAKNAM} hasErr={false} />
+                  <CustomSelect id="laknam" value={form.laknam} onChange={v => set("laknam", v)} options={LAKNAM} hasErr={false} openDropdownId={openDropdownId} setOpenDropdownId={setOpenDropdownId} />
                 </FormField>
-                <FormField label="Dosham">
-                  <CustomSelect value={form.dosham} onChange={(val) => set("dosham", val)} options={DOSHAM_LIST} hasErr={false} />
+                <FormField label={t("registration.dosham")}>
+                  <CustomSelect id="dosham" value={form.dosham} onChange={v => set("dosham", v)} options={DOSHAM_LIST} hasErr={false} openDropdownId={openDropdownId} setOpenDropdownId={setOpenDropdownId} />
                 </FormField>
               </div>
             </div>
           </div>
 
-          {/* Horoscope Photos */}
+          {/* ── Horoscope Photos ────────────────────────────────────────── */}
           <div style={sectionBox}>
             <SectionHeader icon="🔮" title={t("registration.horoscopeDetails")} />
             <p style={{ fontSize: "0.82rem", color: "#8A5060", marginBottom: 20, fontStyle: "italic" }}>{t("registration.horoscopeDesc")}</p>
@@ -705,7 +817,7 @@ export default function PersonalFamilyForm() {
             </div>
           </div>
 
-          {/* Partner Expectations */}
+          {/* ── Partner Expectations ────────────────────────────────────── */}
           <div style={sectionBox}>
             <SectionHeader icon="💑" title={t("registration.partnerExpectations")} />
             <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
@@ -716,14 +828,21 @@ export default function PersonalFamilyForm() {
                 <FormField label={t("registration.partnerJobPreference")}>
                   <div style={{ display: "flex", gap: 8 }}>
                     <input value={form.partnerJob} onChange={e => set("partnerJob", e.target.value)} placeholder={t("registration.partnerJobPlaceholder")} style={{ ...inputStyle(false), flex: 1 }} />
-                    <select value={form.partnerJobRequirement} onChange={e => set("partnerJobRequirement", e.target.value)} style={{ ...selectStyle(false), width: 130, flexShrink: 0 }}>
-                      <option>{t("registration.mustRequired")}</option>
-                      <option>{t("registration.optional")}</option>
-                      <option>{t("registration.notRequired")}</option>
-                    </select>
+                    <div style={{ width: 130, flexShrink: 0 }}>
+                      <CustomSelect
+                        id="partnerJobRequirement"
+                        value={form.partnerJobRequirement}
+                        onChange={v => set("partnerJobRequirement", v)}
+                        options={JOB_REQUIREMENT_OPTIONS}
+                        hasErr={false}
+                        openDropdownId={openDropdownId}
+                        setOpenDropdownId={setOpenDropdownId}
+                      />
+                    </div>
                   </div>
                 </FormField>
               </div>
+
               <div className="row-3">
                 <FormField label={t("registration.partnerIncomeExpectation")}>
                   <input value={form.partnerIncomeMonth} onChange={e => set("partnerIncomeMonth", e.target.value)} placeholder={t("registration.partnerIncomeMonthPlaceholder")} style={inputStyle(false)} />
@@ -735,32 +854,19 @@ export default function PersonalFamilyForm() {
                   <input value={form.partnerAgeTo} onChange={e => set("partnerAgeTo", e.target.value)} placeholder={t("registration.partnerAgePlaceholder")} style={inputStyle(false)} />
                 </FormField>
               </div>
+
               <div className="row-3">
                 <FormField label={t("registration.preferredDiet")}>
-                  <select value={form.partnerDiet} onChange={e => set("partnerDiet", e.target.value)} style={selectStyle(false)}>
-                    <option>{t("registration.dietVegetarian")}</option>
-                    <option>{t("registration.dietNonVegetarian")}</option>
-                    <option>{t("registration.dietEggetarian")}</option>
-                    <option>{t("registration.dietNoPreference")}</option>
-                  </select>
+                  <CustomSelect id="partnerDiet" value={form.partnerDiet} onChange={v => set("partnerDiet", v)} options={DIET_OPTIONS} hasErr={false} openDropdownId={openDropdownId} setOpenDropdownId={setOpenDropdownId} />
                 </FormField>
                 <FormField label={t("registration.preferredCaste")}>
-                  <select value={form.partnerCaste} onChange={e => set("partnerCaste", e.target.value)} style={selectStyle(false)}>
-                    <option>{t("registration.casteAny")}</option>
-                    <option>{t("registration.casteSame")}</option>
-                    <option>{t("registration.casteOthers")}</option>
-                  </select>
+                  <CustomSelect id="partnerCaste" value={form.partnerCaste} onChange={v => set("partnerCaste", v)} options={PARTNER_CASTE_OPTIONS} hasErr={false} openDropdownId={openDropdownId} setOpenDropdownId={setOpenDropdownId} />
                 </FormField>
                 <FormField label={t("registration.partnerMaritalStatus")}>
-                  <select value={form.partnerMaritalStatus} onChange={e => set("partnerMaritalStatus", e.target.value)} style={selectStyle(false)}>
-                    <option>{t("registration.unmarried")}</option>
-                    <option>{t("registration.divorced")}</option>
-                    <option>{t("registration.widowed")}</option>
-                    <option>{t("registration.separated")}</option>
-                    <option>{t("registration.casteAny")}</option>
-                  </select>
+                  <CustomSelect id="partnerMaritalStatus" value={form.partnerMaritalStatus} onChange={v => set("partnerMaritalStatus", v)} options={PARTNER_MARITAL_OPTIONS} hasErr={false} openDropdownId={openDropdownId} setOpenDropdownId={setOpenDropdownId} />
                 </FormField>
               </div>
+
               <div className="row-2">
                 <FormField label={t("registration.horoscopeRequired")}>
                   <div style={radioStyle}>
@@ -770,20 +876,17 @@ export default function PersonalFamilyForm() {
                   </div>
                 </FormField>
                 <FormField label={t("registration.subCastePreference")}>
-                  <select value={form.partnerSubCaste} onChange={e => set("partnerSubCaste", e.target.value)} style={selectStyle(false)}>
-                    <option>{t("registration.casteAny")}</option>
-                    <option>{t("registration.subCasteSame")}</option>
-                    <option>{t("registration.casteOthers")}</option>
-                  </select>
+                  <CustomSelect id="partnerSubCaste" value={form.partnerSubCaste} onChange={v => set("partnerSubCaste", v)} options={PARTNER_SUB_CASTE_OPTIONS} hasErr={false} openDropdownId={openDropdownId} setOpenDropdownId={setOpenDropdownId} />
                 </FormField>
               </div>
+
               <FormField label="Any Other Requirements">
                 <textarea value={form.partnerOtherRequirement} onChange={e => set("partnerOtherRequirement", e.target.value)} rows={3} placeholder={t("registration.partnerRequirementsPlaceholder")} style={{ ...inputStyle(false), resize: "vertical", minHeight: 80, lineHeight: 1.7 }} />
               </FormField>
             </div>
           </div>
 
-          {/* Communication Details */}
+          {/* ── Communication Details ───────────────────────────────────── */}
           <div style={sectionBox}>
             <SectionHeader icon="📞" title={t("registration.communicationDetails")} />
             <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
@@ -806,7 +909,7 @@ export default function PersonalFamilyForm() {
             </div>
           </div>
 
-          {/* Footer Buttons */}
+          {/* ── Footer Buttons ──────────────────────────────────────────── */}
           <div style={{ display: "flex", gap: 14, justifyContent: "center", padding: "10px 0 8px", flexWrap: "wrap" }}>
             <button type="button" onClick={handleReset} style={{ background: "white", color: "#8B0000", border: "2px solid #8B0000", padding: "13px 36px", borderRadius: 10, fontWeight: 700, cursor: "pointer", fontSize: "0.95rem", letterSpacing: "0.06em", transition: "all 0.2s", minWidth: 160 }}>
               ↺ {t("registration.reset")}
@@ -818,6 +921,7 @@ export default function PersonalFamilyForm() {
           <p style={{ textAlign: "center", color: "#C4A0A8", fontSize: "0.75rem", marginTop: 12 }}>
             <span style={{ color: "#C41E3A" }}>✦</span> Fields marked with ✦ are mandatory
           </p>
+
         </div>
       </div>
     </>

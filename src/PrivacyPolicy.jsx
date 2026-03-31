@@ -282,15 +282,6 @@ export default function PrivacyPolicy() {
           <div className="pp-hero-badge"><span>🔒 Privacy First</span></div>
           <h1>Privacy Policy</h1>
           <p>We are committed to protecting your personal information and your right to privacy. This policy explains exactly how we handle your data.</p>
-          <div className="pp-stats">
-            {QUICK_STATS.map((s,i) => (
-              <div key={i} className="pp-stat">
-                <span className="si">{s.icon}</span>
-                <span className="sl">{s.label}</span>
-                <span className="ss">{s.sub}</span>
-              </div>
-            ))}
-          </div>
         </div>
 
         {/* Body */}
@@ -359,12 +350,6 @@ export default function PrivacyPolicy() {
             </div>
           </main>
         </div>
-
-        {/* Footer */}
-        <footer className="pp-footer">
-          <p>© 2026 <strong>MatrimonyConnect Pvt. Ltd.</strong> · All rights reserved · Chennai, Tamil Nadu, India</p>
-          <p style={{ marginTop:6 }}>🔒 privacy@matrimonyconnect.in &nbsp;|&nbsp; 📞 +91-9876543210 &nbsp;|&nbsp; 🛡️ dpo@matrimonyconnect.in</p>
-        </footer>
       </div>
     </>
   );
