@@ -1,541 +1,362 @@
-import React, { useState } from 'react';
+// Detail.jsx
+import React from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 
 export default function Detail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const [interested, setInterested] = useState(false);
-  const [showChat, setShowChat] = useState(false);
-
-  // Get profile from location state (passed from carousel click)
   const profile = location.state?.profile;
 
   if (!profile) {
     return (
-      <div style={{ fontFamily: "'Cormorant Garamond', 'Georgia', serif", minHeight: '100vh', background: '#fdf8f2', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <>
         <style>{`
-          :root {
-            --maroon: #7B1C2E;
-            --maroon-light: #9B2A40;
-            --maroon-dark: #5A1620;
-            --gold: #C9913A;
-            --gold-light: #E8B76A;
-            --gold-dark: #A97324;
-            --cream: #fdf8f2;
-            --cream-dark: #f5ede0;
-          }
-
-          .detail-not-found {
-            text-align: center;
-            padding: 40px 20px;
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 10px 40px rgba(123, 28, 46, 0.1);
-            max-width: 500px;
-          }
-
-          .detail-not-found h1 {
-            font-size: 2.5rem;
-            color: var(--maroon);
-            margin-bottom: 20px;
-            font-weight: 700;
-          }
-
-          .detail-not-found p {
-            color: #666;
-            margin-bottom: 30px;
-            font-size: 1.1rem;
-          }
-
-          .detail-back-btn {
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
-            color: white;
-            border: none;
-            padding: 12px 32px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(201, 145, 58, 0.3);
-          }
-
-          .detail-back-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(201, 145, 58, 0.4);
-          }
+          @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Lato:wght@300;400;700&display=swap');
+          * { box-sizing: border-box; margin: 0; padding: 0; }
+          body { background: #F9EEF0; font-family: 'Lato', sans-serif; }
         `}</style>
-        <div className="detail-not-found">
-          <h1>Profile Not Found</h1>
-          <p>The profile you're looking for doesn't exist.</p>
-          <button className="detail-back-btn" onClick={() => navigate('/')}>
-            ← Back to Home
-          </button>
+        <div style={{ minHeight:'100vh', background:'linear-gradient(160deg,#F9EEF0,#FFF8F0)', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:"'Lato',sans-serif" }}>
+          <div style={{ textAlign:'center', padding:48, background:'white', borderRadius:24, boxShadow:'0 20px 60px rgba(139,0,0,0.12)', maxWidth:460, border:'1px solid rgba(196,30,58,0.1)' }}>
+            <div style={{ fontSize:52, marginBottom:16 }}>🔍</div>
+            <h2 style={{ fontFamily:"'Playfair Display',serif", color:'#8B0000', fontSize:'1.8rem', marginBottom:10 }}>Profile Not Found</h2>
+            <p style={{ color:'#7A4050', marginBottom:28, lineHeight:1.6, fontSize:'0.95rem' }}>The profile you're looking for doesn't exist or has been removed.</p>
+            <button onClick={() => navigate('/')} style={{ background:'linear-gradient(135deg,#8B0000,#C41E3A)', color:'white', border:'none', padding:'12px 32px', borderRadius:10, fontWeight:700, cursor:'pointer', fontSize:'0.95rem', letterSpacing:'0.05em', boxShadow:'0 4px 16px rgba(139,0,0,0.3)' }}>
+              ← Back to Profiles
+            </button>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
+  const p = profile;
+
+  const InfoCard = ({ label, value, icon }) => (
+    <div style={{ background:'#FFFAF9', borderRadius:10, padding:'14px 16px', border:'1px solid rgba(196,30,58,0.1)', borderLeft:'3px solid #C41E3A' }}>
+      <div style={{ fontSize:'0.68rem', fontWeight:700, color:'#8B0000', textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:6, display:'flex', alignItems:'center', gap:5 }}>
+        {icon && <span>{icon}</span>}{label}
+      </div>
+      <div style={{ fontSize:'0.92rem', color:'#2A0A0E', fontWeight:600, lineHeight:1.5 }}>
+        {value || <span style={{ color:'#C4A0A8', fontStyle:'italic', fontWeight:400 }}>Not specified</span>}
+      </div>
+    </div>
+  );
+
+  const SectionTitle = ({ icon, title }) => (
+    <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:20, paddingBottom:12, borderBottom:'1px solid rgba(139,0,0,0.1)' }}>
+      <div style={{ width:34, height:34, borderRadius:'50%', background:'linear-gradient(135deg,#8B0000,#C41E3A)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:15, flexShrink:0, boxShadow:'0 3px 10px rgba(139,0,0,0.2)' }}>{icon}</div>
+      <h3 style={{ margin:0, fontFamily:"'Playfair Display',serif", fontSize:'1.15rem', fontWeight:700, color:'#5A0010', letterSpacing:'0.02em' }}>{title}</h3>
+      <div style={{ flex:1, height:1, background:'linear-gradient(90deg,rgba(139,0,0,0.15),transparent)' }} />
+    </div>
+  );
+
+  const grid2 = { display:'grid', gridTemplateColumns:'1fr 1fr', gap:14 };
+  const grid3 = { display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:14 };
+  const grid4 = { display:'grid', gridTemplateColumns:'1fr 1fr 1fr 1fr', gap:14 };
+  const sectionCard = { background:'white', borderRadius:16, padding:'28px 28px', marginBottom:20, boxShadow:'0 2px 20px rgba(139,0,0,0.06)', border:'1px solid rgba(196,30,58,0.1)' };
+
+  const buildSiblingText = (prefix) => {
+    const fields = [
+      { label:'Elder Brother', key:`sib${prefix}EB` },
+      { label:'Younger Brother', key:`sib${prefix}YB` },
+      { label:'Elder Sister', key:`sib${prefix}ES` },
+      { label:'Younger Sister', key:`sib${prefix}YS` },
+    ];
+    const parts = fields.filter(f => p[f.key] && p[f.key] !== '-' && p[f.key] !== '0').map(f => `${f.label}: ${p[f.key]}`);
+    return parts.length ? parts.join('  |  ') : 'None';
+  };
+
   return (
-    <div style={{ fontFamily: "'Cormorant Garamond', 'Georgia', serif", minHeight: '100vh', background: '#fdf8f2', paddingTop: '40px', paddingBottom: '40px' }}>
+    <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Jost:wght@300;400;500;600&display=swap');
-
-        :root {
-          --maroon: #7B1C2E;
-          --maroon-light: #9B2A40;
-          --maroon-dark: #5A1620;
-          --gold: #C9913A;
-          --gold-light: #E8B76A;
-          --gold-dark: #A97324;
-          --cream: #fdf8f2;
-          --cream-dark: #f5ede0;
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Lato:wght@300;400;700&display=swap');
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: #F9EEF0; font-family: 'Lato', sans-serif; }
+        .g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        .g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+        .g4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 14px; }
+        
+        @media (max-width: 1024px) {
+          .g4 { grid-template-columns: 1fr 1fr 1fr; }
         }
-
-        .detail-container {
-          max-width: 1000px;
-          margin: 0 auto;
-          padding: 0 20px;
-        }
-
-        .detail-back-link {
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
-          color: var(--maroon);
-          text-decoration: none;
-          font-weight: 600;
-          margin-bottom: 30px;
-          cursor: pointer;
-          border: none;
-          background: none;
-          font-size: 1rem;
-          font-family: 'Jost', sans-serif;
-          transition: color 0.3s ease;
-        }
-
-        .detail-back-link:hover {
-          color: var(--gold);
-        }
-
-        .detail-card {
-          background: white;
-          border-radius: 16px;
-          box-shadow: 0 10px 50px rgba(123, 28, 46, 0.15);
-          overflow: hidden;
-        }
-
-        .detail-header {
-          background: linear-gradient(135deg, var(--maroon) 0%, var(--maroon-light) 100%);
-          padding: 40px 30px;
-          color: white;
-        }
-
-        .detail-header-content {
-          display: grid;
-          grid-template-columns: 1fr 2fr;
-          gap: 40px;
-          align-items: center;
-        }
-
-        .detail-image-container {
-          display: flex;
-          justify-content: center;
-        }
-
-        .detail-image {
-          width: 200px;
-          height: 280px;
-          background: linear-gradient(135deg, var(--cream-dark) 0%, var(--cream) 100%);
-          border-radius: 12px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 80px;
-          border: 4px solid rgba(255, 255, 255, 0.3);
-        }
-
-        .detail-header-info h1 {
-          font-size: clamp(2rem, 5vw, 3rem);
-          font-weight: 700;
-          margin: 0 0 10px 0;
-        }
-
-        .detail-header-info p {
-          font-size: 1.3rem;
-          margin: 0 0 20px 0;
-          opacity: 0.95;
-        }
-
-        .detail-header-grid {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 15px;
-        }
-
-        .detail-header-item {
-          background: rgba(255, 255, 255, 0.15);
-          padding: 12px;
-          border-radius: 8px;
-          backdrop-filter: blur(10px);
-        }
-
-        .detail-header-item-label {
-          font-size: 0.75rem;
-          text-transform: uppercase;
-          letter-spacing: 0.05em;
-          opacity: 0.8;
-          font-weight: 600;
-          margin-bottom: 4px;
-        }
-
-        .detail-header-item-value {
-          font-size: 1rem;
-          font-weight: 600;
-          font-family: 'Jost', sans-serif;
-        }
-
-        .detail-action-buttons {
-          display: flex;
-          gap: 12px;
-          margin-top: 20px;
-          flex-wrap: wrap;
-        }
-
-        .detail-btn {
-          padding: 10px 20px;
-          border: none;
-          border-radius: 8px;
-          font-size: 0.95rem;
-          font-weight: 600;
-          cursor: pointer;
-          transition: all 0.3s ease;
-          font-family: 'Jost', sans-serif;
-          text-transform: uppercase;
-          letter-spacing: 0.05em;
-          display: flex;
-          align-items: center;
-          gap: 8px;
-        }
-
-        .detail-btn-primary {
-          background: var(--gold);
-          color: white;
-          box-shadow: 0 4px 15px rgba(201, 145, 58, 0.3);
-        }
-
-        .detail-btn-primary:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 6px 20px rgba(201, 145, 58, 0.4);
-        }
-
-        .detail-btn-secondary {
-          background: white;
-          color: var(--maroon);
-          border: 2px solid var(--maroon);
-        }
-
-        .detail-btn-secondary:hover {
-          background: var(--cream);
-        }
-
-        .detail-content {
-          padding: 40px 30px;
-        }
-
-        .detail-section {
-          margin-bottom: 40px;
-          border-bottom: 2px solid var(--cream-dark);
-          padding-bottom: 30px;
-        }
-
-        .detail-section:last-child {
-          border-bottom: none;
-          margin-bottom: 0;
-          padding-bottom: 0;
-        }
-
-        .detail-section-title {
-          font-size: 1.8rem;
-          font-weight: 700;
-          color: var(--maroon);
-          margin-bottom: 20px;
-          padding-bottom: 10px;
-          border-bottom: 3px solid var(--gold);
-          display: inline-block;
-        }
-
-        .detail-info-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-          gap: 20px;
-        }
-
-        .detail-info-item {
-          background: var(--cream);
-          padding: 16px;
-          border-radius: 8px;
-          border-left: 3px solid var(--gold);
-        }
-
-        .detail-info-label {
-          font-size: 0.75rem;
-          color: var(--maroon);
-          font-weight: 700;
-          text-transform: uppercase;
-          letter-spacing: 0.05em;
-          margin-bottom: 8px;
-        }
-
-        .detail-info-value {
-          font-size: 1.05rem;
-          color: #2A1810;
-          font-weight: 600;
-          font-family: 'Jost', sans-serif;
-          line-height: 1.5;
-        }
-
-        .detail-full-details {
-          background: var(--cream);
-          padding: 20px;
-          border-radius: 8px;
-          border-left: 3px solid var(--gold);
-          margin-top: 20px;
-        }
-
-        .detail-full-details-label {
-          font-size: 0.75rem;
-          color: var(--maroon);
-          font-weight: 700;
-          text-transform: uppercase;
-          letter-spacing: 0.05em;
-          margin-bottom: 12px;
-        }
-
-        .detail-full-details-value {
-          font-size: 1rem;
-          color: #2A1810;
-          line-height: 1.8;
-          font-family: 'Jost', sans-serif;
-        }
-
-        .detail-chat-section {
-          background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
-          border-left: 4px solid var(--maroon);
-          padding: 20px;
-          border-radius: 8px;
-          margin: 20px 0;
-        }
-
-        .detail-chat-section-title {
-          color: var(--maroon);
-          font-weight: 700;
-          margin-bottom: 10px;
-        }
-
-        .detail-chat-section-text {
-          color: #333;
-          font-family: 'Jost', sans-serif;
-        }
-
-        .detail-footer {
-          background: linear-gradient(135deg, var(--cream-dark) 0%, var(--cream) 100%);
-          padding: 30px;
-          border-top: 2px solid #ddd;
-          display: flex;
-          gap: 15px;
-          justify-content: center;
-          flex-wrap: wrap;
-        }
-
+        
         @media (max-width: 768px) {
-          .detail-header-content {
-            grid-template-columns: 1fr;
-            gap: 20px;
+          .g2, .g3, .g4 { grid-template-columns: 1fr 1fr; }
+          .detail-header-grid { grid-template-columns: 1fr 1fr !important; }
+          .photo-strip { flex-direction: column !important; }
+        }
+        
+        @media (max-width: 600px) {
+          .g2, .g3, .g4 { grid-template-columns: 1fr; }
+          .detail-header-grid { grid-template-columns: 1fr !important; }
+          .photo-strip { flex-direction: column !important; }
+          
+          body { font-size: 14px; }
+          input, select, textarea { font-size: 16px !important; }
+        }
+        
+        @media (max-width: 480px) {
+          .g2, .g3, .g4 { grid-template-columns: 1fr; }
+          .detail-header-grid { grid-template-columns: 1fr !important; }
+          .photo-strip { flex-direction: column !important; }
+          
+          body { font-size: 13px; }
+          h1 { font-size: clamp(1.2rem, 3vw, 1.8rem) !important; }
+          h2 { font-size: clamp(1rem, 2.5vw, 1.3rem) !important; }
+          h3 { font-size: clamp(0.9rem, 2vw, 1.1rem) !important; }
+          
+          input, select, textarea {
+            font-size: 14px !important;
+            padding: 8px 10px !important;
           }
-
-          .detail-image {
-            width: 150px;
-            height: 220px;
-            font-size: 60px;
-          }
-
-          .detail-header {
-            padding: 20px;
-          }
-
-          .detail-content {
-            padding: 20px;
-          }
-
-          .detail-action-buttons {
-            flex-direction: column;
-          }
-
-          .detail-btn {
-            width: 100%;
-            justify-content: center;
-          }
-
-          .detail-footer {
-            flex-direction: column;
+          
+          button { padding: 8px 16px !important; font-size: 0.8rem !important; }
+          
+          p { font-size: clamp(0.8rem, 2vw, 0.9rem) !important; }
+        }
+        
+        @media (max-width: 360px) {
+          h1 { font-size: clamp(1rem, 2.5vw, 1.4rem) !important; }
+          input, select, textarea {
+            font-size: 13px !important;
+            padding: 7px 8px !important;
           }
         }
       `}</style>
 
-      <div className="detail-container">
-        {/* Back Button */}
-        <button className="detail-back-link" onClick={() => navigate('/')}>
-          ← Back to Profiles
-        </button>
+      <div style={{ minHeight:'100vh', background:'linear-gradient(160deg,#F9EEF0 0%,#FFF8F0 50%,#F9EEF0 100%)', paddingBottom:60, fontFamily:"'Lato',sans-serif" }}>
 
-        {/* Main Card */}
-        <div className="detail-card">
-          {/* Header Section */}
-          <div className="detail-header">
-            <div className="detail-header-content">
-              <div className="detail-image-container">
-                <div className="detail-image">👤</div>
+        {/* Hero Banner */}
+        <div style={{ background:'linear-gradient(135deg,#5A0010 0%,#8B0000 45%,#C41E3A 100%)', padding:'40px 24px 50px', position:'relative', overflow:'hidden' }}>
+          <div style={{ position:'absolute', inset:0, backgroundImage:'radial-gradient(circle at 15% 50%, rgba(255,255,255,0.04) 0%, transparent 60%), radial-gradient(circle at 85% 20%, rgba(255,255,255,0.06) 0%, transparent 50%)', pointerEvents:'none' }} />
+          <div style={{ position:'absolute', top:-50, right:-50, width:200, height:200, borderRadius:'50%', border:'1px solid rgba(255,255,255,0.07)' }} />
+          <div style={{ position:'absolute', bottom:-80, left:-40, width:240, height:240, borderRadius:'50%', border:'1px solid rgba(255,255,255,0.05)' }} />
+
+          <div style={{ maxWidth:860, margin:'0 auto', position:'relative' }}>
+            <div style={{ display:'flex', gap:32, alignItems:'center', flexWrap:'wrap' }}>
+              {/* Avatar */}
+              <div style={{ flexShrink:0 }}>
+                {p.photoPreviews && p.photoPreviews[0] ? (
+                  <img src={p.photoPreviews[0]} alt={p.name} style={{ width:130, height:170, objectFit:'cover', borderRadius:14, border:'3px solid rgba(255,255,255,0.3)', boxShadow:'0 12px 40px rgba(0,0,0,0.3)' }} />
+                ) : (
+                  <div style={{ width:130, height:170, borderRadius:14, background:'rgba(255,255,255,0.1)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:56, border:'3px solid rgba(255,255,255,0.2)', backdropFilter:'blur(10px)' }}>
+                    {p.gender === 'Female' ? '👩' : '👨'}
+                  </div>
+                )}
               </div>
 
-              <div className="detail-header-info">
-                <h1>{profile.name}</h1>
-                <p>{profile.age} years old</p>
-
-                <div className="detail-header-grid">
-                  <div className="detail-header-item">
-                    <div className="detail-header-item-label">Location</div>
-                    <div className="detail-header-item-value">📍 {profile.location || 'Chennai, TN'}</div>
-                  </div>
-                  <div className="detail-header-item">
-                    <div className="detail-header-item-label">Caste</div>
-                    <div className="detail-header-item-value">{profile.caste || 'N/A'}</div>
-                  </div>
-                  <div className="detail-header-item">
-                    <div className="detail-header-item-label">Occupation</div>
-                    <div className="detail-header-item-value">{profile.occupation || 'Professional'}</div>
-                  </div>
-                  <div className="detail-header-item">
-                    <div className="detail-header-item-label">Status</div>
-                    <div className="detail-header-item-value">Never Married</div>
-                  </div>
+              {/* Header Info */}
+              <div style={{ flex:1, minWidth:260 }}>
+                <div style={{ display:'inline-block', background:'rgba(255,255,255,0.12)', borderRadius:50, padding:'4px 16px', marginBottom:12, fontSize:'0.72rem', letterSpacing:'0.12em', color:'rgba(255,220,200,0.85)', textTransform:'uppercase', border:'1px solid rgba(255,255,255,0.15)' }}>
+                  {p.maritalStatus || 'Unmarried'} · {p.motherTongue || 'Tamil'}
                 </div>
+                <h1 style={{ fontFamily:"'Playfair Display',serif", color:'white', fontSize:'clamp(1.8rem,4vw,2.6rem)', fontWeight:700, marginBottom:6, textShadow:'0 2px 20px rgba(0,0,0,0.3)' }}>
+                  {p.name}
+                </h1>
+                <p style={{ color:'rgba(255,215,200,0.9)', fontSize:'1.05rem', marginBottom:20, fontWeight:300 }}>
+                  {p.dob ? `${new Date().getFullYear() - new Date(p.dob).getFullYear()} yrs` : p.age ? `${p.age} yrs` : ''} {p.dob && p.placeBirth ? '·' : ''} {p.placeBirth || p.location || ''}
+                </p>
 
-                <div className="detail-action-buttons">
-                  <button 
-                    className="detail-btn detail-btn-primary"
-                    onClick={() => setInterested(!interested)}
-                  >
-                    {interested ? '❤️' : '♡'} {interested ? 'Interested' : 'Express Interest'}
-                  </button>
-                  <button 
-                    className="detail-btn detail-btn-secondary"
-                    onClick={() => setShowChat(!showChat)}
-                  >
-                    💬 Send Message
-                  </button>
+                <div className="detail-header-grid" style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:12 }}>
+                  {[
+                    { label:'Caste', value: p.caste && p.caste !== '-Select-' ? p.caste : p.caste || '—' },
+                    { label:'Occupation', value: p.job || p.occupation || '—' },
+                    { label:'Star', value: p.star && p.star !== '-Select-' ? p.star : p.nakshtram || '—' },
+                    { label:'Raasi', value: p.raasi && p.raasi !== '-Select Rasi-' && p.raasi !== '-Select Rasi ' ? p.raasi : '—' },
+                    { label:'Height', value: p.height && p.height !== '-Select-' ? p.height : '—' },
+                    { label:'Diet', value: p.diet || '—' },
+                  ].map(item => (
+                    <div key={item.label} style={{ background:'rgba(255,255,255,0.13)', padding:'10px 12px', borderRadius:8, backdropFilter:'blur(10px)', border:'1px solid rgba(255,255,255,0.1)' }}>
+                      <div style={{ fontSize:'0.65rem', textTransform:'uppercase', letterSpacing:'0.1em', color:'rgba(255,200,180,0.8)', marginBottom:3, fontWeight:600 }}>{item.label}</div>
+                      <div style={{ fontSize:'0.88rem', color:'white', fontWeight:600 }}>{item.value}</div>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
+
+            {/* Photo strip if multiple photos */}
+            {p.photoPreviews && p.photoPreviews.filter(Boolean).length > 1 && (
+              <div className="photo-strip" style={{ display:'flex', gap:10, marginTop:20 }}>
+                {p.photoPreviews.filter(Boolean).slice(1).map((src, i) => (
+                  <img key={i} src={src} alt={`Photo ${i+2}`} style={{ width:80, height:100, objectFit:'cover', borderRadius:8, border:'2px solid rgba(255,255,255,0.2)', boxShadow:'0 4px 12px rgba(0,0,0,0.2)' }} />
+                ))}
+              </div>
+            )}
           </div>
+        </div>
 
-          {/* Chat Section */}
-          {showChat && (
-            <div style={{ padding: '0 30px' }}>
-              <div className="detail-chat-section">
-                <div className="detail-chat-section-title">💬 Chat Feature</div>
-                <div className="detail-chat-section-text">
-                  Contact via WhatsApp or Email. Please express interest first for contact details.
-                </div>
-              </div>
+        {/* Content */}
+        <div style={{ maxWidth:860, margin:'-20px auto 0', padding:'0 16px', position:'relative', zIndex:10 }}>
+
+          {/* Personal Details */}
+          <div style={sectionCard}>
+            <SectionTitle icon="👤" title="Personal Details" />
+            <div className="g3">
+              <InfoCard label="Full Name" value={p.name} icon="🏷️" />
+              <InfoCard label="Gender" value={p.gender && p.gender !== '-Select-' ? p.gender : null} icon="⚧" />
+              <InfoCard label="Date of Birth" value={p.dob ? new Date(p.dob).toLocaleDateString('en-IN', { day:'numeric', month:'long', year:'numeric' }) : null} icon="🗓️" />
+              <InfoCard label="Time of Birth" value={p.birthHour && p.birthMin ? `${p.birthHour}:${p.birthMin} ${p.birthAmPm}` : null} icon="⏰" />
+              <InfoCard label="Place of Birth" value={p.placeBirth} icon="📍" />
+              <InfoCard label="Nativity" value={p.nativity} icon="🏡" />
+              <InfoCard label="Mother Tongue" value={p.motherTongue !== 'Select' ? p.motherTongue : null} icon="🗣️" />
+              <InfoCard label="Marital Status" value={p.maritalStatus} icon="💍" />
+              <InfoCard label="Complexion" value={p.complexion} icon="✨" />
             </div>
-          )}
-
-          {/* Main Content */}
-          <div className="detail-content">
-            {/* Basic Details */}
-            <section className="detail-section">
-              <div className="detail-section-title">👤 Basic Details</div>
-              <div className="detail-info-grid">
-                <div className="detail-info-item">
-                  <div className="detail-info-label">Name</div>
-                  <div className="detail-info-value">{profile.name}</div>
-                </div>
-                <div className="detail-info-item">
-                  <div className="detail-info-label">Age</div>
-                  <div className="detail-info-value">{profile.age}</div>
-                </div>
-                <div className="detail-info-item">
-                  <div className="detail-info-label">Caste</div>
-                  <div className="detail-info-value">{profile.caste || 'Not Specified'}</div>
-                </div>
-                <div className="detail-info-item">
-                  <div className="detail-info-label">Sub-Caste</div>
-                  <div className="detail-info-value">{profile.subcaste || 'Not Specified'}</div>
-                </div>
+            {p.others && (
+              <div style={{ marginTop:16, background:'linear-gradient(135deg,rgba(139,0,0,0.03),rgba(196,30,58,0.05))', borderRadius:10, padding:'16px 18px', border:'1px solid rgba(139,0,0,0.08)', borderLeft:'3px solid #C41E3A' }}>
+                <div style={{ fontSize:'0.68rem', fontWeight:700, color:'#8B0000', textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:8 }}>Additional Details</div>
+                <p style={{ fontSize:'0.9rem', color:'#3D1020', lineHeight:1.8 }}>{p.others}</p>
               </div>
-            </section>
-
-            {/* Astrology Details */}
-            <section className="detail-section">
-              <div className="detail-section-title">⭐ Astrology Details</div>
-              <div className="detail-info-grid">
-                <div className="detail-info-item">
-                  <div className="detail-info-label">Star (Nakshatra)</div>
-                  <div className="detail-info-value">⭐ {profile.nakshtram || 'Not Specified'}</div>
-                </div>
-                <div className="detail-info-item">
-                  <div className="detail-info-label">Raasi (Moon Sign)</div>
-                  <div className="detail-info-value">🌙 {profile.raasi || 'Not Specified'}</div>
-                </div>
-              </div>
-            </section>
-
-            {/* Career Details */}
-            <section className="detail-section">
-              <div className="detail-section-title">💼 Career Details</div>
-              <div className="detail-info-grid">
-                <div className="detail-info-item">
-                  <div className="detail-info-label">Occupation</div>
-                  <div className="detail-info-value">{profile.occupation || 'Professional'}</div>
-                </div>
-                <div className="detail-info-item">
-                  <div className="detail-info-label">Location</div>
-                  <div className="detail-info-value">📍 {profile.location || 'Chennai, TN'}</div>
-                </div>
-              </div>
-            </section>
-
-            {/* Full Details */}
-            {profile.fullDetails && (
-              <section className="detail-section">
-                <div className="detail-section-title">📋 Full Details</div>
-                <div className="detail-full-details">
-                  <div className="detail-full-details-label">Registration Details</div>
-                  <div className="detail-full-details-value">{profile.fullDetails}</div>
-                </div>
-              </section>
             )}
           </div>
 
-          {/* Footer CTA */}
-          <div className="detail-footer">
-            <button 
-              className="detail-btn detail-btn-primary"
-              onClick={() => setInterested(!interested)}
-            >
-              {interested ? '❤️' : '♡'} {interested ? 'Already Interested' : 'Express Interest'}
-            </button>
-            <button 
-              className="detail-btn detail-btn-secondary"
-              onClick={() => navigate('/')}
-            >
-              ← Back to Browse
-            </button>
+          {/* Family Details */}
+          <div style={sectionCard}>
+            <SectionTitle icon="👨‍👩‍👧‍👦" title="Family Details" />
+            <div className="g2" style={{ marginBottom:14 }}>
+              <InfoCard label="Father's Name" value={p.fatherName} icon="👨" />
+              <InfoCard label="Father's Occupation" value={p.fatherJob} icon="💼" />
+              <InfoCard label="Mother's Name" value={p.motherName} icon="👩" />
+              <InfoCard label="Mother's Occupation" value={p.motherJob} icon="💼" />
+            </div>
+            <div className="g2">
+              <InfoCard label="Father Status" value={p.fatherAlive === 'yes' ? '✅ Alive' : p.fatherAlive === 'no' ? 'Deceased' : null} />
+              <InfoCard label="Mother Status" value={p.motherAlive === 'yes' ? '✅ Alive' : p.motherAlive === 'no' ? 'Deceased' : null} />
+            </div>
+
+            {/* Siblings */}
+            <div style={{ marginTop:16 }}>
+              <div style={{ fontSize:'0.68rem', fontWeight:700, color:'#8B0000', textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:12 }}>Siblings</div>
+              <div style={{ overflowX:'auto', borderRadius:10, border:'1px solid rgba(196,30,58,0.12)' }}>
+                <table style={{ width:'100%', borderCollapse:'collapse', fontSize:'0.84rem' }}>
+                  <thead>
+                    <tr style={{ background:'linear-gradient(135deg,#8B0000,#C41E3A)' }}>
+                      <th style={{ padding:'11px 16px', color:'white', fontWeight:700, textAlign:'left', fontSize:'0.78rem', letterSpacing:'0.05em' }}>Status</th>
+                      {['Elder Brother','Younger Brother','Elder Sister','Younger Sister'].map(h => (
+                        <th key={h} style={{ padding:'11px 14px', color:'white', fontWeight:600, textAlign:'center', fontSize:'0.75rem' }}>{h}</th>
+                      ))}
+                    </tr>
+                    <tr style={{ background:'#FFF5F7' }}>
+                      <td style={{ padding:'10px 16px', fontWeight:700, color:'#5A0010', fontSize:'0.82rem' }}>Married</td>
+                      {['sibMarriedEB','sibMarriedYB','sibMarriedES','sibMarriedYS'].map(k => (
+                        <td key={k} style={{ padding:'10px', textAlign:'center', color:'#2A0A0E', fontWeight:600 }}>{p[k] && p[k] !== '-' ? p[k] : '—'}</td>
+                      ))}
+                    </tr>
+                    <tr style={{ background:'white' }}>
+                      <td style={{ padding:'10px 16px', fontWeight:700, color:'#5A0010', fontSize:'0.82rem' }}>Unmarried</td>
+                      {['sibUnmarriedEB','sibUnmarriedYB','sibUnmarriedES','sibUnmarriedYS'].map(k => (
+                        <td key={k} style={{ padding:'10px', textAlign:'center', color:'#2A0A0E', fontWeight:600 }}>{p[k] && p[k] !== '-' ? p[k] : '—'}</td>
+                      ))}
+                    </tr>
+                  </thead>
+                </table>
+              </div>
+            </div>
           </div>
+
+          {/* Physical Attributes */}
+          <div style={sectionCard}>
+            <SectionTitle icon="⚖️" title="Physical Attributes" />
+            <div className="g4">
+              <InfoCard label="Height" value={p.height && p.height !== '-Select-' ? p.height : null} icon="📏" />
+              <InfoCard label="Weight" value={p.weight && p.weight !== '-Select-' ? p.weight : null} icon="⚖️" />
+              <InfoCard label="Blood Group" value={p.bloodGroup && p.bloodGroup !== '-Select-' ? p.bloodGroup : null} icon="🩸" />
+              <InfoCard label="Complexion" value={p.complexion} icon="🌟" />
+            </div>
+            <div className="g2" style={{ marginTop:14 }}>
+              <InfoCard label="Diet Preference" value={p.diet} icon="🍽️" />
+              <InfoCard label="Disability" value={p.disability} icon="♿" />
+            </div>
+          </div>
+
+          {/* Education & Career */}
+          <div style={sectionCard}>
+            <SectionTitle icon="🎓" title="Education & Career" />
+            <div className="g2">
+              <InfoCard label="Qualification" value={p.qualification} icon="📚" />
+              <InfoCard label="Job / Occupation" value={p.job || p.occupation} icon="💼" />
+              <InfoCard label="Place of Job" value={p.placeJob || p.location} icon="📍" />
+              <InfoCard label="Monthly Income" value={p.incomeMonth} icon="💰" />
+            </div>
+          </div>
+
+          {/* Astrology Details */}
+          <div style={sectionCard}>
+            <SectionTitle icon="🪐" title="Astrology & Religion" />
+            <div className="g3">
+              <InfoCard label="Caste" value={p.caste && p.caste !== '-Select-' ? p.caste : null} icon="🏛️" />
+              <InfoCard label="Sub Caste" value={p.subCaste && p.subCaste !== '-select-' ? p.subCaste : null} icon="🏛️" />
+              <InfoCard label="Gothram" value={p.gothram} icon="🔱" />
+              <InfoCard label="Star (Nakshatra)" value={p.star && p.star !== '-Select-' ? p.star : p.nakshtram} icon="⭐" />
+              <InfoCard label="Raasi (Moon Sign)" value={p.raasi && p.raasi !== '-Select Rasi-' && p.raasi !== '-Select Rasi ' ? p.raasi : null} icon="🌙" />
+              <InfoCard label="Padam" value={p.padam && p.padam !== '-Select Padam-' ? p.padam : null} icon="🌸" />
+            </div>
+            <div style={{ marginTop:14, maxWidth:300 }}>
+              <InfoCard label="Laknam" value={p.laknam && p.laknam !== '-Select Laknam-' ? p.laknam : null} icon="🔮" />
+            </div>
+
+            {/* Horoscope Photos */}
+            {(p.horoscopePreview?.rasi || p.horoscopePreview?.amsam) && (
+              <div style={{ marginTop:20 }}>
+                <div style={{ fontSize:'0.68rem', fontWeight:700, color:'#8B0000', textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:14 }}>Horoscope Charts</div>
+                <div className="g2">
+                  {p.horoscopePreview?.rasi && (
+                    <div style={{ borderRadius:12, overflow:'hidden', border:'2px solid rgba(196,30,58,0.2)', boxShadow:'0 4px 16px rgba(139,0,0,0.1)' }}>
+                      <img src={p.horoscopePreview.rasi} alt="Rasi Chart" style={{ width:'100%', display:'block' }} />
+                      <div style={{ padding:'8px 12px', background:'linear-gradient(135deg,#8B0000,#C41E3A)', color:'white', fontSize:'0.78rem', fontWeight:600, textAlign:'center' }}>Rasi Chart (Janma Kundali)</div>
+                    </div>
+                  )}
+                  {p.horoscopePreview?.amsam && (
+                    <div style={{ borderRadius:12, overflow:'hidden', border:'2px solid rgba(196,30,58,0.2)', boxShadow:'0 4px 16px rgba(139,0,0,0.1)' }}>
+                      <img src={p.horoscopePreview.amsam} alt="Amsam Chart" style={{ width:'100%', display:'block' }} />
+                      <div style={{ padding:'8px 12px', background:'linear-gradient(135deg,#8B0000,#C41E3A)', color:'white', fontSize:'0.78rem', fontWeight:600, textAlign:'center' }}>Amsam Chart (Navamsa)</div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Partner Expectations */}
+          <div style={sectionCard}>
+            <SectionTitle icon="💑" title="Partner Expectations" />
+            <div className="g3">
+              <InfoCard label="Qualification" value={p.partnerQualification} icon="🎓" />
+              <InfoCard label="Job Preference" value={p.partnerJob ? `${p.partnerJob} (${p.partnerJobRequirement || 'Optional'})` : null} icon="💼" />
+              <InfoCard label="Monthly Income" value={p.partnerIncomeMonth} icon="💰" />
+              <InfoCard label="Preferred Age" value={p.partnerAgeFrom && p.partnerAgeTo ? `${p.partnerAgeFrom} – ${p.partnerAgeTo} yrs` : p.partnerAgeFrom ? `From ${p.partnerAgeFrom} yrs` : null} icon="🗓️" />
+              <InfoCard label="Diet Preference" value={p.partnerDiet} icon="🍽️" />
+              <InfoCard label="Horoscope Required" value={p.partnerHoroscopeRequired} icon="🔮" />
+              <InfoCard label="Caste Preference" value={p.partnerCaste} icon="🏛️" />
+              <InfoCard label="Sub Caste" value={p.partnerSubCaste} icon="🏛️" />
+              <InfoCard label="Marital Status" value={p.partnerMaritalStatus} icon="💍" />
+            </div>
+            {p.partnerOtherRequirement && (
+              <div style={{ marginTop:14, background:'rgba(139,0,0,0.03)', borderRadius:10, padding:'16px 18px', border:'1px solid rgba(139,0,0,0.08)', borderLeft:'3px solid #C41E3A' }}>
+                <div style={{ fontSize:'0.68rem', fontWeight:700, color:'#8B0000', textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:8 }}>Additional Requirements</div>
+                <p style={{ fontSize:'0.9rem', color:'#3D1020', lineHeight:1.8 }}>{p.partnerOtherRequirement}</p>
+              </div>
+            )}
+          </div>
+
+          {/* Communication Details */}
+          <div style={sectionCard}>
+            <SectionTitle icon="📞" title="Contact Information" />
+            <div className="g2">
+              <InfoCard label="Permanent Address" value={p.permanentAddress} icon="🏠" />
+              <InfoCard label="Present Address" value={p.presentAddress} icon="📌" />
+              <InfoCard label="Contact Person" value={p.contactPerson} icon="👤" />
+              <InfoCard label="Contact Number" value={p.contactNumber ? `📱 ${p.contactNumber}` : null} icon="📞" />
+            </div>
+          </div>
+
+          <p style={{ textAlign:'center', color:'#C4A0A8', fontSize:'0.75rem', marginTop:16 }}>
+            Profile last updated · All information is kept confidential
+          </p>
         </div>
       </div>
-    </div>
+    </>
   );
 }

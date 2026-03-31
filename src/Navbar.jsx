@@ -35,6 +35,115 @@ export default function Navbar() {
   return (
     <>
       <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700&display=swap');
+
+        /* ── NAVBAR BRANDING ── */
+        .navbar-brand-container {
+          display: flex;
+          align-items: center;
+          gap: clamp(12px, 3vw, 20px);
+          flex-shrink: 0;
+        }
+
+        .navbar-logo {
+          width: 60px;
+          height: 60px;
+          border-radius: 50%;
+          border: 4px solid #E8B76A;
+          padding: 6px;
+          background: rgba(255,255,255,0.08);
+          flex-shrink: 0;
+          box-shadow: 0 8px 24px rgba(232, 183, 106, 0.3), inset 0 1px 2px rgba(255,255,255,0.15);
+          animation: float 3s ease-in-out infinite;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          overflow: hidden;
+        }
+
+        .navbar-logo img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          border-radius: 50%;
+        }
+
+        @keyframes float {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-6px); }
+        }
+
+        .navbar-brand-text {
+          display: flex;
+          flex-direction: column;
+          gap: 0;
+          cursor: pointer;
+          transition: all 0.3s ease;
+        }
+
+        .navbar-brand-text:hover {
+          transform: translateY(-2px);
+        }
+
+        .navbar-brand-title {
+          font-family: 'Cormorant Garamond', serif;
+          font-size: clamp(1.4rem, 4vw, 2rem);
+          font-weight: 700;
+          color: #ffffff;
+          letter-spacing: 0.03em;
+          line-height: 1.1;
+          text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        .navbar-brand-subtitle {
+          font-family: 'Cormorant Garamond', serif;
+          font-size: clamp(1rem, 2.5vw, 1.5rem);
+          font-weight: 600;
+          color: #E8B76A;
+          letter-spacing: 0.02em;
+          line-height: 1;
+          text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        @media (max-width: 768px) {
+          .navbar-brand-container {
+            gap: 10px;
+          }
+
+          .navbar-logo {
+            width: 52px;
+            height: 52px;
+            border-width: 3px;
+          }
+
+          .navbar-brand-title {
+            font-size: clamp(1.2rem, 3.5vw, 1.6rem);
+          }
+
+          .navbar-brand-subtitle {
+            font-size: clamp(0.9rem, 2vw, 1.2rem);
+          }
+        }
+
+        @media (max-width: 480px) {
+          .navbar-brand-container {
+            gap: 8px;
+          }
+
+          .navbar-logo {
+            width: 48px;
+            height: 48px;
+          }
+
+          .navbar-brand-title {
+            font-size: clamp(1rem, 3vw, 1.4rem);
+          }
+
+          .navbar-brand-subtitle {
+            font-size: clamp(0.8rem, 1.8vw, 1rem);
+          }
+        }
+        
         @media (max-width: 768px) {
           .mobile-menu {
             position: absolute;
@@ -48,6 +157,9 @@ export default function Navbar() {
             padding: 0;
             box-shadow: 0 8px 24px rgba(0,0,0,0.2);
             animation: slideDown 0.3s ease;
+            z-index: 999;
+            max-height: 80vh;
+            overflow-y: auto;
           }
           
           @keyframes slideDown {
@@ -67,20 +179,20 @@ export default function Navbar() {
           
           .mobile-menu a,
           .mobile-menu div {
-            padding: 16px 20px !important;
+            padding: clamp(12px, 3vw, 16px) clamp(16px, 4vw, 20px) !important;
             border-bottom: 1px solid rgba(232,183,106,0.1);
             color: #fdf8f2 !important;
             text-decoration: none !important;
             cursor: pointer !important;
             text-align: left;
-            font-size: 16px !important;
+            font-size: clamp(13px, 3vw, 16px) !important;
             transition: all 0.2s ease;
           }
           
           .mobile-menu a:hover,
           .mobile-menu div:hover {
             background: rgba(232,183,106,0.15);
-            padding-left: 24px !important;
+            padding-left: clamp(20px, 5vw, 24px) !important;
           }
           
           .hamburger {
@@ -88,10 +200,11 @@ export default function Navbar() {
             flex-direction: column;
             gap: 5px;
             cursor: pointer;
+            padding: 8px;
           }
           
           .hamburger span {
-            width: 25px;
+            width: 24px;
             height: 2.5px;
             background: #E8B76A;
             transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
@@ -116,6 +229,18 @@ export default function Navbar() {
           }
         }
         
+        @media (max-width: 480px) {
+          .mobile-menu {
+            top: 56px;
+          }
+          
+          .mobile-menu a,
+          .mobile-menu div {
+            padding: 12px 14px !important;
+            font-size: 14px !important;
+          }
+        }
+        
         @media (min-width: 769px) {
           .hamburger {
             display: none;
@@ -125,38 +250,91 @@ export default function Navbar() {
             display: none !important;
           }
         }
+
+        /* ── NAVBAR TAGLINE ── */
+        .navbar-tagline {
+          font-family: 'Cormorant Garamond', serif;
+          font-size: clamp(0.9rem, 2vw, 1.3rem);
+          color: #E8B76A;
+          font-weight: 600;
+          letter-spacing: 0.05em;
+          text-align: center;
+          flex: 1;
+          margin: 0 20px;
+          text-shadow: 
+            0 0 10px rgba(232, 183, 106, 0.8),
+            0 0 20px rgba(232, 183, 106, 0.5),
+            0 0 30px rgba(232, 183, 106, 0.3);
+          animation: glow 2s ease-in-out infinite;
+          word-wrap: break-word;
+          overflow-wrap: break-word;
+          line-height: 1.5;
+        }
+
+        @keyframes glow {
+          0%, 100% {
+            text-shadow: 
+              0 0 10px rgba(232, 183, 106, 0.8),
+              0 0 20px rgba(232, 183, 106, 0.5),
+              0 0 30px rgba(232, 183, 106, 0.3);
+          }
+          50% {
+            text-shadow: 
+              0 0 15px rgba(232, 183, 106, 1),
+              0 0 25px rgba(232, 183, 106, 0.8),
+              0 0 40px rgba(232, 183, 106, 0.5);
+          }
+        }
+
+        @media (max-width: 768px) {
+          .navbar-tagline {
+            flex: 0 1 auto;
+            margin: 0 10px;
+            font-size: clamp(0.75rem, 1.8vw, 1rem);
+            order: 3;
+            width: 100%;
+            padding-top: 8px;
+          }
+        }
+
+        @media (max-width: 360px) {
+          .navbar-tagline {
+            font-size: clamp(0.7rem, 1.5vw, 0.9rem);
+            margin: 0 8px;
+            padding-top: 6px;
+          }
+        }
       `}</style>
 
       <nav style={{
         background: 'linear-gradient(135deg, #7B1C2E 0%, #5A1620 100%)',
-        padding: 'clamp(12px, 3vw, 15px) clamp(16px, 5vw, 30px)',
+        padding: 'clamp(12px, 2.5vw, 16px) clamp(16px, 5vw, 30px)',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
         boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
         fontFamily: "'Cormorant Garamond', 'Georgia', serif",
-        position: 'relative',
+        position: 'sticky',
+        top: 0,
+        zIndex: 1000,
         flexWrap: 'wrap'
       }}>
-        <div style={{
-          fontSize: 'clamp(18px, 5vw, 24px)',
-          fontWeight: 'bold',
-          color: '#E8B76A',
-          letterSpacing: '0.05em',
-          cursor: 'pointer',
-          transition: 'all 0.3s ease',
-          animation: 'glow 2s ease-in-out infinite'
-        }}
-        onMouseEnter={(e) => e.target.style.textShadow = '0 0 12px rgba(232,183,106,0.4)'}
-        onMouseLeave={(e) => e.target.style.textShadow = 'none'}>
-          <style>{`
-            @keyframes glow {
-              0%, 100% { text-shadow: 0 0 8px rgba(232,183,106,0.2); }
-              50% { text-shadow: 0 0 16px rgba(232,183,106,0.3); }
-            }
-          `}</style>
-          Chennai Profiles
-        </div>
+        {/* Brand Logo and Text */}
+        <Link to="/" style={{ textDecoration: 'none', color: 'inherit', display: 'flex' }}>
+          <div className="navbar-brand-container">
+            <div className="navbar-logo">
+              <img src="/assets/chennai_profiles.png" alt="Chennai Profiles Logo" 
+                onError={(e) => { e.target.style.display = 'none'; }} />
+            </div>
+            <div className="navbar-brand-text">
+              <div className="navbar-brand-title">Chennai</div>
+              <div className="navbar-brand-subtitle">Profiles</div>
+            </div>
+          </div>
+        </Link>
+        
+        {/* Navbar Tagline */}
+        <div className="navbar-tagline">Where Hearts Meet Their Perfect Match ❤️</div>
         
         {/* Desktop Navigation */}
         <div className="desktop-nav" style={{
@@ -191,7 +369,21 @@ export default function Navbar() {
             }}>
             {t('navbar.registration')}
           </Link>
-          
+
+          <Link to="/search" style={navLinkStyle}
+            onMouseEnter={(e) => {
+              e.target.style.color = '#E8B76A';
+              e.target.style.backgroundColor = 'rgba(232,183,106,0.1)';
+              e.target.style.transform = 'translateY(-2px)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.color = '#fdf8f2';
+              e.target.style.backgroundColor = 'transparent';
+              e.target.style.transform = 'translateY(0)';
+            }}>
+            {t('navbar.search')}
+          </Link>
+
           <Link to="/contact" style={navLinkStyle}
             onMouseEnter={(e) => {
               e.target.style.color = '#E8B76A';
@@ -237,7 +429,6 @@ export default function Navbar() {
         <div 
           className={`hamburger ${menuOpen ? 'open' : ''}`}
           onClick={() => setMenuOpen(!menuOpen)}
-          style={{ display: 'none' }}
         >
           <span></span>
           <span></span>
@@ -246,12 +437,13 @@ export default function Navbar() {
 
         {/* Mobile Navigation Menu */}
         <div className={`mobile-menu ${!menuOpen ? 'closed' : ''}`}>
-          <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }}>{t('navbar.home')}</Link>
-          <Link to="/registration" style={{ textDecoration: 'none', color: 'inherit' }}>{t('navbar.registration')}</Link>
-          <Link to="/contact" style={{ textDecoration: 'none', color: 'inherit' }}>{t('navbar.contact')}</Link>
+          <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }} onClick={() => setMenuOpen(false)}>{t('navbar.home')}</Link>
+          <Link to="/registration" style={{ textDecoration: 'none', color: 'inherit' }} onClick={() => setMenuOpen(false)}>{t('navbar.registration')}</Link>
+          <Link to="/search" style={{ textDecoration: 'none', color: 'inherit' }} onClick={() => setMenuOpen(false)}>Search</Link>
+          <Link to="/contact" style={{ textDecoration: 'none', color: 'inherit' }} onClick={() => setMenuOpen(false)}>{t('navbar.contact')}</Link>
           <select 
             value={i18n.language}
-            onChange={(e) => handleLanguageChange(e.target.value)}
+            onChange={(e) => { handleLanguageChange(e.target.value); setMenuOpen(false); }}
             style={{
               padding: '10px 15px',
               borderRadius: '4px',
