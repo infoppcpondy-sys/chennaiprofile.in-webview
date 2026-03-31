@@ -314,7 +314,9 @@ export default function Navbar() {
         alignItems: 'center',
         boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
         fontFamily: "'Cormorant Garamond', 'Georgia', serif",
-        position: 'relative',
+        position: 'sticky',
+        top: 0,
+        zIndex: 1000,
         flexWrap: 'wrap'
       }}>
         {/* Brand Logo and Text */}

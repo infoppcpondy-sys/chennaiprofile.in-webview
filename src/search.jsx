@@ -24,7 +24,7 @@ const DUMMY = [
   { id:15, regId:"MAT1015", name:"Balamurugan K",     caste:"Yadav",       gender:"Male",   language:"Tamil",     marital:"Unmarried",      age:27, photo:"https://i.pravatar.cc/80?img=16" },
 ];
 
-const INIT = { gender:"Male", language:"Any", caste:"Any", sortId:"asc", ageFrom:"", ageTo:"", marital:"Any" };
+const INIT = { gender:"Female", language:"Any", caste:"Any", sortId:"asc", ageFrom:"", ageTo:"", marital:"Any" };
 
 export default function MatrimonySearch() {
   const navigate = useNavigate();
@@ -71,7 +71,7 @@ export default function MatrimonySearch() {
         #root{min-height:100vh;}
         select:focus,input:focus{border-color:#c0392b!important;box-shadow:0 0 0 3px rgba(192,57,43,0.13)!important;outline:none;}
         select option{background:#fff;color:#222;}
-        .fg{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+        .fg{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;}
         .fg2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
         .age-pair{display:flex;gap:8px;align-items:center;}
         .age-pair span{color:#c0392b;font-size:16px;flex-shrink:0;font-weight:700;}
@@ -290,23 +290,11 @@ export default function MatrimonySearch() {
                   <input type="number" min={18} max={80} value={filters.ageTo}   onChange={e=>set("ageTo",  e.target.value)} placeholder="To"   style={S.num}/>
                 </div>
               </div>
-              <div style={{ gridColumn:"span 2" }}>
+              <div>
                 <label className="filter-label" style={S.lbl}>Marital Status</label>
-                <div className="marital-pills">
-                  {MARITAL_OPTIONS.map(m => {
-                    const active = filters.marital === m;
-                    return (
-                      <div key={m} className="m-pill"
-                        onClick={()=>set("marital",m)}
-                        style={{ background:active?"#c0392b":"#fff", color:active?"#fff":"#555", border:`1.5px solid ${active?"#c0392b":"#ddd"}`, boxShadow:active?"0 2px 10px rgba(192,57,43,0.25)":"none" }}>
-                        <span style={{ width:13, height:13, borderRadius:"50%", border:`2px solid ${active?"#fff":"#c0392b"}`, background:active?"#fff":"transparent", display:"inline-flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
-                          {active && <span style={{ width:6, height:6, borderRadius:"50%", background:"#c0392b", display:"block" }}/>}
-                        </span>
-                        {m}
-                      </div>
-                    );
-                  })}
-                </div>
+                <select value={filters.marital} onChange={e=>set("marital",e.target.value)} style={S.sel}>
+                  {MARITAL_OPTIONS.map(m=><option key={m}>{m}</option>)}
+                </select>
               </div>
             </div>
 
@@ -425,7 +413,6 @@ export default function MatrimonySearch() {
                               <thead>
                                 <tr>
                                   <th>Photo</th>
-                                  <th>Reg ID</th>
                                   <th>Name</th>
                                   <th>Details</th>
                                 </tr>
@@ -444,8 +431,10 @@ export default function MatrimonySearch() {
                                           onError={e=>{ e.target.src=`https://ui-avatars.com/api/?name=${encodeURIComponent(r.name)}&background=e74c3c&color=fff&size=80`; }}
                                         />
                                       </td>
-                                      <td><span className="regbadge">{r.regId}</span></td>
-                                      <td style={{ fontWeight:700, color:"#1a1a1a" }}>{r.name}</td>
+                                      <td>
+                                        <div><span className="regbadge">{r.regId}</span></div>
+                                        <div style={{ fontWeight:700, color:"#1a1a1a", marginTop:'4px' }}>{r.name}</div>
+                                      </td>
                                       <td style={{ fontSize:'12px', color:'#666' }}>
                                         <div style={{ marginBottom:'6px' }}><strong style={{ color:'#c0392b' }}>Age:</strong> {r.age}</div>
                                         <div style={{ marginBottom:'6px' }}><strong style={{ color:'#c0392b' }}>Gender:</strong> {r.gender}</div>
