@@ -1,6 +1,7 @@
 // RegisterForm.jsx
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { checkIfFaceExists } from "./utils/faceDetection";
 
 export default function PersonalFamilyForm() {
   const { t, i18n } = useTranslation();
@@ -46,12 +47,12 @@ export default function PersonalFamilyForm() {
 
   const [photos, setPhotos] = useState([null, null, null]);
   const [photoPreviews, setPhotoPreviews] = useState([null, null, null]);
+  const [photoValidating, setPhotoValidating] = useState(false);
   const [horoscopePhotos, setHoroscopePhotos] = useState({ rasi: null, amsam: null });
   const [horoscopePreview, setHoroscopePreview] = useState({ rasi: null, amsam: null });
   const [errors, setErrors] = useState({});
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [activeSection, setActiveSection] = useState(null);
 
   useEffect(() => {}, [i18n.language]);
 
@@ -60,17 +61,63 @@ export default function PersonalFamilyForm() {
     if (errors[k]) setErrors(e => ({ ...e, [k]: "" }));
   };
 
-  const handlePhotoUpload = (index, file) => {
-    if (!file) return;
-    if (file.size > 5 * 1024 * 1024) { alert("Image size must be less than 5MB"); return; }
-    if (!file.type.startsWith("image/")) { alert("Please select a valid image file"); return; }
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const np = [...photos]; const nv = [...photoPreviews];
-      np[index] = file; nv[index] = e.target.result;
-      setPhotos(np); setPhotoPreviews(nv);
-    };
-    reader.readAsDataURL(file);
+  // ─── AI human-face validation using face-api.js ───────────────────────────
+  const validateHumanPhoto = async (file) => {
+    return await checkIfFaceExists(file);
+  };
+
+  // ─── Single upload handler (accepts up to 3 photos from one input) ───────────
+  const handlePhotoUpload = async (files) => {
+    if (!files || files.length === 0) return;
+
+    const currentCount = photos.filter(Boolean).length;
+    const remaining = 3 - currentCount;
+    if (remaining === 0) {
+      alert("You have already uploaded 3 photos. Remove one to add more.");
+      return;
+    }
+
+    const filesToProcess = Array.from(files).slice(0, remaining);
+    setPhotoValidating(true);
+
+    const newPhotos = [...photos];
+    const newPreviews = [...photoPreviews];
+
+    for (const file of filesToProcess) {
+      if (file.size > 5 * 1024 * 1024) {
+        alert(`"${file.name}" exceeds 5MB. Please choose a smaller image.`);
+        continue;
+      }
+      if (!file.type.startsWith("image/")) {
+        alert(`"${file.name}" is not a valid image file.`);
+        continue;
+      }
+
+      // AI validation
+      const isHuman = await validateHumanPhoto(file);
+      if (!isHuman) {
+        alert("Please upload your photo correctly");
+        continue;
+      }
+
+      // Find next empty slot
+      const slotIndex = newPhotos.findIndex(p => p === null);
+      if (slotIndex === -1) break;
+
+      await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          newPhotos[slotIndex] = file;
+          newPreviews[slotIndex] = e.target.result;
+          resolve();
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    setPhotos(newPhotos);
+    setPhotoPreviews(newPreviews);
+    setPhotoValidating(false);
   };
 
   const removePhoto = (index) => {
@@ -183,6 +230,8 @@ export default function PersonalFamilyForm() {
 
   const sectionBox = { background:"white", borderRadius:16, padding:"28px 30px", marginBottom:20, boxShadow:"0 2px 20px rgba(139,0,0,0.06)", border:"1px solid rgba(196,30,58,0.1)" };
 
+  const uploadedCount = photos.filter(Boolean).length;
+
   if (submitted) {
     return (
       <>
@@ -213,7 +262,9 @@ export default function PersonalFamilyForm() {
         .row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
         .row-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 16px; }
         
-        /* Tablet Responsiveness */
+        .photo-upload-zone { transition: all 0.2s ease; }
+        .photo-upload-zone:hover { border-color: #8B0000 !important; background: linear-gradient(135deg,#FFF0F2,#FFF8F0) !important; }
+        
         @media (max-width: 768px) {
           .row-2, .row-3, .row-4 { grid-template-columns: 1fr; gap: 16px; }
           .form-outer { padding: 0 12px 40px; }
@@ -221,106 +272,155 @@ export default function PersonalFamilyForm() {
           input, select, textarea { font-size: 16px !important; }
         }
         
-        /* Mobile Responsiveness */
         @media (max-width: 600px) {
           .row-2, .row-3, .row-4 { grid-template-columns: 1fr; }
           .form-outer { padding: 0 10px 32px; }
           .section-box { padding: 20px 14px !important; margin-bottom: 18px !important; }
-          
-          input, select, textarea {
-            font-size: 16px !important;
-            padding: 10px 12px !important;
-          }
-          
-          table th, table td {
-            padding: 8px 6px !important;
-            font-size: 12px !important;
-          }
-          
-          .row-3 > div { margin-bottom: 12px; }
-          .row-2 > div { margin-bottom: 12px; }
-          .row-4 > div { margin-bottom: 12px; }
+          input, select, textarea { font-size: 16px !important; padding: 10px 12px !important; }
+          table th, table td { padding: 8px 6px !important; font-size: 12px !important; }
+          .row-3 > div, .row-2 > div, .row-4 > div { margin-bottom: 12px; }
         }
         
-        /* Small Mobile Responsiveness */
         @media (max-width: 480px) {
           .form-outer { padding: 0 8px 24px; }
           .section-box { padding: 16px 12px !important; }
-          
-          input, select, textarea {
-            font-size: 14px !important;
-            padding: 9px 10px !important;
-          }
-          
+          input, select, textarea { font-size: 14px !important; padding: 9px 10px !important; }
           h1 { font-size: clamp(1.4rem, 4vw, 2rem) !important; }
           h2 { font-size: clamp(1rem, 3vw, 1.3rem) !important; }
           h3 { font-size: clamp(0.9rem, 2.5vw, 1.1rem) !important; }
-          
           label { font-size: 0.7rem !important; }
           p { font-size: clamp(0.8rem, 2vw, 0.9rem) !important; }
-          
-          table th, table td {
-            padding: 6px 4px !important;
-            font-size: 11px !important;
-          }
-          
+          table th, table td { padding: 6px 4px !important; font-size: 11px !important; }
           button { padding: 8px 16px !important; font-size: 0.8rem !important; }
         }
         
-        /* Extra Small Mobile */
         @media (max-width: 360px) {
           .form-outer { padding: 0 6px 16px; }
           .section-box { padding: 12px 10px !important; }
-          
-          input, select, textarea {
-            font-size: 14px !important;
-            padding: 8px 8px !important;
-          }
+          input, select, textarea { font-size: 14px !important; padding: 8px 8px !important; }
         }
         
         select option { background: white; color: #2A0A0E; }
       `}</style>
 
       <div className="form-outer" style={{ minHeight:"100vh", background:"linear-gradient(160deg,#F9EEF0 0%,#FFF8F0 50%,#F9EEF0 100%)", padding:"0 16px 48px" }}>
-
         <div style={{ maxWidth:860, margin:"0 auto" }}>
 
-          {/* Photo Upload Section */}
+          {/* ── Photo Upload Section (UPDATED) ───────────────────────── */}
           <div style={{ ...sectionBox, marginBottom:20 }}>
             <SectionHeader icon="📸" title={t("registration.profilePhotographs")} />
             <p style={{ fontSize:"0.82rem", color:"#8A5060", marginBottom:20, fontStyle:"italic" }}>
               {t("registration.photoDesc")}
             </p>
-            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(150px, 1fr))", gap:"clamp(12px, 3vw, 16px)" }}>
-              {[0,1,2].map(index => (
-                <div key={index} style={{ position:"relative" }}>
-                  {photoPreviews[index] ? (
-                    <div style={{ borderRadius:12, overflow:"hidden", border:"2px solid #C41E3A", boxShadow:"0 8px 24px rgba(139,0,0,0.15)" }}>
-                      <img src={photoPreviews[index]} alt={`Photo ${index+1}`} style={{ width:"100%", height:"clamp(160px, 30vw, 200px)", objectFit:"cover", display:"block" }} />
-                      <div style={{ padding:"clamp(8px, 2vw, 10px) clamp(10px, 2vw, 12px)", background:"linear-gradient(135deg,#8B0000,#C41E3A)", display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-                        <span style={{ color:"rgba(255,255,255,0.85)", fontSize:"clamp(0.7rem, 2vw, 0.78rem)" }}>Photo {index+1}</span>
-                        <button type="button" onClick={() => removePhoto(index)} style={{ background:"rgba(255,255,255,0.2)", color:"white", border:"none", padding:"3px 10px", borderRadius:20, cursor:"pointer", fontSize:"0.75rem", fontWeight:600 }}>
+
+            {/* Single unified upload zone */}
+            {uploadedCount < 3 && (
+              <label
+                className="photo-upload-zone"
+                style={{
+                  display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center",
+                  gap:14, cursor: photoValidating ? "not-allowed" : "pointer",
+                  border:"2px dashed #D4A0A8", borderRadius:14,
+                  background:"linear-gradient(135deg,#FFF8F9,#FFF5F0)",
+                  padding:"clamp(24px,5vw,36px) 20px",
+                  marginBottom: uploadedCount > 0 ? 20 : 0,
+                  opacity: photoValidating ? 0.7 : 1,
+                  pointerEvents: photoValidating ? "none" : "auto",
+                }}
+              >
+                <div style={{ width:64, height:64, borderRadius:"50%", background:"linear-gradient(135deg,rgba(139,0,0,0.08),rgba(196,30,58,0.14))", display:"flex", alignItems:"center", justifyContent:"center", fontSize:28 }}>
+                  {photoValidating ? "⏳" : "📷"}
+                </div>
+                <div style={{ textAlign:"center" }}>
+                  <div style={{ color:"#8B0000", fontSize:"clamp(0.9rem,2.5vw,1rem)", fontWeight:700, marginBottom:4 }}>
+                    {photoValidating ? "Validating photo…" : `Upload Profile Photo${uploadedCount > 0 ? "s" : ""}`}
+                  </div>
+                  <div style={{ color:"#B08090", fontSize:"clamp(0.7rem,1.8vw,0.8rem)" }}>
+                    {photoValidating
+                      ? "Please wait while we verify the image"
+                      : `Select up to ${3 - uploadedCount} photo${3 - uploadedCount > 1 ? "s" : ""} · Max 5MB each · Human photos only`}
+                  </div>
+                </div>
+                {!photoValidating && (
+                  <div style={{ background:"linear-gradient(135deg,#8B0000,#C41E3A)", color:"white", padding:"8px 24px", borderRadius:24, fontSize:"clamp(0.78rem,2vw,0.88rem)", fontWeight:700, letterSpacing:"0.05em", boxShadow:"0 4px 14px rgba(139,0,0,0.3)" }}>
+                    {t("registration.browsePhoto")}
+                  </div>
+                )}
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  disabled={photoValidating}
+                  onChange={e => handlePhotoUpload(e.target.files)}
+                  style={{ display:"none" }}
+                />
+              </label>
+            )}
+
+            {/* Uploaded photos thumbnails */}
+            {uploadedCount > 0 && (
+              <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(140px, 1fr))", gap:14 }}>
+                {photoPreviews.map((preview, index) =>
+                  preview ? (
+                    <div key={index} style={{ borderRadius:12, overflow:"hidden", border:"2px solid #C41E3A", boxShadow:"0 6px 20px rgba(139,0,0,0.14)", position:"relative" }}>
+                      <img
+                        src={preview}
+                        alt={`Photo ${index + 1}`}
+                        style={{ width:"100%", height:"clamp(130px,25vw,170px)", objectFit:"cover", display:"block" }}
+                      />
+                      <div style={{ padding:"8px 10px", background:"linear-gradient(135deg,#8B0000,#C41E3A)", display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+                        <span style={{ color:"rgba(255,255,255,0.9)", fontSize:"0.75rem", fontWeight:600 }}>Photo {index + 1}</span>
+                        <button
+                          type="button"
+                          onClick={() => removePhoto(index)}
+                          style={{ background:"rgba(255,255,255,0.2)", color:"white", border:"none", padding:"3px 10px", borderRadius:20, cursor:"pointer", fontSize:"0.72rem", fontWeight:700 }}
+                        >
                           {t("registration.removePhoto")}
                         </button>
                       </div>
                     </div>
-                  ) : (
-                    <label style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:"clamp(8px, 2vw, 12px)", cursor:"pointer", height:"clamp(160px, 30vw, 200px)", border:"2px dashed #D4A0A8", borderRadius:12, background:"linear-gradient(135deg,#FFF8F9,#FFF5F0)", transition:"all 0.2s ease", padding:"clamp(12px, 2vw, 16px)" }}>
-                      <div style={{ width:52, height:52, borderRadius:"50%", background:"linear-gradient(135deg,rgba(139,0,0,0.08),rgba(196,30,58,0.12))", display:"flex", alignItems:"center", justifyContent:"center", fontSize:22 }}>
-                        {index === 0 ? "🖼️" : index === 1 ? "📷" : "🌸"}
-                      </div>
-                      <div style={{ textAlign:"center" }}>
-                        <div style={{ color:"#8B0000", fontSize:"clamp(0.75rem, 2vw, 0.85rem)", fontWeight:700 }}>Photo {index+1}</div>
-                        <div style={{ color:"#B08090", fontSize:"clamp(0.65rem, 1.5vw, 0.72rem)", marginTop:4 }}>Click to upload · Max 5MB</div>
-                      </div>
-                      <div style={{ background:"linear-gradient(135deg,#8B0000,#C41E3A)", color:"white", padding:"6px 16px", borderRadius:20, fontSize:"clamp(0.7rem, 1.5vw, 0.78rem)", fontWeight:700, letterSpacing:"0.05em" }}>
-                        {t("registration.browsePhoto")}
-                      </div>
-                      <input type="file" accept="image/*" onChange={e => handlePhotoUpload(index, e.target.files[0])} style={{ display:"none" }} />
-                    </label>
-                  )}
-                </div>
+                  ) : null
+                )}
+
+                {/* Add more button if slots remain */}
+                {uploadedCount < 3 && (
+                  <label
+                    className="photo-upload-zone"
+                    style={{
+                      display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center",
+                      gap:10, cursor: photoValidating ? "not-allowed" : "pointer",
+                      border:"2px dashed #D4A0A8", borderRadius:12,
+                      background:"linear-gradient(135deg,#FFF8F9,#FFF5F0)",
+                      height:"clamp(130px,25vw,170px)",
+                      opacity: photoValidating ? 0.6 : 1,
+                      pointerEvents: photoValidating ? "none" : "auto",
+                    }}
+                  >
+                    <div style={{ fontSize:28 }}>{photoValidating ? "⏳" : "➕"}</div>
+                    <div style={{ color:"#8B0000", fontSize:"0.78rem", fontWeight:700, textAlign:"center" }}>
+                      {photoValidating ? "Validating…" : `Add Photo (${3 - uploadedCount} left)`}
+                    </div>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      disabled={photoValidating}
+                      onChange={e => handlePhotoUpload(e.target.files)}
+                      style={{ display:"none" }}
+                    />
+                  </label>
+                )}
+              </div>
+            )}
+
+            {/* Counter badge */}
+            <div style={{ marginTop:14, display:"flex", alignItems:"center", gap:8 }}>
+              {[0,1,2].map(i => (
+                <div key={i} style={{ width:10, height:10, borderRadius:"50%", background: photoPreviews[i] ? "#8B0000" : "#E0C0C8", transition:"background 0.3s" }} />
               ))}
+              <span style={{ fontSize:"0.75rem", color:"#9A6070", marginLeft:6 }}>
+                {uploadedCount} / 3 photo{uploadedCount !== 1 ? "s" : ""} uploaded
+              </span>
             </div>
           </div>
 
@@ -714,53 +814,6 @@ export default function PersonalFamilyForm() {
               </div>
             </div>
           </div>
-
-          {/* Scheme / Account - COMMENTED OUT */}
-          {/* 
-          <div style={{ ...sectionBox, background:"linear-gradient(135deg,#FFF8F0,white)", border:"1px solid rgba(139,0,0,0.15)" }}>
-            <SectionHeader icon="💎" title={t("registration.schemeDetails")} />
-            <div style={{ display:"flex", flexDirection:"column", gap:20 }}>
-              <div className="row-3">
-                <FormField label="Membership Scheme">
-                  <select value={form.scheme} onChange={e => set("scheme", e.target.value)} style={selectStyle(false)}>
-                    <option>{t("registration.schemePlaceholder")}</option>
-                    <option>{t("registration.schemeBasic")}</option>
-                    <option>{t("registration.schemeStandard")}</option>
-                    <option>{t("registration.schemePremium")}</option>
-                  </select>
-                </FormField>
-                <FormField label="Login Username">
-                  <input type="text" value={form.username} onChange={e => set("username", e.target.value)} placeholder={t("registration.usernamePlaceholder")} style={inputStyle(false)} />
-                </FormField>
-                <FormField label="Password">
-                  <input type="password" value={form.password} onChange={e => set("password", e.target.value)} placeholder={t("registration.passwordPlaceholder")} style={inputStyle(false)} />
-                </FormField>
-              </div>
-
-              <div style={{ background:"rgba(139,0,0,0.04)", borderRadius:10, padding:18, border:"1px solid rgba(139,0,0,0.1)" }}>
-                <p style={{ fontSize:"0.88rem", color:"#5A0010", fontWeight:700, marginBottom:6 }}>
-                  💰 {t("registration.registrationFee")}
-                </p>
-                <p style={{ fontSize:"0.8rem", color:"#6A3040", lineHeight:1.7, marginBottom:12 }}>
-                  {t("registration.feeDescription")}{" "}
-                  <span style={{ color:"#C41E3A", fontWeight:600 }}>dumdumdummarriage@gmail.com</span>.
-                  {t("registration.enquiries")}{" "}<span style={{ color:"#C41E3A", fontWeight:600 }}>+91-9489331973</span>.
-                </p>
-                <label style={{ display:"flex", alignItems:"center", gap:10, cursor:"pointer" }}>
-                  <div style={{ position:"relative", width:18, height:18, flexShrink:0 }}>
-                    <input type="checkbox" checked={form.termsAccepted} onChange={e => set("termsAccepted", e.target.checked)} style={{ position:"absolute", opacity:0, width:"100%", height:"100%", cursor:"pointer", margin:0 }} />
-                    <div style={{ width:18, height:18, border:`2px solid ${form.termsAccepted ? "#8B0000" : "#C4A0A8"}`, borderRadius:4, background: form.termsAccepted ? "#8B0000" : "white", display:"flex", alignItems:"center", justifyContent:"center", transition:"all 0.2s" }}>
-                      {form.termsAccepted && <span style={{ color:"white", fontSize:11, fontWeight:900 }}>✓</span>}
-                    </div>
-                  </div>
-                  <span style={{ fontSize:"0.85rem", color:"#3D0010" }}>
-                    {t("registration.termsAcceptance")}{" "}<span style={{ color:"#8B0000", fontWeight:700, textDecoration:"underline", cursor:"pointer" }}>{t("registration.termsLink")}</span>
-                  </span>
-                </label>
-              </div>
-            </div>
-          </div>
-          */}
 
           {/* Footer Buttons */}
           <div style={{ display:"flex", gap:14, justifyContent:"center", padding:"10px 0 8px", flexWrap:"wrap" }}>

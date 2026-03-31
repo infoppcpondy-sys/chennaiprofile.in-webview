@@ -90,8 +90,9 @@ export default function MatrimonySearch() {
         .rtable td{padding:11px 14px;border-bottom:1px solid #f5e8e8;vertical-align:middle;color:#333;}
         .rtable tr:nth-child(even) td{background:#fffafa;}
         .rtable tr:nth-child(odd)  td{background:#fff;}
+        .rtable tbody tr{cursor:pointer;transition:background-color 0.15s ease;}
         .rtable tbody tr:hover td{background:#fdecea;transition:background 0.15s;}
-        .thumb{width:120px;height:120px;border-radius:8px;object-fit:cover;border:2.5px solid #e74c3c;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s;display:block;}
+        .thumb{width:120px;height:120px;border-radius:8px;object-fit:cover;border:none;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s;display:block;}
         .thumb:hover{transform:scale(1.14);box-shadow:0 4px 16px rgba(192,57,43,0.4);}
         .regbadge{background:#fdecea;color:#c0392b;padding:3px 9px;border-radius:4px;font-size:12px;font-weight:700;}
         .gbadge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;}
@@ -225,7 +226,7 @@ export default function MatrimonySearch() {
           .pagination-info{font-size:12px;}
           .rtable{font-size:11px;}
           .rtable th,.rtable td{padding:6px 4px;font-size:10px;}
-          .thumb{width:70px;height:70px;border-width:2px;}
+          .thumb{width:70px;height:70px;border-width:0;}
           .filter-card-container{padding:12px 10px !important;margin-bottom:12px !important;border-radius:10px !important;}
           .results-card-container{padding:12px 10px 16px !important;border-radius:10px !important;}
         }
@@ -433,7 +434,7 @@ export default function MatrimonySearch() {
                                 {paginatedResults.map((r) => {
                                   const [bg, fg] = maritalColor(r.marital);
                                   return (
-                                    <tr key={r.id}>
+                                    <tr key={r.id} onClick={() => navigate(`/detail/${r.id}`, { state: { profile: r } })} style={{ cursor: 'pointer' }}>
                                       <td style={{ textAlign:'center' }}>
                                         <img 
                                           src={r.photo} 
