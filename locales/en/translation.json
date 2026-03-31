@@ -348,7 +348,46 @@
     "maritalLabel": "Marital",
     "regId": "Reg ID",
     "name": "Name",
-    "details": "Details"
+    "details": "Details",
+    "genderOptions": [
+      { "value": "Male",   "label": "Male"   },
+      { "value": "Female", "label": "Female" }
+    ],
+    "languageOptions": [
+      { "value": "Any",       "label": "Any"       },
+      { "value": "Tamil",     "label": "Tamil"     },
+      { "value": "Telugu",    "label": "Telugu"    },
+      { "value": "Malayalam", "label": "Malayalam" },
+      { "value": "Kannada",   "label": "Kannada"   },
+      { "value": "Hindi",     "label": "Hindi"     },
+      { "value": "Bengali",   "label": "Bengali"   },
+      { "value": "Marathi",   "label": "Marathi"   }
+    ],
+    "casteOptions": [
+      { "value": "Any",          "label": "Any"          },
+      { "value": "Brahmin",      "label": "Brahmin"      },
+      { "value": "Kshatriya",    "label": "Kshatriya"    },
+      { "value": "Vellalar",     "label": "Vellalar"     },
+      { "value": "Nadar",        "label": "Nadar"        },
+      { "value": "Mudaliar",     "label": "Mudaliar"     },
+      { "value": "Pillai",       "label": "Pillai"       },
+      { "value": "Gounder",      "label": "Gounder"      },
+      { "value": "Naicker",      "label": "Naicker"      },
+      { "value": "Chettiar",     "label": "Chettiar"     },
+      { "value": "Vishwakarma",  "label": "Vishwakarma"  },
+      { "value": "Yadav",        "label": "Yadav"        },
+      { "value": "Vanniyar",     "label": "Vanniyar"     },
+      { "value": "Thevar",       "label": "Thevar"       },
+      { "value": "Agamudayar",   "label": "Agamudayar"   },
+      { "value": "Others",       "label": "Others"       }
+    ],
+    "maritalOptions": [
+      { "value": "Any",               "label": "Any"               },
+      { "value": "Single",            "label": "Single"            },
+      { "value": "Widow",             "label": "Widow / Widower"   },
+      { "value": "Divorce",           "label": "Divorced"          },
+      { "value": "Awaiting Divorce",  "label": "Awaiting Divorce"  }
+    ]
   },
   "about": {
     "whyUsLabel": "✦ Why Us",

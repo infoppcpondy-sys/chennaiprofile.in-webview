@@ -2,40 +2,43 @@ import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
-const CASTES    = ["Any","Brahmin","Kshatriya","Vellalar","Nadar","Mudaliar","Pillai","Gounder","Naicker","Chettiar","Vishwakarma","Yadav","Vanniyar","Thevar","Agamudayar","Others"];
-const LANGUAGES = ["Any","Tamil","Telugu","Malayalam","Kannada","Hindi","Bengali","Marathi"];
-const MARITAL_OPTIONS = ["Any","Single","Widow","Divorce","Awaiting Divorce"];
-const GENDERS = ["Male","Female"];
-
+// Static data kept as-is — values are locale-neutral keys used for filtering.
+// Labels shown in the UI come from the JSON via t("search.*Options").
 const DUMMY = [
-  { id:1,  regId:"MAT1001", name:"Aravind Kumar",    caste:"Brahmin",     gender:"Male",   language:"Tamil",     marital:"Unmarried",      age:27, photo:"https://i.pravatar.cc/80?img=11" },
-  { id:2,  regId:"MAT1002", name:"Priya Devi",        caste:"Vellalar",    gender:"Female", language:"Tamil",     marital:"Unmarried",      age:24, photo:"https://i.pravatar.cc/80?img=47" },
-  { id:3,  regId:"MAT1003", name:"Karthik Raja",      caste:"Gounder",     gender:"Male",   language:"Tamil",     marital:"Divorce",        age:31, photo:"https://i.pravatar.cc/80?img=15" },
-  { id:4,  regId:"MAT1004", name:"Meena Lakshmi",     caste:"Nadar",       gender:"Female", language:"Tamil",     marital:"Widow/Widower",  age:29, photo:"https://i.pravatar.cc/80?img=49" },
-  { id:5,  regId:"MAT1005", name:"Venkatesh Raman",   caste:"Pillai",      gender:"Male",   language:"Telugu",    marital:"Unmarried",      age:26, photo:"https://i.pravatar.cc/80?img=13" },
-  { id:6,  regId:"MAT1006", name:"Anitha Selvam",     caste:"Mudaliar",    gender:"Female", language:"Tamil",     marital:"Awaiting Divorce",age:33,photo:"https://i.pravatar.cc/80?img=44" },
-  { id:7,  regId:"MAT1007", name:"Suresh Balaji",     caste:"Vishwakarma", gender:"Male",   language:"Tamil",     marital:"Unmarried",      age:28, photo:"https://i.pravatar.cc/80?img=17" },
-  { id:8,  regId:"MAT1008", name:"Kavitha Nair",      caste:"Others",      gender:"Female", language:"Malayalam", marital:"Unmarried",      age:25, photo:"https://i.pravatar.cc/80?img=48" },
-  { id:9,  regId:"MAT1009", name:"Dinesh Kannan",     caste:"Chettiar",    gender:"Male",   language:"Tamil",     marital:"Divorce",        age:35, photo:"https://i.pravatar.cc/80?img=19" },
-  { id:10, regId:"MAT1010", name:"Saranya Priya",     caste:"Brahmin",     gender:"Female", language:"Tamil",     marital:"Unmarried",      age:23, photo:"https://i.pravatar.cc/80?img=46" },
-  { id:11, regId:"MAT1011", name:"Manikandan S",      caste:"Thevar",      gender:"Male",   language:"Tamil",     marital:"Unmarried",      age:30, photo:"https://i.pravatar.cc/80?img=12" },
-  { id:12, regId:"MAT1012", name:"Deepa Sundaram",    caste:"Naicker",     gender:"Female", language:"Telugu",    marital:"Widow/Widower",  age:32, photo:"https://i.pravatar.cc/80?img=45" },
-  { id:13, regId:"MAT1013", name:"Rajesh Pandian",    caste:"Agamudayar",  gender:"Male",   language:"Tamil",     marital:"Unmarried",      age:29, photo:"https://i.pravatar.cc/80?img=14" },
-  { id:14, regId:"MAT1014", name:"Lakshmi Priya",     caste:"Vellalar",    gender:"Female", language:"Tamil",     marital:"Unmarried",      age:26, photo:"https://i.pravatar.cc/80?img=43" },
-  { id:15, regId:"MAT1015", name:"Balamurugan K",     caste:"Yadav",       gender:"Male",   language:"Tamil",     marital:"Unmarried",      age:27, photo:"https://i.pravatar.cc/80?img=16" },
+  { id:1,  regId:"MAT1001", name:"Aravind Kumar",    caste:"Brahmin",     gender:"Male",   language:"Tamil",     marital:"Single",           age:27, photo:"https://i.pravatar.cc/80?img=11" },
+  { id:2,  regId:"MAT1002", name:"Priya Devi",        caste:"Vellalar",    gender:"Female", language:"Tamil",     marital:"Single",           age:24, photo:"https://i.pravatar.cc/80?img=47" },
+  { id:3,  regId:"MAT1003", name:"Karthik Raja",      caste:"Gounder",     gender:"Male",   language:"Tamil",     marital:"Divorce",          age:31, photo:"https://i.pravatar.cc/80?img=15" },
+  { id:4,  regId:"MAT1004", name:"Meena Lakshmi",     caste:"Nadar",       gender:"Female", language:"Tamil",     marital:"Widow",            age:29, photo:"https://i.pravatar.cc/80?img=49" },
+  { id:5,  regId:"MAT1005", name:"Venkatesh Raman",   caste:"Pillai",      gender:"Male",   language:"Telugu",    marital:"Single",           age:26, photo:"https://i.pravatar.cc/80?img=13" },
+  { id:6,  regId:"MAT1006", name:"Anitha Selvam",     caste:"Mudaliar",    gender:"Female", language:"Tamil",     marital:"Awaiting Divorce", age:33, photo:"https://i.pravatar.cc/80?img=44" },
+  { id:7,  regId:"MAT1007", name:"Suresh Balaji",     caste:"Vishwakarma", gender:"Male",   language:"Tamil",     marital:"Single",           age:28, photo:"https://i.pravatar.cc/80?img=17" },
+  { id:8,  regId:"MAT1008", name:"Kavitha Nair",      caste:"Others",      gender:"Female", language:"Malayalam", marital:"Single",           age:25, photo:"https://i.pravatar.cc/80?img=48" },
+  { id:9,  regId:"MAT1009", name:"Dinesh Kannan",     caste:"Chettiar",    gender:"Male",   language:"Tamil",     marital:"Divorce",          age:35, photo:"https://i.pravatar.cc/80?img=19" },
+  { id:10, regId:"MAT1010", name:"Saranya Priya",     caste:"Brahmin",     gender:"Female", language:"Tamil",     marital:"Single",           age:23, photo:"https://i.pravatar.cc/80?img=46" },
+  { id:11, regId:"MAT1011", name:"Manikandan S",      caste:"Thevar",      gender:"Male",   language:"Tamil",     marital:"Single",           age:30, photo:"https://i.pravatar.cc/80?img=12" },
+  { id:12, regId:"MAT1012", name:"Deepa Sundaram",    caste:"Naicker",     gender:"Female", language:"Telugu",    marital:"Widow",            age:32, photo:"https://i.pravatar.cc/80?img=45" },
+  { id:13, regId:"MAT1013", name:"Rajesh Pandian",    caste:"Agamudayar",  gender:"Male",   language:"Tamil",     marital:"Single",           age:29, photo:"https://i.pravatar.cc/80?img=14" },
+  { id:14, regId:"MAT1014", name:"Lakshmi Priya",     caste:"Vellalar",    gender:"Female", language:"Tamil",     marital:"Single",           age:26, photo:"https://i.pravatar.cc/80?img=43" },
+  { id:15, regId:"MAT1015", name:"Balamurugan K",     caste:"Yadav",       gender:"Male",   language:"Tamil",     marital:"Single",           age:27, photo:"https://i.pravatar.cc/80?img=16" },
 ];
 
 const INIT = { gender:"Female", language:"Any", caste:"Any", sortId:"asc", ageFrom:"", ageTo:"", marital:"Any" };
 
 export default function MatrimonySearch() {
-  const navigate = useNavigate();
-  const { t } = useTranslation();
-  const [filters, setFilters] = useState(INIT);
-  const [applied, setApplied] = useState(INIT);
-  const [preview, setPreview] = useState(null);
+  const navigate   = useNavigate();
+  const { t }      = useTranslation();
+  const [filters,  setFilters]  = useState(INIT);
+  const [applied,  setApplied]  = useState(INIT);
+  const [preview,  setPreview]  = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [viewMode, setViewMode] = useState("card");
   const itemsPerPage = 10;
+
+  // ── Dropdown option arrays — sourced entirely from JSON ──────────────────
+  const genderOptions  = t("search.genderOptions",  { returnObjects: true }) || [];
+  const languageOptions= t("search.languageOptions",{ returnObjects: true }) || [];
+  const casteOptions   = t("search.casteOptions",   { returnObjects: true }) || [];
+  const maritalOptions = t("search.maritalOptions", { returnObjects: true }) || [];
 
   const set = (k, v) => setFilters(f => ({ ...f, [k]: v }));
 
@@ -51,13 +54,19 @@ export default function MatrimonySearch() {
     return d;
   }, [applied]);
 
+  // Helper: get translated label for a value from an options array
+  const getLabel = (options, value) => {
+    const found = options.find(o => o.value === value);
+    return found ? found.label : value;
+  };
+
   const S = {
     sel: { padding:"8px 32px 8px 12px", border:"1.5px solid #e0c8c8", borderRadius:6, fontSize:13, fontFamily:"Georgia,serif", background:"#fff", color:"#222", outline:"none", width:"100%", cursor:"pointer", appearance:"none", backgroundImage:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='%23c0392b' d='M5 7L1 3h8z'/%3E%3C/svg%3E")`, backgroundRepeat:"no-repeat", backgroundPosition:"right 10px center", transition:"border-color 0.2s,box-shadow 0.2s" },
     num: { padding:"8px 12px", border:"1.5px solid #e0c8c8", borderRadius:6, fontSize:13, fontFamily:"Georgia,serif", background:"#fff", color:"#222", outline:"none", width:"100%", transition:"border-color 0.2s,box-shadow 0.2s" },
     lbl: { fontSize:11, fontWeight:700, color:"#c0392b", letterSpacing:1.1, textTransform:"uppercase", fontFamily:"Georgia,serif", marginBottom:6, display:"block" },
   };
 
-  const maritalColor = (m) => ({ "Unmarried":"#e8fdf0:#1a7a40", "Divorce":"#fff3e0:#d35400", "Widow/Widower":"#f3e8fd:#7d3c98", "Awaiting Divorce":"#fef9e7:#b7950b" }[m] || "#f0f0f0:#666").split(":");
+  const maritalColor = (m) => ({ "Single":"#e8fdf0:#1a7a40", "Divorce":"#fff3e0:#d35400", "Widow":"#f3e8fd:#7d3c98", "Awaiting Divorce":"#fef9e7:#b7950b" }[m] || "#f0f0f0:#666").split(":");
 
   return (
     <>
@@ -132,24 +141,38 @@ export default function MatrimonySearch() {
             </div>
 
             <div className="fg">
+
+              {/* Gender */}
               <div>
                 <label style={S.lbl}>{t("search.gender")}</label>
                 <select value={filters.gender} onChange={e => set("gender", e.target.value)} style={S.sel}>
-                  {GENDERS.map(g => <option key={g}>{g}</option>)}
+                  {genderOptions.map(o => (
+                    <option key={o.value} value={o.value}>{o.label}</option>
+                  ))}
                 </select>
               </div>
+
+              {/* Language */}
               <div>
                 <label style={S.lbl}>{t("search.language")}</label>
                 <select value={filters.language} onChange={e => set("language", e.target.value)} style={S.sel}>
-                  {LANGUAGES.map(l => <option key={l}>{l}</option>)}
+                  {languageOptions.map(o => (
+                    <option key={o.value} value={o.value}>{o.label}</option>
+                  ))}
                 </select>
               </div>
+
+              {/* Caste */}
               <div>
                 <label style={S.lbl}>{t("search.caste")}</label>
                 <select value={filters.caste} onChange={e => set("caste", e.target.value)} style={S.sel}>
-                  {CASTES.map(c => <option key={c}>{c}</option>)}
+                  {casteOptions.map(o => (
+                    <option key={o.value} value={o.value}>{o.label}</option>
+                  ))}
                 </select>
               </div>
+
+              {/* Age range */}
               <div>
                 <label style={S.lbl}>{t("search.ageRange")}</label>
                 <div className="age-pair">
@@ -158,12 +181,17 @@ export default function MatrimonySearch() {
                   <input type="number" min={18} max={80} value={filters.ageTo}   onChange={e => set("ageTo",   e.target.value)} placeholder={t("search.ageTo")}   style={S.num}/>
                 </div>
               </div>
+
+              {/* Marital status */}
               <div>
                 <label style={S.lbl}>{t("search.maritalStatus")}</label>
                 <select value={filters.marital} onChange={e => set("marital", e.target.value)} style={S.sel}>
-                  {MARITAL_OPTIONS.map(m => <option key={m}>{m}</option>)}
+                  {maritalOptions.map(o => (
+                    <option key={o.value} value={o.value}>{o.label}</option>
+                  ))}
                 </select>
               </div>
+
             </div>
 
             <div className="btn-row">
@@ -206,7 +234,7 @@ export default function MatrimonySearch() {
               </div>
             ) : (() => {
               const totalPages = Math.ceil(results.length / itemsPerPage);
-              const startIdx = (currentPage-1)*itemsPerPage;
+              const startIdx   = (currentPage-1)*itemsPerPage;
               const paginatedResults = results.slice(startIdx, startIdx+itemsPerPage);
 
               return (
@@ -223,13 +251,17 @@ export default function MatrimonySearch() {
                               <div className="card-name">{r.name}</div>
                               <div className="card-regid">{r.regId}</div>
                               <div className="card-badges">
-                                <span className="card-badge" style={{ background:r.gender==="Male"?"#e8f4fd":"#fde8f0", color:r.gender==="Male"?"#1a6ea8":"#c0392b" }}>{r.gender}</span>
+                                <span className="card-badge" style={{ background:r.gender==="Male"?"#e8f4fd":"#fde8f0", color:r.gender==="Male"?"#1a6ea8":"#c0392b" }}>
+                                  {getLabel(genderOptions, r.gender)}
+                                </span>
                                 <span className="card-badge" style={{ background:"#f5f5f5", color:"#666" }}>{r.age} {t("detail.yrs")}</span>
-                                <span className="card-badge" style={{ background:bg, color:fg }}>{r.marital}</span>
+                                <span className="card-badge" style={{ background:bg, color:fg }}>
+                                  {getLabel(maritalOptions, r.marital)}
+                                </span>
                               </div>
                               <div className="card-info">
                                 <div className="card-info-row"><span className="card-info-label">{t("search.casteLabel")}:</span> {r.caste}</div>
-                                <div className="card-info-row"><span className="card-info-label">{t("search.languageLabel")}:</span> {r.language}</div>
+                                <div className="card-info-row"><span className="card-info-label">{t("search.languageLabel")}:</span> {getLabel(languageOptions, r.language)}</div>
                               </div>
                               <div className="card-actions">
                                 <button className="card-btn card-btn-primary">{t("search.moreDetails")}</button>
@@ -255,7 +287,8 @@ export default function MatrimonySearch() {
                             return (
                               <tr key={r.id} onClick={() => navigate(`/detail/${r.id}`, { state:{ profile:r } })}>
                                 <td style={{ textAlign:"center" }}>
-                                  <img src={r.photo} alt={r.name} className="thumb" onClick={e => { e.stopPropagation(); setPreview(r); }}
+                                  <img src={r.photo} alt={r.name} className="thumb"
+                                    onClick={e => { e.stopPropagation(); setPreview(r); }}
                                     onError={e => { e.target.src=`https://ui-avatars.com/api/?name=${encodeURIComponent(r.name)}&background=e74c3c&color=fff&size=80`; }}/>
                                 </td>
                                 <td>
@@ -264,10 +297,10 @@ export default function MatrimonySearch() {
                                 </td>
                                 <td style={{ fontSize:"12px", color:"#666" }}>
                                   <div style={{ marginBottom:"6px" }}><strong style={{ color:"#c0392b" }}>{t("search.age")}:</strong> {r.age}</div>
-                                  <div style={{ marginBottom:"6px" }}><strong style={{ color:"#c0392b" }}>{t("search.genderLabel")}:</strong> {r.gender}</div>
+                                  <div style={{ marginBottom:"6px" }}><strong style={{ color:"#c0392b" }}>{t("search.genderLabel")}:</strong> {getLabel(genderOptions, r.gender)}</div>
                                   <div style={{ marginBottom:"6px" }}><strong style={{ color:"#c0392b" }}>{t("search.casteLabel")}:</strong> {r.caste}</div>
-                                  <div style={{ marginBottom:"6px" }}><strong style={{ color:"#c0392b" }}>{t("search.languageLabel")}:</strong> {r.language}</div>
-                                  <div style={{ marginBottom:"6px" }}><strong style={{ color:"#c0392b" }}>{t("search.maritalLabel")}:</strong> {r.marital}</div>
+                                  <div style={{ marginBottom:"6px" }}><strong style={{ color:"#c0392b" }}>{t("search.languageLabel")}:</strong> {getLabel(languageOptions, r.language)}</div>
+                                  <div style={{ marginBottom:"6px" }}><strong style={{ color:"#c0392b" }}>{t("search.maritalLabel")}:</strong> {getLabel(maritalOptions, r.marital)}</div>
                                 </td>
                               </tr>
                             );
@@ -293,21 +326,30 @@ export default function MatrimonySearch() {
         </div>
       </div>
 
-      {/* ── PHOTO MODAL ── */}
+      {/* ── PHOTO PREVIEW MODAL ── */}
       {preview && (
         <div className="overlay" onClick={() => setPreview(null)}>
           <div className="modal" onClick={e => e.stopPropagation()}>
             <img src={preview.photo} alt={preview.name}
               onError={e => { e.target.src=`https://ui-avatars.com/api/?name=${encodeURIComponent(preview.name)}&background=e74c3c&color=fff&size=130`; }}/>
             <div className="modal-name">{preview.name}</div>
-            <div className="modal-sub">{preview.regId} · {preview.age} {t("detail.yrs")} · {preview.gender} · {preview.language}</div>
+            <div className="modal-sub">
+              {preview.regId} · {preview.age} {t("detail.yrs")} · {getLabel(genderOptions, preview.gender)} · {getLabel(languageOptions, preview.language)}
+            </div>
             <div style={{ marginBottom:8 }}>
               <span style={{ background:"#fdecea", color:"#c0392b", padding:"3px 12px", borderRadius:20, fontSize:12, fontWeight:700 }}>{preview.caste}</span>
             </div>
             <div style={{ marginBottom:16 }}>
-              {(() => { const [bg,fg]=maritalColor(preview.marital); return <span style={{ background:bg, color:fg, padding:"3px 12px", borderRadius:20, fontSize:12, fontWeight:700 }}>{preview.marital}</span>; })()}
+              {(() => {
+                const [bg, fg] = maritalColor(preview.marital);
+                return (
+                  <span style={{ background:bg, color:fg, padding:"3px 12px", borderRadius:20, fontSize:12, fontWeight:700 }}>
+                    {getLabel(maritalOptions, preview.marital)}
+                  </span>
+                );
+              })()}
             </div>
-            <button className="btn-close" onClick={() => setPreview(null)}>✕ Close</button>
+            <button className="btn-close" onClick={() => setPreview(null)}>✕ {t("common.cancel")}</button>
           </div>
         </div>
       )}
