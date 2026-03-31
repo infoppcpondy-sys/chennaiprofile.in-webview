@@ -3,16 +3,11 @@ import { useTranslation } from "react-i18next";
 
 const Contact = () => {
   const { t } = useTranslation();
+
   return (
-    <div style={{ 
-      background: "#fff", 
-      minHeight: "100vh", 
-      padding: "80px 24px",
-      fontFamily: "'Crimson Pro', 'Georgia', serif"
-    }}>
+    <div style={{ background:"#fff", minHeight:"100vh", padding:"80px 24px", fontFamily:"'Crimson Pro','Georgia',serif" }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400&family=Crimson+Pro:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap');
-
         .au-label { display:inline-flex; align-items:center; gap:7px; background:#fdecea; border:1px solid #f5c6c6; border-radius:50px; padding:5px 16px; font-size:11px; color:#c0392b; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; font-family:'Playfair Display',serif; margin-bottom:14px; }
         .au-title { font-family:'Playfair Display',serif; font-size:clamp(26px,4vw,42px); font-weight:900; color:#c0392b; line-height:1.15; margin-bottom:14px; }
         .au-divider { width:56px; height:4px; background:linear-gradient(135deg,#c0392b,#e74c3c); border-radius:2px; margin:16px auto 28px; }
@@ -33,50 +28,60 @@ const Contact = () => {
         .au-field textarea { resize:vertical; min-height:90px; }
         .btn-contact { background:linear-gradient(135deg,#c0392b,#e74c3c); color:#fff; border:none; padding:12px 32px; border-radius:8px; font-size:15px; font-family:'Playfair Display',serif; font-weight:700; cursor:pointer; width:100%; transition:all 0.2s; }
         .btn-contact:hover { box-shadow:0 4px 16px rgba(192,57,43,0.2); transform:translateY(-1px); }
-
-        @media (max-width: 768px) {
+        @media (max-width:768px) {
           .au-contact-grid { grid-template-columns:1fr; gap:24px; }
-          .au-title { font-size: clamp(24px, 6vw, 36px); }
-          .au-subtitle { font-size: clamp(14px, 3vw, 16px); }
         }
-        
-        @media (max-width: 480px) {
-          .au-contact-form { padding: 20px; }
-          .au-field input, .au-field textarea { font-size: 16px; padding: 10px 12px; }
+        @media (max-width:480px) {
+          .au-contact-form { padding:20px; }
+          .au-field input, .au-field textarea { font-size:16px; padding:10px 12px; }
         }
       `}</style>
 
-      <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
+      <div style={{ maxWidth:"1100px", margin:"0 auto" }}>
         <div style={{ textAlign:"center", marginBottom:48 }}>
-          <div className="au-label">✦ Get in Touch</div>
-          <h2 className="au-title">Contact Us</h2>
+          <div className="au-label">✦ {t("contact.getInTouch")}</div>
+          <h2 className="au-title">{t("contact.title")}</h2>
           <div className="au-divider"/>
-          <p className="au-subtitle">Have questions? Our friendly support team is here to help you find your perfect match.</p>
+          <p className="au-subtitle">{t("contact.tagline")}</p>
         </div>
+
         <div className="au-contact-grid">
           <div className="au-contact-info">
             {[
-              { icon:"📧", label:"Email Us", value:"support@chennaimatrimony.in" },
-              { icon:"📞", label:"Call Us", value:"+91-9876543210" },
-              { icon:"🏢", label:"Visit Us", value:"No. 12, Anna Salai, Chennai – 600002" },
-              { icon:"⏰", label:"Working Hours", value:"Mon–Sat · 9:00 AM to 6:00 PM IST" },
-            ].map((item,i)=>(
+              { icon:"📧", labelKey:"emailLabel", valueKey:"emailValue" },
+              { icon:"📞", labelKey:"phoneLabel", valueKey:"phoneValue" },
+              { icon:"🏢", labelKey:"addressLabel", valueKey:"addressValue" },
+              { icon:"⏰", labelKey:"hoursLabel", valueKey:"hoursValue" },
+            ].map((item, i) => (
               <div key={i} className="au-contact-item">
                 <div className="au-contact-item-icon">{item.icon}</div>
                 <div className="au-contact-item-text">
-                  <label>{item.label}</label>
-                  <span>{item.value}</span>
+                  <label>{t(`contact.${item.labelKey}`)}</label>
+                  <span>{t(`contact.${item.valueKey}`)}</span>
                 </div>
               </div>
             ))}
           </div>
+
           <div className="au-contact-form">
-            <h3>Send Us a Message</h3>
-            <div className="au-field"><label>Your Name</label><input placeholder="Enter your full name"/></div>
-            <div className="au-field"><label>Email Address</label><input type="email" placeholder="your@email.com"/></div>
-            <div className="au-field"><label>Phone Number</label><input placeholder="+91-XXXXXXXXXX"/></div>
-            <div className="au-field"><label>Message</label><textarea placeholder="How can we help you?"/></div>
-            <button className="btn-contact">✉ Send Message</button>
+            <h3>{t("contact.sendMessage")}</h3>
+            <div className="au-field">
+              <label>{t("contact.yourName")}</label>
+              <input placeholder={t("contact.yourNamePlaceholder")}/>
+            </div>
+            <div className="au-field">
+              <label>{t("contact.emailAddress")}</label>
+              <input type="email" placeholder={t("contact.emailPlaceholder")}/>
+            </div>
+            <div className="au-field">
+              <label>{t("contact.phoneNumber")}</label>
+              <input placeholder={t("contact.phonePlaceholder")}/>
+            </div>
+            <div className="au-field">
+              <label>{t("contact.message")}</label>
+              <textarea placeholder={t("contact.messagePlaceholder")}/>
+            </div>
+            <button className="btn-contact">{t("contact.sendBtn")}</button>
           </div>
         </div>
       </div>
