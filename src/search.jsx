@@ -2,30 +2,29 @@ import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 
 const CASTES = ["Any","Brahmin","Kshatriya","Vellalar","Nadar","Mudaliar","Pillai","Gounder","Naicker","Chettiar","Vishwakarma","Yadav","Vanniyar","Thevar","Agamudayar","Others"];
-const SUB_CASTES = ["Any","Iyer","Iyengar","Saiva Vellalar","Karkatta Vellalar","Kongu Vellalar","Senguntha Mudaliar","Arcot Mudaliar","Kondaikatti Vellalar","Sozhia Vellalar","Others"];
 const LANGUAGES = ["Any","Tamil","Telugu","Malayalam","Kannada","Hindi","Bengali","Marathi"];
-const MARITAL_OPTIONS = ["Any","Unmarried","Widow/Widower","Divorce","Awaiting Divorce"];
-const GENDERS = ["Any","Male","Female"];
+const MARITAL_OPTIONS = ["Any","Single","Widow","Divorce","Awaiting Divorce"];
+const GENDERS = ["Male","Female"];
 
 const DUMMY = [
-  { id:1,  regId:"MAT1001", name:"Aravind Kumar",    caste:"Brahmin",     subCaste:"Iyer",                gender:"Male",   language:"Tamil",     marital:"Unmarried",      age:27, photo:"https://i.pravatar.cc/80?img=11" },
-  { id:2,  regId:"MAT1002", name:"Priya Devi",        caste:"Vellalar",    subCaste:"Saiva Vellalar",      gender:"Female", language:"Tamil",     marital:"Unmarried",      age:24, photo:"https://i.pravatar.cc/80?img=47" },
-  { id:3,  regId:"MAT1003", name:"Karthik Raja",      caste:"Gounder",     subCaste:"Kongu Vellalar",      gender:"Male",   language:"Tamil",     marital:"Divorce",        age:31, photo:"https://i.pravatar.cc/80?img=15" },
-  { id:4,  regId:"MAT1004", name:"Meena Lakshmi",     caste:"Nadar",       subCaste:"Others",              gender:"Female", language:"Tamil",     marital:"Widow/Widower",  age:29, photo:"https://i.pravatar.cc/80?img=49" },
-  { id:5,  regId:"MAT1005", name:"Venkatesh Raman",   caste:"Pillai",      subCaste:"Kondaikatti Vellalar",gender:"Male",   language:"Telugu",    marital:"Unmarried",      age:26, photo:"https://i.pravatar.cc/80?img=13" },
-  { id:6,  regId:"MAT1006", name:"Anitha Selvam",     caste:"Mudaliar",    subCaste:"Senguntha Mudaliar",  gender:"Female", language:"Tamil",     marital:"Awaiting Divorce",age:33,photo:"https://i.pravatar.cc/80?img=44" },
-  { id:7,  regId:"MAT1007", name:"Suresh Balaji",     caste:"Vishwakarma", subCaste:"Others",              gender:"Male",   language:"Tamil",     marital:"Unmarried",      age:28, photo:"https://i.pravatar.cc/80?img=17" },
-  { id:8,  regId:"MAT1008", name:"Kavitha Nair",      caste:"Others",      subCaste:"Others",              gender:"Female", language:"Malayalam", marital:"Unmarried",      age:25, photo:"https://i.pravatar.cc/80?img=48" },
-  { id:9,  regId:"MAT1009", name:"Dinesh Kannan",     caste:"Chettiar",    subCaste:"Others",              gender:"Male",   language:"Tamil",     marital:"Divorce",        age:35, photo:"https://i.pravatar.cc/80?img=19" },
-  { id:10, regId:"MAT1010", name:"Saranya Priya",     caste:"Brahmin",     subCaste:"Iyengar",             gender:"Female", language:"Tamil",     marital:"Unmarried",      age:23, photo:"https://i.pravatar.cc/80?img=46" },
-  { id:11, regId:"MAT1011", name:"Manikandan S",      caste:"Thevar",      subCaste:"Others",              gender:"Male",   language:"Tamil",     marital:"Unmarried",      age:30, photo:"https://i.pravatar.cc/80?img=12" },
-  { id:12, regId:"MAT1012", name:"Deepa Sundaram",    caste:"Naicker",     subCaste:"Others",              gender:"Female", language:"Telugu",    marital:"Widow/Widower",  age:32, photo:"https://i.pravatar.cc/80?img=45" },
-  { id:13, regId:"MAT1013", name:"Rajesh Pandian",    caste:"Agamudayar",  subCaste:"Others",              gender:"Male",   language:"Tamil",     marital:"Unmarried",      age:29, photo:"https://i.pravatar.cc/80?img=14" },
-  { id:14, regId:"MAT1014", name:"Lakshmi Priya",     caste:"Vellalar",    subCaste:"Sozhia Vellalar",     gender:"Female", language:"Tamil",     marital:"Unmarried",      age:26, photo:"https://i.pravatar.cc/80?img=43" },
-  { id:15, regId:"MAT1015", name:"Balamurugan K",     caste:"Yadav",       subCaste:"Others",              gender:"Male",   language:"Tamil",     marital:"Unmarried",      age:27, photo:"https://i.pravatar.cc/80?img=16" },
+  { id:1,  regId:"MAT1001", name:"Aravind Kumar",    caste:"Brahmin",     gender:"Male",   language:"Tamil",     marital:"Unmarried",      age:27, photo:"https://i.pravatar.cc/80?img=11" },
+  { id:2,  regId:"MAT1002", name:"Priya Devi",        caste:"Vellalar",    gender:"Female", language:"Tamil",     marital:"Unmarried",      age:24, photo:"https://i.pravatar.cc/80?img=47" },
+  { id:3,  regId:"MAT1003", name:"Karthik Raja",      caste:"Gounder",     gender:"Male",   language:"Tamil",     marital:"Divorce",        age:31, photo:"https://i.pravatar.cc/80?img=15" },
+  { id:4,  regId:"MAT1004", name:"Meena Lakshmi",     caste:"Nadar",       gender:"Female", language:"Tamil",     marital:"Widow/Widower",  age:29, photo:"https://i.pravatar.cc/80?img=49" },
+  { id:5,  regId:"MAT1005", name:"Venkatesh Raman",   caste:"Pillai",      gender:"Male",   language:"Telugu",    marital:"Unmarried",      age:26, photo:"https://i.pravatar.cc/80?img=13" },
+  { id:6,  regId:"MAT1006", name:"Anitha Selvam",     caste:"Mudaliar",    gender:"Female", language:"Tamil",     marital:"Awaiting Divorce",age:33,photo:"https://i.pravatar.cc/80?img=44" },
+  { id:7,  regId:"MAT1007", name:"Suresh Balaji",     caste:"Vishwakarma", gender:"Male",   language:"Tamil",     marital:"Unmarried",      age:28, photo:"https://i.pravatar.cc/80?img=17" },
+  { id:8,  regId:"MAT1008", name:"Kavitha Nair",      caste:"Others",      gender:"Female", language:"Malayalam", marital:"Unmarried",      age:25, photo:"https://i.pravatar.cc/80?img=48" },
+  { id:9,  regId:"MAT1009", name:"Dinesh Kannan",     caste:"Chettiar",    gender:"Male",   language:"Tamil",     marital:"Divorce",        age:35, photo:"https://i.pravatar.cc/80?img=19" },
+  { id:10, regId:"MAT1010", name:"Saranya Priya",     caste:"Brahmin",     gender:"Female", language:"Tamil",     marital:"Unmarried",      age:23, photo:"https://i.pravatar.cc/80?img=46" },
+  { id:11, regId:"MAT1011", name:"Manikandan S",      caste:"Thevar",      gender:"Male",   language:"Tamil",     marital:"Unmarried",      age:30, photo:"https://i.pravatar.cc/80?img=12" },
+  { id:12, regId:"MAT1012", name:"Deepa Sundaram",    caste:"Naicker",     gender:"Female", language:"Telugu",    marital:"Widow/Widower",  age:32, photo:"https://i.pravatar.cc/80?img=45" },
+  { id:13, regId:"MAT1013", name:"Rajesh Pandian",    caste:"Agamudayar",  gender:"Male",   language:"Tamil",     marital:"Unmarried",      age:29, photo:"https://i.pravatar.cc/80?img=14" },
+  { id:14, regId:"MAT1014", name:"Lakshmi Priya",     caste:"Vellalar",    gender:"Female", language:"Tamil",     marital:"Unmarried",      age:26, photo:"https://i.pravatar.cc/80?img=43" },
+  { id:15, regId:"MAT1015", name:"Balamurugan K",     caste:"Yadav",       gender:"Male",   language:"Tamil",     marital:"Unmarried",      age:27, photo:"https://i.pravatar.cc/80?img=16" },
 ];
 
-const INIT = { gender:"Any", language:"Any", caste:"Any", subCaste:"Any", sortId:"asc", ageFrom:"", ageTo:"", marital:"Any" };
+const INIT = { gender:"Male", language:"Any", caste:"Any", sortId:"asc", ageFrom:"", ageTo:"", marital:"Any" };
 
 export default function MatrimonySearch() {
   const navigate = useNavigate();
@@ -36,7 +35,6 @@ export default function MatrimonySearch() {
   const [viewMode, setViewMode] = useState('card');
   const itemsPerPage = 10;
 
-  // Save viewMode to localStorage (but always default to 'card')
   const handleViewModeChange = (mode) => {
     setViewMode(mode);
     localStorage.setItem('viewMode', mode);
@@ -49,7 +47,6 @@ export default function MatrimonySearch() {
     if (applied.gender   !== "Any") d = d.filter(r => r.gender   === applied.gender);
     if (applied.language !== "Any") d = d.filter(r => r.language === applied.language);
     if (applied.caste    !== "Any") d = d.filter(r => r.caste    === applied.caste);
-    if (applied.subCaste !== "Any") d = d.filter(r => r.subCaste === applied.subCaste);
     if (applied.marital  !== "Any") d = d.filter(r => r.marital  === applied.marital);
     if (applied.ageFrom)            d = d.filter(r => r.age >= Number(applied.ageFrom));
     if (applied.ageTo)              d = d.filter(r => r.age <= Number(applied.ageTo));
@@ -71,6 +68,7 @@ export default function MatrimonySearch() {
         @import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700;900&family=Lora:ital,wght@0,400;0,600;1,400&display=swap');
         *{box-sizing:border-box;margin:0;padding:0;}
         body{background:#fdf5f5;}
+        #root{min-height:100vh;}
         select:focus,input:focus{border-color:#c0392b!important;box-shadow:0 0 0 3px rgba(192,57,43,0.13)!important;outline:none;}
         select option{background:#fff;color:#222;}
         .fg{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
@@ -109,190 +107,32 @@ export default function MatrimonySearch() {
         .divider{width:4px;height:22px;background:linear-gradient(#c0392b,#e74c3c);border-radius:2px;flex-shrink:0;}
         
         /* ── CARD GRID ── */
-        .card-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-          gap: 20px;
-          margin-bottom: 30px;
-        }
-        
-        .profile-card {
-          background: #fff;
-          border-radius: 12px;
-          overflow: hidden;
-          box-shadow: 0 4px 12px rgba(192,57,43,0.1);
-          border: 1px solid rgba(192,57,43,0.12);
-          transition: all 0.3s ease;
-          cursor: pointer;
-          display: flex;
-          flex-direction: column;
-        }
-        
-        .profile-card:hover {
-          transform: translateY(-4px);
-          box-shadow: 0 8px 24px rgba(192,57,43,0.2);
-          border-color: rgba(192,57,43,0.25);
-        }
-        
-        .card-photo {
-          width: 100%;
-          height: 240px;
-          object-fit: cover;
-          background: linear-gradient(135deg, #fdecea, #fff);
-        }
-        
-        .card-content {
-          padding: 16px 14px;
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-        }
-        
-        .card-name {
-          font-family: 'Merriweather', serif;
-          font-size: 16px;
-          font-weight: 700;
-          color: #1a1a1a;
-          margin-bottom: 4px;
-        }
-        
-        .card-regid {
-          font-size: 11px;
-          color: #999;
-          font-family: Georgia, serif;
-          margin-bottom: 10px;
-        }
-        
-        .card-badges {
-          display: flex;
-          gap: 6px;
-          flex-wrap: wrap;
-          margin-bottom: 12px;
-        }
-        
-        .card-badge {
-          display: inline-block;
-          padding: 4px 10px;
-          border-radius: 16px;
-          font-size: 11px;
-          font-weight: 600;
-          font-family: Georgia, serif;
-        }
-        
-        .card-info {
-          display: flex;
-          flex-direction: column;
-          gap: 6px;
-          margin-bottom: 12px;
-          flex: 1;
-        }
-        
-        .card-info-row {
-          font-size: 12px;
-          color: #666;
-          font-family: Georgia, serif;
-        }
-        
-        .card-info-label {
-          font-weight: 700;
-          color: #c0392b;
-          display: inline;
-        }
-        
-        .card-actions {
-          display: flex;
-          gap: 8px;
-          padding-top: 10px;
-          border-top: 1px solid #f0f0f0;
-        }
-        
-        .card-btn {
-          flex: 1;
-          padding: 8px 12px;
-          border-radius: 6px;
-          border: none;
-          font-size: 12px;
-          font-family: Georgia, serif;
-          font-weight: 600;
-          cursor: pointer;
-          transition: all 0.2s;
-        }
-        
-        .card-btn-primary {
-          background: linear-gradient(135deg, #c0392b, #e74c3c);
-          color: #fff;
-        }
-        
-        .card-btn-primary:hover {
-          background: linear-gradient(135deg, #a93226, #c0392b);
-        }
+        .card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;margin-bottom:30px;}
+        .profile-card{background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 4px 12px rgba(192,57,43,0.1);border:1px solid rgba(192,57,43,0.12);transition:all 0.3s ease;cursor:pointer;display:flex;flex-direction:column;}
+        .profile-card:hover{transform:translateY(-4px);box-shadow:0 8px 24px rgba(192,57,43,0.2);border-color:rgba(192,57,43,0.25);}
+        .card-photo{width:100%;height:240px;object-fit:cover;background:linear-gradient(135deg,#fdecea,#fff);}
+        .card-content{padding:16px 14px;flex:1;display:flex;flex-direction:column;}
+        .card-name{font-family:'Merriweather',serif;font-size:16px;font-weight:700;color:#1a1a1a;margin-bottom:4px;}
+        .card-regid{font-size:11px;color:#999;font-family:Georgia,serif;margin-bottom:10px;}
+        .card-badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
+        .card-badge{display:inline-block;padding:4px 10px;border-radius:16px;font-size:11px;font-weight:600;font-family:Georgia,serif;}
+        .card-info{display:flex;flex-direction:column;gap:6px;margin-bottom:12px;flex:1;}
+        .card-info-row{font-size:12px;color:#666;font-family:Georgia,serif;}
+        .card-info-label{font-weight:700;color:#c0392b;display:inline;}
+        .card-actions{display:flex;gap:8px;padding-top:10px;border-top:1px solid #f0f0f0;}
+        .card-btn{flex:1;padding:8px 12px;border-radius:6px;border:none;font-size:12px;font-family:Georgia,serif;font-weight:600;cursor:pointer;transition:all 0.2s;}
+        .card-btn-primary{background:linear-gradient(135deg,#c0392b,#e74c3c);color:#fff;}
+        .card-btn-primary:hover{background:linear-gradient(135deg,#a93226,#c0392b);}
         
         /* ── PAGINATION ── */
-        .pagination {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          gap: 12px;
-          margin-top: 20px;
-        }
-        
-        .pagination-btn {
-          padding: 8px 16px;
-          border-radius: 6px;
-          border: 1.5px solid #e0c8c8;
-          background: #fff;
-          color: #c0392b;
-          font-family: Georgia, serif;
-          font-weight: 600;
-          cursor: pointer;
-          transition: all 0.2s;
-        }
-        
-        .pagination-btn:hover:not(:disabled) {
-          background: linear-gradient(135deg, #c0392b, #e74c3c);
-          color: #fff;
-          border-color: #c0392b;
-        }
-        
-        .pagination-btn:disabled {
-          opacity: 0.5;
-          cursor: not-allowed;
-        }
-        
-        .pagination-info {
-          font-size: 13px;
-          color: #999;
-          font-family: Georgia, serif;
-        }
-        
-        @media(max-width: 1024px) {
-          .card-grid {
-            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-          }
-        }
-        
-        @media(max-width: 768px) {
-          .card-grid {
-            grid-template-columns: repeat(2, 1fr);
-            gap: 14px;
-          }
-          .card-photo {
-            height: 180px;
-          }
-          .card-content {
-            padding: 12px 10px;
-          }
-        }
-        
-        @media(max-width: 480px) {
-          .card-grid {
-            grid-template-columns: 1fr;
-            gap: 12px;
-          }
-          .pagination {
-            flex-wrap: wrap;
-          }
-        }
+        .pagination{display:flex;justify-content:center;align-items:center;gap:12px;margin-top:20px;}
+        .pagination-btn{padding:8px 16px;border-radius:6px;border:1.5px solid #e0c8c8;background:#fff;color:#c0392b;font-family:Georgia,serif;font-weight:600;cursor:pointer;transition:all 0.2s;}
+        .pagination-btn:hover:not(:disabled){background:linear-gradient(135deg,#c0392b,#e74c3c);color:#fff;border-color:#c0392b;}
+        .pagination-btn:disabled{opacity:0.5;cursor:not-allowed;}
+        .pagination-info{font-size:13px;color:#999;font-family:Georgia,serif;}
+
+        /* ── TABLET ── */
+        @media(max-width:1024px){.card-grid{grid-template-columns:repeat(auto-fill,minmax(240px,1fr));}}
         @media(max-width:880px){.fg{grid-template-columns:repeat(2,1fr);}}
         @media(max-width:768px){
           .fg{grid-template-columns:1fr;}
@@ -303,27 +143,112 @@ export default function MatrimonySearch() {
           .thumb{width:100px;height:100px;}
           .modal{max-width:90vw;padding:20px 18px;}
           .modal img{width:100px;height:100px;}
+          .card-grid{grid-template-columns:repeat(2,1fr);gap:14px;}
+          .card-photo{height:180px;}
+          .card-content{padding:12px 10px;}
+          .filter-card-container{padding:16px 14px !important;margin-bottom:16px !important;border-radius:12px !important;}
+          .results-card-container{padding:16px 14px 20px !important;border-radius:12px !important;}
         }
         @media(max-width:540px){
           .fg{grid-template-columns:1fr;}
-          .fg2{grid-template-columns:1fr;}.btn-row button{width:100%;}.rtable th,.rtable td{padding:8px 9px;font-size:11.5px;}.thumb{width:90px;height:90px;}
+          .fg2{grid-template-columns:1fr;}
+          .btn-row button{width:100%;}
+          .rtable th,.rtable td{padding:8px 9px;font-size:11.5px;}
+          .thumb{width:90px;height:90px;}
         }
+
+        /* ── MOBILE FILTER COMPACT OVERRIDES ── */
+        @media(max-width:640px){
+          .filter-card-container{
+            padding:10px 10px !important;
+            margin-bottom:10px !important;
+            border-radius:10px !important;
+          }
+          .filter-header-row{
+            margin-bottom:10px !important;
+            padding-bottom:8px !important;
+          }
+          .fg{
+            gap:8px !important;
+            grid-template-columns:1fr 1fr !important;
+          }
+          .fg select{
+            padding:5px 24px 5px 8px !important;
+            font-size:11px !important;
+            border-radius:5px !important;
+          }
+          .fg input[type="number"]{
+            padding:5px 6px !important;
+            font-size:11px !important;
+            border-radius:5px !important;
+          }
+          .filter-label{
+            font-size:8px !important;
+            margin-bottom:3px !important;
+            letter-spacing:0.7px !important;
+          }
+          .age-pair{gap:4px !important;}
+          .age-pair span{font-size:12px !important;}
+          .marital-pills{gap:5px !important;}
+          .m-pill{
+            padding:4px 9px !important;
+            font-size:10px !important;
+            border-radius:14px !important;
+          }
+          .m-pill > span:first-child{
+            width:10px !important;
+            height:10px !important;
+          }
+          .btn-row{margin-top:12px !important;gap:8px !important;}
+          .btn-s{padding:8px 18px !important;font-size:12px !important;}
+          .btn-r{padding:8px 14px !important;font-size:12px !important;}
+        }
+
         @media(max-width:480px){
-          .fg{grid-template-columns:1fr;}
-          padding:16px 8px !important;
-          .rtable{font-size:10px;}
-          .rtable th, .rtable td{padding:6px 4px;font-size:9px;}
-          .thumb{width:80px;height:80px;}
-          body {font-size:13px;}
-          .btn-s, .btn-r {padding:8px 16px;font-size:12px;}
-          .modal{max-width:95vw;padding:16px 14px;}
-          .modal img{width:90px;height:90px;}
-          .modal-name{font-size:16px;}
-          .modal-sub{font-size:11px;}
-        }
-        @media(max-width:360px){
-          .rtable th, .rtable td{padding:4px 3px;font-size:8px;}
+          .filter-card-container{padding:8px 8px !important;}
+          .fg{gap:6px !important;grid-template-columns:1fr 1fr !important;}
+          .fg select{padding:4px 20px 4px 6px !important;font-size:10px !important;}
+          .fg input[type="number"]{padding:4px 5px !important;font-size:10px !important;}
+          .filter-label{font-size:7px !important;margin-bottom:2px !important;}
+          .m-pill{padding:3px 7px !important;font-size:9px !important;}
+          .btn-row{margin-top:8px !important;}
+          .btn-s,.btn-r{padding:7px 12px !important;font-size:11px !important;}
+          .card-grid{grid-template-columns:1fr;gap:10px;}
+          .card-photo{height:180px;}
+          .card-content{padding:10px 10px;}
+          .card-name{font-size:14px;}
+          .card-badges{gap:4px;margin-bottom:8px;}
+          .card-badge{padding:3px 7px;font-size:9px;}
+          .card-info-row{font-size:10px;}
+          .marital-pills{gap:6px;}
+          .pagination-btn{padding:6px 12px;font-size:12px;}
+          .pagination-info{font-size:12px;}
+          .rtable{font-size:11px;}
+          .rtable th,.rtable td{padding:6px 4px;font-size:10px;}
           .thumb{width:70px;height:70px;border-width:2px;}
+          .filter-card-container{padding:12px 10px !important;margin-bottom:12px !important;border-radius:10px !important;}
+          .results-card-container{padding:12px 10px 16px !important;border-radius:10px !important;}
+        }
+
+        @media(max-width:375px){
+          .filter-card-container{padding:8px 6px !important;margin-bottom:8px !important;}
+          .fg{gap:5px !important;}
+          .fg select{font-size:9px !important;padding:3px 18px 3px 5px !important;}
+          .fg input[type="number"]{font-size:9px !important;padding:3px 4px !important;}
+          .filter-label{font-size:6.5px !important;}
+          .m-pill{padding:3px 6px !important;font-size:8.5px !important;}
+          .btn-s,.btn-r{padding:6px 10px !important;font-size:10px !important;width:100%;}
+          .btn-row{flex-direction:column;gap:6px !important;}
+          .card-photo{height:160px;}
+          .card-content{padding:8px 8px;}
+          .card-name{font-size:13px;margin-bottom:2px;}
+          .card-regid{font-size:9px;margin-bottom:6px;}
+          .card-badge{padding:2px 6px;font-size:8px;}
+          .card-info-row{font-size:9px;}
+          .rtable th,.rtable td{padding:4px 3px;font-size:9px;}
+          .marital-pills{flex-direction:column;}
+          .m-pill{width:100%;justify-content:flex-start;}
+          .results-card-container{padding:10px 8px 12px !important;}
         }
       `}</style>
 
@@ -331,46 +256,33 @@ export default function MatrimonySearch() {
         <div style={{ maxWidth:1120, margin:"0 auto" }}>
 
           {/* ── FILTER CARD ── */}
-          <div style={{ background:"#fff", borderRadius:14, boxShadow:"0 4px 32px rgba(192,57,43,0.1)", border:"1px solid rgba(192,57,43,0.12)", padding:"26px 24px", marginBottom:26 }}>
-            <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:22, paddingBottom:14, borderBottom:"2px solid #fdecea" }}>
+          <div className="filter-card-container" style={{ background:"#fff", borderRadius:14, boxShadow:"0 4px 32px rgba(192,57,43,0.1)", border:"1px solid rgba(192,57,43,0.12)", padding:"26px 24px", marginBottom:26 }}>
+            <div className="filter-header-row" style={{ display:"flex", alignItems:"center", gap:10, marginBottom:22, paddingBottom:14, borderBottom:"2px solid #fdecea" }}>
               <div className="divider"/>
               <h2 style={{ margin:0, fontSize:15, color:"#c0392b", fontFamily:"'Merriweather',serif", fontWeight:700 }}>🔍 Search Filters</h2>
             </div>
 
             <div className="fg">
               <div>
-                <label style={S.lbl}>Gender</label>
+                <label className="filter-label" style={S.lbl}>Gender</label>
                 <select value={filters.gender} onChange={e=>set("gender",e.target.value)} style={S.sel}>
                   {GENDERS.map(g=><option key={g}>{g}</option>)}
                 </select>
               </div>
               <div>
-                <label style={S.lbl}>Language</label>
+                <label className="filter-label" style={S.lbl}>Language</label>
                 <select value={filters.language} onChange={e=>set("language",e.target.value)} style={S.sel}>
                   {LANGUAGES.map(l=><option key={l}>{l}</option>)}
                 </select>
               </div>
               <div>
-                <label style={S.lbl}>Caste</label>
+                <label className="filter-label" style={S.lbl}>Caste</label>
                 <select value={filters.caste} onChange={e=>set("caste",e.target.value)} style={S.sel}>
                   {CASTES.map(c=><option key={c}>{c}</option>)}
                 </select>
               </div>
               <div>
-                <label style={S.lbl}>Sub Caste</label>
-                <select value={filters.subCaste} onChange={e=>set("subCaste",e.target.value)} style={S.sel}>
-                  {SUB_CASTES.map(s=><option key={s}>{s}</option>)}
-                </select>
-              </div>
-              <div>
-                <label style={S.lbl}>Sort by ID</label>
-                <select value={filters.sortId} onChange={e=>set("sortId",e.target.value)} style={S.sel}>
-                  <option value="asc">Ascending ↑</option>
-                  <option value="desc">Descending ↓</option>
-                </select>
-              </div>
-              <div>
-                <label style={S.lbl}>Age Range</label>
+                <label className="filter-label" style={S.lbl}>Age Range</label>
                 <div className="age-pair">
                   <input type="number" min={18} max={80} value={filters.ageFrom} onChange={e=>set("ageFrom",e.target.value)} placeholder="From" style={S.num}/>
                   <span>–</span>
@@ -378,7 +290,7 @@ export default function MatrimonySearch() {
                 </div>
               </div>
               <div style={{ gridColumn:"span 2" }}>
-                <label style={S.lbl}>Marital Status</label>
+                <label className="filter-label" style={S.lbl}>Marital Status</label>
                 <div className="marital-pills">
                   {MARITAL_OPTIONS.map(m => {
                     const active = filters.marital === m;
@@ -404,11 +316,19 @@ export default function MatrimonySearch() {
           </div>
 
           {/* ── RESULTS ── */}
-          <div style={{ background:"#fff", borderRadius:14, boxShadow:"0 4px 32px rgba(192,57,43,0.1)", border:"1px solid rgba(192,57,43,0.12)", padding:"22px 22px 26px" }}>
+          <div className="results-card-container" style={{ background:"#fff", borderRadius:14, boxShadow:"0 4px 32px rgba(192,57,43,0.1)", border:"1px solid rgba(192,57,43,0.12)", padding:"22px 22px 26px" }}>
             <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:10, marginBottom:18, paddingBottom:14, borderBottom:"2px solid #fdecea" }}>
               <div style={{ display:"flex", alignItems:"center", gap:10 }}>
                 <div className="divider"/>
                 <h2 style={{ margin:0, fontSize:15, color:"#c0392b", fontFamily:"'Merriweather',serif", fontWeight:700 }}>📋 Results</h2>
+              </div>
+              
+              {/* Sort by ID Filter */}
+              <div style={{ minWidth:120 }}>
+                <select value={filters.sortId} onChange={e=>set("sortId",e.target.value)} style={{...S.sel, fontSize:12, padding:"7px 28px 7px 10px" }}>
+                  <option value="asc">Sort: Ascending ↑</option>
+                  <option value="desc">Sort: Descending ↓</option>
+                </select>
               </div>
               
               {/* View Toggle */}
@@ -419,7 +339,7 @@ export default function MatrimonySearch() {
                   style={{
                     background: viewMode === 'card' ? '#c0392b' : '#fff',
                     color: viewMode === 'card' ? '#fff' : '#c0392b',
-                    border: `1.5px solid ${viewMode === 'card' ? '#c0392b' : '#c0392b'}`,
+                    border: `1.5px solid #c0392b`,
                     padding: '8px 14px',
                     fontSize: '12px'
                   }}
@@ -432,7 +352,7 @@ export default function MatrimonySearch() {
                   style={{
                     background: viewMode === 'table' ? '#c0392b' : '#fff',
                     color: viewMode === 'table' ? '#fff' : '#c0392b',
-                    border: `1.5px solid ${viewMode === 'table' ? '#c0392b' : '#c0392b'}`,
+                    border: `1.5px solid #c0392b`,
                     padding: '8px 14px',
                     fontSize: '12px'
                   }}
@@ -462,7 +382,6 @@ export default function MatrimonySearch() {
                     return (
                       <>
                         {viewMode === 'card' ? (
-                          // ── CARD VIEW (EXISTING UI) ──
                           <div className="card-grid">
                             {paginatedResults.map((r) => {
                               const [bg, fg] = maritalColor(r.marital);
@@ -477,19 +396,15 @@ export default function MatrimonySearch() {
                                   <div className="card-content">
                                     <div className="card-name">{r.name}</div>
                                     <div className="card-regid">{r.regId}</div>
-                                    
                                     <div className="card-badges">
                                       <span className="card-badge" style={{ background:r.gender==="Male"?"#e8f4fd":"#fde8f0", color:r.gender==="Male"?"#1a6ea8":"#c0392b" }}>{r.gender}</span>
                                       <span className="card-badge" style={{ background:"#f5f5f5", color:"#666" }}>{r.age} yrs</span>
                                       <span className="card-badge" style={{ background:bg, color:fg }}>{r.marital}</span>
                                     </div>
-                                    
                                     <div className="card-info">
                                       <div className="card-info-row"><span className="card-info-label">Caste:</span> {r.caste}</div>
                                       <div className="card-info-row"><span className="card-info-label">Language:</span> {r.language}</div>
-                                      <div className="card-info-row"><span className="card-info-label">Sub Caste:</span> {r.subCaste}</div>
                                     </div>
-                                    
                                     <div className="card-actions">
                                       <button 
                                         className="card-btn card-btn-primary"
@@ -504,7 +419,6 @@ export default function MatrimonySearch() {
                             })}
                           </div>
                         ) : (
-                          // ── TABLE VIEW ──
                           <div className="twrap">
                             <table className="rtable">
                               <thead>
@@ -512,11 +426,7 @@ export default function MatrimonySearch() {
                                   <th>Photo</th>
                                   <th>Reg ID</th>
                                   <th>Name</th>
-                                  <th>Age</th>
-                                  <th>Gender</th>
-                                  <th>Caste</th>
-                                  <th>Language</th>
-                                  <th>Marital</th>
+                                  <th>Details</th>
                                 </tr>
                               </thead>
                               <tbody>
@@ -524,7 +434,7 @@ export default function MatrimonySearch() {
                                   const [bg, fg] = maritalColor(r.marital);
                                   return (
                                     <tr key={r.id}>
-                                      <td style={{ textAlign: 'center' }}>
+                                      <td style={{ textAlign:'center' }}>
                                         <img 
                                           src={r.photo} 
                                           alt={r.name} 
@@ -535,11 +445,13 @@ export default function MatrimonySearch() {
                                       </td>
                                       <td><span className="regbadge">{r.regId}</span></td>
                                       <td style={{ fontWeight:700, color:"#1a1a1a" }}>{r.name}</td>
-                                      <td>{r.age}</td>
-                                      <td><span className="gbadge" style={{ background:r.gender==="Male"?"#e8f4fd":"#fde8f0", color:r.gender==="Male"?"#1a6ea8":"#c0392b" }}>{r.gender}</span></td>
-                                      <td>{r.caste}</td>
-                                      <td>{r.language}</td>
-                                      <td><span className="gbadge" style={{ background:bg, color:fg }}>{r.marital}</span></td>
+                                      <td style={{ fontSize:'12px', color:'#666' }}>
+                                        <div style={{ marginBottom:'6px' }}><strong style={{ color:'#c0392b' }}>Age:</strong> {r.age}</div>
+                                        <div style={{ marginBottom:'6px' }}><strong style={{ color:'#c0392b' }}>Gender:</strong> {r.gender}</div>
+                                        <div style={{ marginBottom:'6px' }}><strong style={{ color:'#c0392b' }}>Caste:</strong> {r.caste}</div>
+                                        <div style={{ marginBottom:'6px' }}><strong style={{ color:'#c0392b' }}>Language:</strong> {r.language}</div>
+                                        <div style={{ marginBottom:'6px' }}><strong style={{ color:'#c0392b' }}>Marital:</strong> {r.marital}</div>
+                                      </td>
                                     </tr>
                                   );
                                 })}

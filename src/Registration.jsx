@@ -20,6 +20,7 @@ export default function PersonalFamilyForm() {
   const LAKNAM = [t("registration.genderSelect"), "Laknam 1", "Laknam 2"];
   const RASI_LIST = [t("registration.genderSelect"), "Mesha", "Vrishabha", "Mithuna", "Kataka", "Simha", "Kanya", "Tula", "Vrischika", "Dhanu", "Makara", "Kumbha", "Meena"];
   const PADAM_LIST = [t("registration.genderSelect"), "Padam 1", "Padam 2", "Padam 3", "Padam 4"];
+  const DOSHAM_LIST = [t("registration.genderSelect"), "Sevvai", "Ragu"];
 
   const [form, setForm] = useState({
     name: "", gender: "-Select-", dob: "", birthHour: "", birthMin: "", birthAmPm: "AM",
@@ -38,7 +39,7 @@ export default function PersonalFamilyForm() {
     partnerMaritalStatus: "Unmarried", partnerCaste: "Any", partnerSubCaste: "Any",
     partnerOtherRequirement: "",
     caste: "-Select-", subCaste: "-select-", gothram: "",
-    star: "-Select-", raasi: "-Select Rasi-", padam: "-Select Padam-", laknam: "-Select Laknam-",
+    star: "-Select-", raasi: "-Select Rasi-", padam: "-Select Padam-", laknam: "-Select Laknam-", dosham: "-Select-",
     permanentAddress: "", presentAddress: "", contactPerson: "", contactNumber: "",
     scheme: "Select", username: "", password: "", termsAccepted: false,
   });
@@ -527,7 +528,7 @@ export default function PersonalFamilyForm() {
           <div style={sectionBox}>
             <SectionHeader icon="🪐" title={t("registration.astrology")} />
             <div style={{ display:"flex", flexDirection:"column", gap:20 }}>
-              <div className="row-3">
+              <div className="row-4">
                 <FormField label={t("registration.caste")} required>
                   <select value={form.caste} onChange={e => set("caste", e.target.value)} style={selectStyle(false)}>
                     {CASTES.map(c => <option key={c}>{c}</option>)}
@@ -542,13 +543,13 @@ export default function PersonalFamilyForm() {
                 <FormField label={t("registration.gothram")}>
                   <input value={form.gothram} onChange={e => set("gothram", e.target.value)} placeholder={t("registration.gothramPlaceholder")} style={inputStyle(false)} />
                 </FormField>
-              </div>
-              <div className="row-4">
                 <FormField label={t("registration.star")}>
                   <select value={form.star} onChange={e => set("star", e.target.value)} style={selectStyle(false)}>
                     {STARS.map(s => <option key={s}>{s}</option>)}
                   </select>
                 </FormField>
+              </div>
+              <div className="row-4">
                 <FormField label={t("registration.raasi")}>
                   <select value={form.raasi} onChange={e => set("raasi", e.target.value)} style={selectStyle(false)}>
                     {RASI_LIST.map(r => <option key={r}>{r}</option>)}
@@ -562,6 +563,11 @@ export default function PersonalFamilyForm() {
                 <FormField label={t("registration.laknam")}>
                   <select value={form.laknam} onChange={e => set("laknam", e.target.value)} style={selectStyle(false)}>
                     {LAKNAM.map(l => <option key={l}>{l}</option>)}
+                  </select>
+                </FormField>
+                <FormField label="Dosham">
+                  <select value={form.dosham} onChange={e => set("dosham", e.target.value)} style={selectStyle(false)}>
+                    {DOSHAM_LIST.map(d => <option key={d}>{d}</option>)}
                   </select>
                 </FormField>
               </div>
@@ -709,7 +715,8 @@ export default function PersonalFamilyForm() {
             </div>
           </div>
 
-          {/* Scheme / Account */}
+          {/* Scheme / Account - COMMENTED OUT */}
+          {/* 
           <div style={{ ...sectionBox, background:"linear-gradient(135deg,#FFF8F0,white)", border:"1px solid rgba(139,0,0,0.15)" }}>
             <SectionHeader icon="💎" title={t("registration.schemeDetails")} />
             <div style={{ display:"flex", flexDirection:"column", gap:20 }}>
@@ -753,6 +760,7 @@ export default function PersonalFamilyForm() {
               </div>
             </div>
           </div>
+          */}
 
           {/* Footer Buttons */}
           <div style={{ display:"flex", gap:14, justifyContent:"center", padding:"10px 0 8px", flexWrap:"wrap" }}>
