@@ -1,5 +1,5 @@
 // Detail.jsx
-import React from "react";
+import React, { useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
@@ -9,6 +9,7 @@ export default function Detail() {
   const location = useLocation();
   const { t } = useTranslation();
   const profile = location.state?.profile;
+  const [showContact, setShowContact] = useState(false);
 
   if (!profile) {
     return (
@@ -261,13 +262,41 @@ export default function Detail() {
 
           {/* Communication Details */}
           <div style={sectionCard}>
-            <SectionTitle icon="📞" title={t("detail.contactInformation")}/>
-            <div className="g2">
-              <InfoCard label={t("detail.permanentAddress")} value={p.permanentAddress}/>
-              <InfoCard label={t("detail.presentAddress")} value={p.presentAddress}/>
-              <InfoCard label={t("detail.contactPerson")} value={p.contactPerson}/>
-              <InfoCard label={t("detail.contactNumber")} value={p.contactNumber ? `📱 ${p.contactNumber}` : null}/>
+            <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:20 }}>
+              <div style={{ display:"flex", alignItems:"center", gap:12 }}>
+                <div style={{ width:34, height:34, borderRadius:"50%", background:"linear-gradient(135deg,#8B0000,#C41E3A)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:15, flexShrink:0, boxShadow:"0 3px 10px rgba(139,0,0,0.2)" }}>📞</div>
+                <h3 style={{ margin:0, fontFamily:"'Playfair Display',serif", fontSize:"1.15rem", fontWeight:700, color:"#5A0010", letterSpacing:"0.02em" }}>{t("detail.contactInformation")}</h3>
+              </div>
+              <button 
+                onClick={() => setShowContact(!showContact)}
+                style={{
+                  background: showContact ? "linear-gradient(135deg,#8B0000,#C41E3A)" : "white",
+                  color: showContact ? "white" : "#8B0000",
+                  border: "1.5px solid #C41E3A",
+                  padding: "8px 18px",
+                  borderRadius: 8,
+                  fontWeight: 700,
+                  cursor: "pointer",
+                  fontSize: "0.85rem",
+                  letterSpacing: "0.05em",
+                  transition: "all 0.3s ease",
+                  boxShadow: showContact ? "0 4px 12px rgba(139,0,0,0.3)" : "none"
+                }}
+              >
+                {showContact ? "Hide Contact" : "View Contact"}
+              </button>
             </div>
+            {showContact && (
+              <>
+                <div style={{ marginBottom:16 }} />
+                <div className="g2">
+                  <InfoCard label={t("detail.permanentAddress")} value={p.permanentAddress}/>
+                  <InfoCard label={t("detail.presentAddress")} value={p.presentAddress}/>
+                  <InfoCard label={t("detail.contactPerson")} value={p.contactPerson}/>
+                  <InfoCard label={t("detail.contactNumber")} value={p.contactNumber ? `📱 ${p.contactNumber}` : null}/>
+                </div>
+              </>
+            )}
           </div>
 
           <p style={{ textAlign:"center", color:"#C4A0A8", fontSize:"0.75rem", marginTop:16 }}>{t("detail.profileConfidential")}</p>
