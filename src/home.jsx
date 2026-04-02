@@ -347,7 +347,7 @@ export default function Home() {
         /* ── SEARCH CARDS ── */
         .cards-grid {
           display: grid;
-          grid-template-columns: 1fr;
+          grid-template-columns: 1fr 1fr;
           gap: 40px;
           max-width: 100%;
           margin: 0;
@@ -356,7 +356,7 @@ export default function Home() {
         .cards-column-left {
           display: flex;
           flex-direction: column;
-          gap: 28px;
+          gap: 24px;
         }
 
         .cards-column-right {
@@ -367,6 +367,7 @@ export default function Home() {
 
         @media (max-width: 720px) {
           .cards-grid { grid-template-columns: 1fr; gap: 28px; }
+          .cards-column-right { display: none; }
           .header-inner { flex-direction: column; text-align: center; gap: 28px; padding: 40px 16px 28px; }
           .header-logo-container { flex-direction: column; gap: 16px; }
           .header-divider { display: none; }
@@ -1471,17 +1472,16 @@ export default function Home() {
         </div>
         <div className="section-heading">{t('home.title')}</div>
 
-        {/* Create New Profile Button */}
-        <div style={{marginTop: '24px', marginBottom: '32px'}}>
-          <button type="button" className="btn-create-profile" onClick={() => setShowRegistrationModal(true)}>
-            <span>{t('home.createNewProfile')}</span>
-          </button>
-        </div>
-
         <div className="cards-grid">
 
-          {/* Left Column - Quick Search and Advertisement */}
+          {/* Left Column - Create Profile, Quick Search and Advertisement */}
           <div className="cards-column-left">
+            {/* Create New Profile Button */}
+            <div style={{marginTop: '0', marginBottom: '8px'}}>
+              <button type="button" className="btn-create-profile" onClick={() => setShowRegistrationModal(true)}>
+                <span>{t('home.createNewProfile')}</span>
+              </button>
+            </div>
             {/* Quick Search Card */}
             <div className="card">
               <div className="card-header">
@@ -1612,6 +1612,10 @@ export default function Home() {
               <img src="/assets/whatsapp_contact_edit.png" alt="WhatsApp Contact" className="whatsapp-card-image" 
                 onError={(e) => { e.target.style.display = 'none'; }} />
             </a>
+          </div>
+
+          {/* Right Column - Reserved for future content */}
+          <div className="cards-column-right">
           </div>
         </div>
 
