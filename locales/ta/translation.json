@@ -205,6 +205,24 @@
     "mandatoryNote": "✦ குறிப்பிடப்பட்ட புலங்கள் கட்டாயமாகும்",
     "submitting": "சமர்ப்பிக்கிறது...",
     "profileCreated": "சுயவிவரம் உருவாக்கப்பட்டது!",
+    "casteOptions": [
+      { "value": "-Select-", "label": "-தேர்ந்தெடுக்கவும்-" },
+      { "value": "Brahmin", "label": "பிராமணர்" },
+      { "value": "Kshatriya", "label": "க்ஷத்திரியர்" },
+      { "value": "Vellalar", "label": "வெள்ளாளர்" },
+      { "value": "Nadar", "label": "நாடார்" },
+      { "value": "Mudaliar", "label": "முதலியார்" },
+      { "value": "Pillai", "label": "பிள்ளை" },
+      { "value": "Gounder", "label": "கவுண்டர்" },
+      { "value": "Naicker", "label": "நாய்க்கர்" },
+      { "value": "Chettiar", "label": "செட்டியார்" },
+      { "value": "Vishwakarma", "label": "விஸ்வகர்மா" },
+      { "value": "Yadav", "label": "யாதவர்" },
+      { "value": "Vanniyar", "label": "வன்னியர்" },
+      { "value": "Thevar", "label": "தேவர்" },
+      { "value": "Agamudayar", "label": "ஆகமுடையர்" },
+      { "value": "Others", "label": "மற்றவை" }
+    ],
     "profileSubmittedSuccess": "உங்கள் திருமண சுயவிவரம் வெற்றிகரமாக சமர்ப்பிக்கப்பட்டது. நாங்கள் சரிபார்த்து விரைவில் செயல்படுத்துவோம்.",
     "createAnotherProfile": "மற்றொரு சுயவிவரத்தை உருவாக்கவும்",
     "rasiList": {
@@ -349,6 +367,7 @@
     "regId": "பதிவு எண்",
     "name": "பெயர்",
     "details": "விவரங்கள்",
+    "phoneLabel": "தொடர்பு எண்",
     "genderOptions": [
       {
         "value": "Male",

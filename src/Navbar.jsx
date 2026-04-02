@@ -37,6 +37,28 @@ export default function Navbar() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700&display=swap');
 
+        /* ── TAMIL LANGUAGE SPECIFIC ADJUSTMENTS ── */
+        html[lang="ta"] .navbar-brand-title {
+          font-size: clamp(1.2rem, 3vw, 1.6rem) !important;
+        }
+
+        html[lang="ta"] .navbar-brand-subtitle {
+          font-size: clamp(0.85rem, 2vw, 1.1rem) !important;
+        }
+
+        html[lang="ta"] .desktop-nav {
+          gap: clamp(15px, 3vw, 30px) !important;
+        }
+
+        html[lang="ta"] .desktop-nav a,
+        html[lang="ta"] .desktop-nav select {
+          font-size: 13px !important;
+        }
+
+        html[lang="ta"] .navbar-tagline {
+          font-size: clamp(0.8rem, 1.8vw, 1.1rem) !important;
+        }
+
         /* ── NAVBAR BRANDING ── */
         .navbar-brand-container {
           display: flex;
@@ -123,6 +145,19 @@ export default function Navbar() {
           .navbar-brand-subtitle {
             font-size: clamp(0.9rem, 2vw, 1.2rem);
           }
+
+          html[lang="ta"] .navbar-brand-title {
+            font-size: clamp(1rem, 3vw, 1.4rem) !important;
+          }
+
+          html[lang="ta"] .navbar-brand-subtitle {
+            font-size: clamp(0.8rem, 1.8vw, 1rem) !important;
+          }
+
+          html[lang="ta"] .mobile-menu a,
+          html[lang="ta"] .mobile-menu div {
+            font-size: clamp(12px, 2.5vw, 14px) !important;
+          }
         }
 
         @media (max-width: 480px) {
@@ -141,6 +176,19 @@ export default function Navbar() {
 
           .navbar-brand-subtitle {
             font-size: clamp(0.8rem, 1.8vw, 1rem);
+          }
+
+          html[lang="ta"] .navbar-brand-title {
+            font-size: clamp(0.9rem, 2.8vw, 1.2rem) !important;
+          }
+
+          html[lang="ta"] .navbar-brand-subtitle {
+            font-size: clamp(0.7rem, 1.6vw, 0.9rem) !important;
+          }
+
+          html[lang="ta"] .mobile-menu a,
+          html[lang="ta"] .mobile-menu div {
+            font-size: 12px !important;
           }
         }
         
@@ -303,6 +351,18 @@ export default function Navbar() {
             margin: 0 8px;
             padding-top: 6px;
           }
+
+          html[lang="ta"] .navbar-brand-title {
+            font-size: clamp(0.85rem, 2.5vw, 1.1rem) !important;
+          }
+
+          html[lang="ta"] .navbar-brand-subtitle {
+            font-size: clamp(0.65rem, 1.4vw, 0.85rem) !important;
+          }
+
+          html[lang="ta"] .navbar-tagline {
+            font-size: clamp(0.65rem, 1.3vw, 0.8rem) !important;
+          }
         }
       `}</style>
 
@@ -439,7 +499,7 @@ export default function Navbar() {
         <div className={`mobile-menu ${!menuOpen ? 'closed' : ''}`}>
           <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }} onClick={() => setMenuOpen(false)}>{t('navbar.home')}</Link>
           <Link to="/registration" style={{ textDecoration: 'none', color: 'inherit' }} onClick={() => setMenuOpen(false)}>{t('navbar.registration')}</Link>
-          <Link to="/search" style={{ textDecoration: 'none', color: 'inherit' }} onClick={() => setMenuOpen(false)}>Search</Link>
+          <Link to="/search" style={{ textDecoration: 'none', color: 'inherit' }} onClick={() => setMenuOpen(false)}>{t('navbar.search')}</Link>
           <Link to="/contact" style={{ textDecoration: 'none', color: 'inherit' }} onClick={() => setMenuOpen(false)}>{t('navbar.contact')}</Link>
           <select 
             value={i18n.language}

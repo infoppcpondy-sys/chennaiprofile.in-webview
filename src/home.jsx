@@ -5,6 +5,10 @@ import { useNavigate } from 'react-router-dom';
 export default function Home() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  
+  // Get caste options from translations
+  const casteOptions = t("registration.casteOptions", { returnObjects: true }) || [];
+  
   const [quickSearch, setQuickSearch] = useState({
     gender: '',
     language: '',
@@ -1530,10 +1534,9 @@ export default function Home() {
                     <label>{t('home.caste')}</label>
                     <select name="caste" value={quickSearch.caste} onChange={handleQuickSearchChange}>
                       <option value="">{t('common.select')}</option>
-                      <option value="Any">{t('home.casteAny')}</option>
-                      <option value="a">{t('home.casteBrahmin')}</option>
-                      <option value="b">{t('home.casteMudaliar')}</option>
-                      <option value="c">{t('home.casteNadar')}</option>
+                      {casteOptions.map((option, index) => (
+                        <option key={index} value={option.value}>{option.label}</option>
+                      ))}
                     </select>
                   </div>
                   <div className="field">

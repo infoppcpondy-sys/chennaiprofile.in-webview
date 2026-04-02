@@ -205,6 +205,24 @@
     "mandatoryNote": "Fields marked with ✦ are mandatory",
     "submitting": "Submitting...",
     "profileCreated": "Profile Created!",
+    "casteOptions": [
+      { "value": "-Select-", "label": "-Select-" },
+      { "value": "Brahmin", "label": "Brahmin" },
+      { "value": "Kshatriya", "label": "Kshatriya" },
+      { "value": "Vellalar", "label": "Vellalar" },
+      { "value": "Nadar", "label": "Nadar" },
+      { "value": "Mudaliar", "label": "Mudaliar" },
+      { "value": "Pillai", "label": "Pillai" },
+      { "value": "Gounder", "label": "Gounder" },
+      { "value": "Naicker", "label": "Naicker" },
+      { "value": "Chettiar", "label": "Chettiar" },
+      { "value": "Vishwakarma", "label": "Vishwakarma" },
+      { "value": "Yadav", "label": "Yadav" },
+      { "value": "Vanniyar", "label": "Vanniyar" },
+      { "value": "Thevar", "label": "Thevar" },
+      { "value": "Agamudayar", "label": "Agamudayar" },
+      { "value": "Others", "label": "Others" }
+    ],
     "profileSubmittedSuccess": "Your matrimony profile has been submitted successfully. We will review and activate it shortly.",
     "createAnotherProfile": "Create Another Profile",
     "rasiList": {
@@ -349,6 +367,7 @@
     "regId": "Reg ID",
     "name": "Name",
     "details": "Details",
+    "phoneLabel": "Contact Number",
     "genderOptions": [
       { "value": "Male",   "label": "Male"   },
       { "value": "Female", "label": "Female" }

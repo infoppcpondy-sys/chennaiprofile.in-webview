@@ -183,7 +183,11 @@ export default function PersonalFamilyForm() {
   const HEIGHTS = [t("registration.genderSelect"), "4'8\"", "4'9\"", "4'10\"", "4'11\"", "5'0\"", "5'1\"", "5'2\"", "5'3\"", "5'4\"", "5'5\"", "5'6\"", "5'7\"", "5'8\"", "5'9\"", "5'10\"", "5'11\"", "6'0\""];
   const WEIGHTS = [t("registration.genderSelect"), "40kg", "45kg", "50kg", "55kg", "60kg", "65kg", "70kg", "75kg", "80kg", "85kg", "90kg"];
   const BLOOD_GROUPS = [t("registration.genderSelect"), "O+", "O-", "A+", "A-", "B+", "B-", "AB+", "AB-"];
-  const CASTES = [t("registration.genderSelect"), "Brahmin", "Kshatriya", "Vaishya", "Shudra", "Others"];
+  
+  // Get caste options from translations
+  const casteOptionsRaw = t("registration.casteOptions", { returnObjects: true }) || [];
+  const CASTES = casteOptionsRaw.map(o => o.label);
+  
   const SUB_CASTES = [t("registration.selectSubCaste"), "Subgroup 1", "Subgroup 2", "Subgroup 3"];
   
   // Rasi keys in order
