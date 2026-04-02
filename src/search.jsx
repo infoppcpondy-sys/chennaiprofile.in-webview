@@ -274,7 +274,7 @@ export default function MatrimonySearch() {
                               <div className="card-actions">
                                 <button className="card-btn card-btn-primary">{t("search.moreDetails")}</button>
                                 <button className="card-btn" style={{background:"#f0f0f0", color:"#333", border:"1px solid #ddd"}} onClick={e => { e.stopPropagation(); setShowContact(showContact === r.id ? null : r.id); }}>
-                                  {showContact === r.id ? "✕ Hide" : "📞 Contact"}
+                                  {showContact === r.id ? `✕ ${t('common.hide')}` : `📞 ${t('common.contact')}`}
                                 </button>
                               </div>
                               {showContact === r.id && (

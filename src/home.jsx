@@ -1853,7 +1853,7 @@ export default function Home() {
               >
                 ✕
               </button>
-              <div className="modal-header-title">{t('detail.profileDetails') || 'Profile Details'}</div>
+              <div className="modal-header-title">{t('detail.profileDetails')}</div>
             </div>
 
             <div className="modal-body">
@@ -1911,7 +1911,7 @@ export default function Home() {
                       onMouseOver={(e) => e.target.style.background = "#e8e8e8"}
                       onMouseOut={(e) => e.target.style.background = "#f0f0f0"}
                     >
-                      {showContact ? "✕ Hide" : "📞 Contact"}
+                      {showContact ? `✕ ${t('common.hide')}` : `📞 ${t('common.contact')}`}
                     </button>
                   </div>
 
