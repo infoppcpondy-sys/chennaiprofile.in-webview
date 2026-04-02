@@ -406,12 +406,12 @@ export default function Detail() {
                 {showContact ? (
                   <>
                     <span style={{ fontSize:14 }}>🔒</span>
-                    Hide Contact
+                    {t('common.hide')}
                   </>
                 ) : (
                   <>
-                    <span style={{ fontSize:14 }}>👁️</span>
-                    View Contact
+                    <span style={{ fontSize: 14 }}>👁️</span>
+                    {t('common.viewContact')}
                   </>
                 )}
               </button>
@@ -468,7 +468,7 @@ export default function Detail() {
                     <div style={{ fontSize:"0.68rem", fontWeight:700, color:"#8B0000", textTransform:"uppercase", letterSpacing:"0.09em", marginBottom:4 }}>{t("detail.contactNumber")}</div>
                     {p.contactNumber ? (
                       <a href={`tel:${p.contactNumber}`} style={{ fontSize:"1rem", color:"#8B0000", fontWeight:700, textDecoration:"none", letterSpacing:"0.05em" }}>
-                        {p.contactNumber}
+                        {p.contactNumber.substring(0, 5) + '*'.repeat(5)}
                       </a>
                     ) : (
                       <div style={{ fontSize:"0.9rem", color:"#C4A0A8", fontStyle:"italic", fontWeight:400 }}>{t("detail.notSpecified")}</div>
@@ -658,7 +658,7 @@ export default function Detail() {
                       e.target.style.background = "transparent";
                     }}
                   >
-                    Cancel
+                    {t('common.cancel')}
                   </button>
                   <button
                     onClick={() => {
@@ -694,7 +694,7 @@ export default function Detail() {
                       }
                     }}
                   >
-                    Submit Report
+                    {t('common.submitReport')}
                   </button>
                 </div>
 

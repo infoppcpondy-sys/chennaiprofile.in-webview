@@ -615,6 +615,8 @@
     "next": "Next",
     "contact": "Contact",
     "hide": "Hide",
-    "reportProfile": "Report Profile"
+    "reportProfile": "Report Profile",
+    "submitReport": "Submit Report",
+    "viewContact": "View Contact"
   }
 }
