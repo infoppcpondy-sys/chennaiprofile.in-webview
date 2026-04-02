@@ -334,7 +334,7 @@ export default function Navbar() {
         </Link>
         
         {/* Navbar Tagline */}
-        <div className="navbar-tagline">Where Hearts Meet Their Perfect Match ❤️</div>
+        {/* <div className="navbar-tagline">Where Hearts Meet Their Perfect Match ❤️</div> */}
         
         {/* Desktop Navigation */}
         <div className="desktop-nav" style={{

@@ -347,9 +347,8 @@ export default function Home() {
         /* ── SEARCH CARDS ── */
         .cards-grid {
           display: grid;
-          grid-template-columns: 1fr 1fr;
+          grid-template-columns: 1fr;
           gap: 40px;
-          align-items: end;
           max-width: 100%;
           margin: 0;
         }
@@ -1472,10 +1471,92 @@ export default function Home() {
         </div>
         <div className="section-heading">{t('home.title')}</div>
 
+        {/* Create New Profile Button */}
+        <div style={{marginTop: '24px', marginBottom: '32px'}}>
+          <button type="button" className="btn-create-profile" onClick={() => setShowRegistrationModal(true)}>
+            <span>{t('home.createNewProfile')}</span>
+          </button>
+        </div>
+
         <div className="cards-grid">
 
-          {/* Left Column - Advertisement Carousel */}
+          {/* Left Column - Quick Search and Advertisement */}
           <div className="cards-column-left">
+            {/* Quick Search Card */}
+            <div className="card">
+              <div className="card-header">
+                <div className="card-icon">🔍</div>
+                <div>
+                  <div className="card-title">{t('home.quickSearch')}</div>
+                  <div className="card-subtitle">{t('home.quickSearchSubtitle')}</div>
+                </div>
+              </div>
+
+              <form onSubmit={handleQuickSearchSubmit}>
+                <div className="field">
+                  <label>{t('home.regNumber')}</label>
+                  <input
+                    type="text"
+                    value={regNumber}
+                    onChange={(e) => setRegNumber(e.target.value)}
+                    placeholder={t('home.regNumberPlaceholder')}
+                  />
+                </div>
+
+                <div className="fields-row">
+                  <div className="field">
+                    <label>{t('home.gender')}</label>
+                    <select name="gender" value={quickSearch.gender} onChange={handleQuickSearchChange}>
+                      <option value="">{t('common.select')}</option>
+                      <option value="Male">{t('home.genderMale')}</option>
+                      <option value="Female">{t('home.genderFemale')}</option>
+                    </select>
+                  </div>
+                  <div className="field">
+                    <label>{t('home.language')}</label>
+                    <select name="language" value={quickSearch.language} onChange={handleQuickSearchChange}>
+                      <option value="">{t('common.select')}</option>
+                      <option value="Any">{t('home.languageAny')}</option>
+                      <option value="Tamil">{t('home.languageTamil')}</option>
+                      <option value="Telugu">{t('home.languageTelugu')}</option>
+                      <option value="Malayalam">{t('home.languageMalayalam')}</option>
+                      <option value="Hindi">{t('home.languageHindi')}</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="fields-row">
+                  <div className="field">
+                    <label>{t('home.caste')}</label>
+                    <select name="caste" value={quickSearch.caste} onChange={handleQuickSearchChange}>
+                      <option value="">{t('common.select')}</option>
+                      <option value="Any">{t('home.casteAny')}</option>
+                      <option value="a">{t('home.casteBrahmin')}</option>
+                      <option value="b">{t('home.casteMudaliar')}</option>
+                      <option value="c">{t('home.casteNadar')}</option>
+                    </select>
+                  </div>
+                  <div className="field">
+                    <label>{t('home.subcaste')}</label>
+                    <select name="subcaste" value={quickSearch.subcaste} onChange={handleQuickSearchChange}>
+                      <option value="">Select</option>
+                      <option value="Any">Any</option>
+                      <option value="a">Option A</option>
+                      <option value="b">Option B</option>
+                    </select>
+                  </div>
+                </div>
+
+                <button type="submit" className="btn-primary">
+                  <span>{t('home.search')}</span>
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path d="M6 12l4-4-4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                  </svg>
+                </button>
+              </form>
+            </div>
+
+            {/* Advertisement Carousel */}
             <div className="ad-carousel">
               <div className="ad-image-container">
                 {adImages.map((image, index) => (
@@ -1531,91 +1612,6 @@ export default function Home() {
               <img src="/assets/whatsapp_contact_edit.png" alt="WhatsApp Contact" className="whatsapp-card-image" 
                 onError={(e) => { e.target.style.display = 'none'; }} />
             </a>
-          </div>
-
-          {/* Right Column - Quick Search */}
-          <div className="cards-column-right">
-            {/* Quick Search Card */}
-            <div className="card">
-              <div className="card-header">
-                <div className="card-icon">🔍</div>
-                <div>
-                  <div className="card-title">{t('home.quickSearch')}</div>
-                  <div className="card-subtitle">{t('home.quickSearchSubtitle')}</div>
-                </div>
-              </div>
-
-              <form onSubmit={handleQuickSearchSubmit}>
-                <div className="field">
-                  <label>{t('home.regNumber')} <span className="req">*</span></label>
-                  <input
-                    type="text"
-                    value={regNumber}
-                    onChange={(e) => setRegNumber(e.target.value)}
-                    placeholder={t('home.regNumberPlaceholder')}
-                    required
-                  />
-                </div>
-
-                <div className="fields-row">
-                  <div className="field">
-                    <label>{t('home.gender')} <span className="req">*</span></label>
-                    <select name="gender" value={quickSearch.gender} onChange={handleQuickSearchChange} required>
-                      <option value="">{t('common.select')}</option>
-                      <option value="Male">{t('home.genderMale')}</option>
-                      <option value="Female">{t('home.genderFemale')}</option>
-                    </select>
-                  </div>
-                  <div className="field">
-                    <label>{t('home.language')} <span className="req">*</span></label>
-                    <select name="language" value={quickSearch.language} onChange={handleQuickSearchChange} required>
-                      <option value="">{t('common.select')}</option>
-                      <option value="Any">{t('home.languageAny')}</option>
-                      <option value="Tamil">{t('home.languageTamil')}</option>
-                      <option value="Telugu">{t('home.languageTelugu')}</option>
-                      <option value="Malayalam">{t('home.languageMalayalam')}</option>
-                      <option value="Hindi">{t('home.languageHindi')}</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div className="fields-row">
-                  <div className="field">
-                    <label>{t('home.caste')} <span className="req">*</span></label>
-                    <select name="caste" value={quickSearch.caste} onChange={handleQuickSearchChange} required>
-                      <option value="">{t('common.select')}</option>
-                      <option value="Any">{t('home.casteAny')}</option>
-                      <option value="a">{t('home.casteBrahmin')}</option>
-                      <option value="b">{t('home.casteMudaliar')}</option>
-                      <option value="c">{t('home.casteNadar')}</option>
-                    </select>
-                  </div>
-                  <div className="field">
-                    <label>{t('home.subcaste')} <span className="req">*</span></label>
-                    <select name="subcaste" value={quickSearch.subcaste} onChange={handleQuickSearchChange} required>
-                      <option value="">Select</option>
-                      <option value="Any">Any</option>
-                      <option value="a">Option A</option>
-                      <option value="b">Option B</option>
-                    </select>
-                  </div>
-                </div>
-
-                <button type="submit" className="btn-primary">
-                  <span>{t('home.search')}</span>
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                    <path d="M6 12l4-4-4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-                  </svg>
-                </button>
-              </form>
-            </div>
-
-            {/* Create New Profile Button */}
-            <div style={{marginTop: '24px'}}>
-              <button type="button" className="btn-create-profile" onClick={() => setShowRegistrationModal(true)}>
-                <span>{t('home.createNewProfile')}</span>
-              </button>
-            </div>
           </div>
         </div>
 

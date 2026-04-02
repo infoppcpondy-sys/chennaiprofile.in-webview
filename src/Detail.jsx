@@ -10,6 +10,8 @@ export default function Detail() {
   const { t } = useTranslation();
   const profile = location.state?.profile;
   const [showContact, setShowContact] = useState(false);
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [reportReason, setReportReason] = useState("");
 
   if (!profile) {
     return (
@@ -373,6 +375,7 @@ export default function Detail() {
             <style>{`
               @keyframes shimmer { 0%{background-position:0% 50%} 100%{background-position:200% 50%} }
               @keyframes fadeSlideIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+              @keyframes slideUp { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
             `}</style>
 
             {/* Header row */}
@@ -412,6 +415,7 @@ export default function Detail() {
                   </>
                 )}
               </button>
+            
             </div>
 
             {/* Animated reveal area */}
@@ -480,7 +484,242 @@ export default function Detail() {
             </div>
           </div>
 
+          {/* Report Profile Button Section */}
+          <div style={{ marginTop: 20, display: "flex", justifyContent: "center" }}>
+            <button
+              onClick={() => setShowReportModal(true)}
+              style={{
+                position: "relative",
+                overflow: "hidden",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "8px",
+                padding: "12px 32px",
+                borderRadius: "50px",
+                fontWeight: 700,
+                fontSize: "0.95rem",
+                letterSpacing: "0.06em",
+                cursor: "pointer",
+                border: "1.5px solid rgba(196,30,58,0.5)",
+                background: "white",
+                color: "#8B0000",
+                boxShadow: "0 4px 16px rgba(139,0,0,0.15)",
+                transition: "all 0.35s ease",
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.boxShadow = "0 8px 28px rgba(139,0,0,0.3)";
+                e.target.style.transform = "translateY(-2px)";
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.boxShadow = "0 4px 16px rgba(139,0,0,0.15)";
+                e.target.style.transform = "translateY(0)";
+              }}
+            >
+              <span style={{ fontSize: 16 }}>⚠️</span>
+              Report Profile
+            </button>
+          </div>
         </div>
+
+        {/* Report Modal */}
+        {showReportModal && (
+          <div style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: "rgba(42, 24, 16, 0.7)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 2000,
+            backdropFilter: "blur(4px)",
+          }} onClick={() => setShowReportModal(false)}>
+            <div style={{
+              background: "white",
+              borderRadius: "20px",
+              overflow: "hidden",
+              maxWidth: "500px",
+              width: "90%",
+              boxShadow: "0 20px 60px rgba(139, 0, 0, 0.3)",
+              animation: "slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)",
+            }} onClick={(e) => e.stopPropagation()}>
+              {/* Modal Header */}
+              <div style={{
+                background: "linear-gradient(135deg, #8B0000, #C41E3A)",
+                padding: "28px 24px",
+                textAlign: "center",
+                position: "relative",
+              }}>
+                <div style={{
+                  position: "absolute",
+                  top: "16px",
+                  right: "16px",
+                  width: "36px",
+                  height: "36px",
+                  background: "rgba(255, 255, 255, 0.2)",
+                  border: "none",
+                  borderRadius: "50%",
+                  color: "white",
+                  fontSize: "1.2rem",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  transition: "all 0.3s ease",
+                }} onClick={() => setShowReportModal(false)}>
+                  ✕
+                </div>
+                <h2 style={{
+                  fontFamily: "'Playfair Display', serif",
+                  fontSize: "1.8rem",
+                  fontWeight: 700,
+                  color: "white",
+                  margin: 0,
+                  letterSpacing: "0.02em",
+                }}>
+                  Report Profile
+                </h2>
+                <p style={{
+                  color: "rgba(255, 215, 200, 0.9)",
+                  fontSize: "0.9rem",
+                  marginTop: "8px",
+                  margin: "8px 0 0",
+                }}>
+                  Help us maintain a safe community
+                </p>
+              </div>
+
+              {/* Modal Body */}
+              <div style={{ padding: "32px 24px" }}>
+                <p style={{
+                  fontSize: "0.95rem",
+                  color: "#3D1020",
+                  marginBottom: "24px",
+                  lineHeight: "1.6",
+                }}>
+                  Please select the reason for reporting this profile:
+                </p>
+
+                {/* Report Options */}
+                <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginBottom: "24px" }}>
+                  {[
+                    { value: "already_married", label: "👰 Already Married", icon: "👰" },
+                    { value: "misinformation", label: "⚠️ Misinformation", icon: "⚠️" },
+                    { value: "fraud", label: "🚨 Fraud", icon: "🚨" },
+                  ].map((option) => (
+                    <label key={option.value} style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "12px",
+                      padding: "14px 16px",
+                      border: reportReason === option.value ? "2px solid #8B0000" : "2px solid rgba(196, 30, 58, 0.2)",
+                      borderRadius: "10px",
+                      background: reportReason === option.value ? "rgba(139, 0, 0, 0.05)" : "white",
+                      cursor: "pointer",
+                      transition: "all 0.3s ease",
+                    }}>
+                      <input
+                        type="radio"
+                        name="report_reason"
+                        value={option.value}
+                        checked={reportReason === option.value}
+                        onChange={(e) => setReportReason(e.target.value)}
+                        style={{
+                          width: "18px",
+                          height: "18px",
+                          cursor: "pointer",
+                          accentColor: "#8B0000",
+                        }}
+                      />
+                      <span style={{
+                        fontSize: "0.95rem",
+                        fontWeight: 600,
+                        color: reportReason === option.value ? "#8B0000" : "#1A0008",
+                      }}>
+                        {option.label}
+                      </span>
+                    </label>
+                  ))}
+                </div>
+
+                {/* Buttons */}
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+                  <button
+                    onClick={() => setShowReportModal(false)}
+                    style={{
+                      padding: "12px 20px",
+                      background: "transparent",
+                      border: "2px solid rgba(196, 30, 58, 0.3)",
+                      borderRadius: "10px",
+                      color: "#8B0000",
+                      fontWeight: 600,
+                      cursor: "pointer",
+                      fontSize: "0.9rem",
+                      transition: "all 0.3s ease",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.target.style.background = "rgba(196, 30, 58, 0.1)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.target.style.background = "transparent";
+                    }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => {
+                      if (reportReason) {
+                        alert(`Profile reported for: ${reportReason.replace(/_/g, " ")}`);
+                        setShowReportModal(false);
+                        setReportReason("");
+                      }
+                    }}
+                    disabled={!reportReason}
+                    style={{
+                      padding: "12px 20px",
+                      background: reportReason ? "linear-gradient(135deg, #8B0000, #C41E3A)" : "rgba(139, 0, 0, 0.3)",
+                      border: "none",
+                      borderRadius: "10px",
+                      color: "white",
+                      fontWeight: 600,
+                      cursor: reportReason ? "pointer" : "not-allowed",
+                      fontSize: "0.9rem",
+                      transition: "all 0.3s ease",
+                      boxShadow: reportReason ? "0 4px 16px rgba(139, 0, 0, 0.3)" : "none",
+                    }}
+                    onMouseEnter={(e) => {
+                      if (reportReason) {
+                        e.target.style.boxShadow = "0 8px 24px rgba(139, 0, 0, 0.4)";
+                        e.target.style.transform = "translateY(-2px)";
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (reportReason) {
+                        e.target.style.boxShadow = "0 4px 16px rgba(139, 0, 0, 0.3)";
+                        e.target.style.transform = "translateY(0)";
+                      }
+                    }}
+                  >
+                    Submit Report
+                  </button>
+                </div>
+
+                {/* Disclaimer */}
+                <p style={{
+                  fontSize: "0.75rem",
+                  color: "#A06070",
+                  marginTop: "16px",
+                  textAlign: "center",
+                  lineHeight: "1.5",
+                }}>
+                  🔒 Your report will be reviewed by our moderation team. False reports may result in account restrictions.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </>
   );
