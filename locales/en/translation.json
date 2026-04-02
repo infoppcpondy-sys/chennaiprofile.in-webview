@@ -37,7 +37,10 @@
     "findProfile": "Find Profile",
     "createNewProfile": "Create New Profile",
     "findingMatch": "✓ Finding your perfect match...",
-    "profileSearch": "✓ Profile search initiated..."
+    "profileSearch": "✓ Profile search initiated...",
+    "whatsappCardText": "For chat on WhatsApp Click This Image",
+    "findMaleProfiles": "Find Male Profiles",
+    "findFemaleProfiles": "Find Female Profiles"
   },
   "registration": {
     "heading": "Matrimony Profile Registration",

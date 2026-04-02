@@ -2,12 +2,25 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
+// Dummy profile data (same as search.jsx)
+const DUMMY = [
+  { id:1,  regId:"MAT1001", name:"Aravind Kumar",    caste:"Brahmin",     gender:"Male",   language:"Tamil",     marital:"Single",           age:27, phone:"9876543211", photo:"https://i.pravatar.cc/80?img=11" },
+  { id:2,  regId:"MAT1002", name:"Priya Devi",        caste:"Vellalar",    gender:"Female", language:"Tamil",     marital:"Single",           age:24, phone:"9876543212", photo:"https://i.pravatar.cc/80?img=47" },
+  { id:3,  regId:"MAT1003", name:"Karthik Raja",      caste:"Gounder",     gender:"Male",   language:"Tamil",     marital:"Divorce",          age:31, phone:"9876543213", photo:"https://i.pravatar.cc/80?img=15" },
+  { id:4,  regId:"MAT1004", name:"Meena Lakshmi",     caste:"Nadar",       gender:"Female", language:"Tamil",     marital:"Widow",            age:29, phone:"9876543214", photo:"https://i.pravatar.cc/80?img=49" },
+  { id:5,  regId:"MAT1005", name:"Venkatesh Raman",   caste:"Pillai",      gender:"Male",   language:"Telugu",    marital:"Single",           age:26, phone:"9876543215", photo:"https://i.pravatar.cc/80?img=13" },
+  { id:6,  regId:"MAT1006", name:"Anitha Selvam",     caste:"Mudaliar",    gender:"Female", language:"Tamil",     marital:"Awaiting Divorce", age:33, phone:"9876543216", photo:"https://i.pravatar.cc/80?img=44" },
+];
+
 export default function Home() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   
-  // Get caste options from translations
+  // Get caste options and other translations
   const casteOptions = t("registration.casteOptions", { returnObjects: true }) || [];
+  const languageOptions = t("search.languageOptions", { returnObjects: true }) || [];
+  const maritalOptions = t("search.maritalOptions", { returnObjects: true }) || [];
+  const genderOptions = t("search.genderOptions", { returnObjects: true }) || [];
   
   const [quickSearch, setQuickSearch] = useState({
     gender: '',
@@ -20,6 +33,9 @@ export default function Home() {
   const [feedbackMessage, setFeedbackMessage] = useState('');
   const [showRegistrationModal, setShowRegistrationModal] = useState(false);
   const [adIndex, setAdIndex] = useState(0);
+  const [searchResult, setSearchResult] = useState(null);
+  const [showSearchResultModal, setShowSearchResultModal] = useState(false);
+  const [showContact, setShowContact] = useState(false);
   const [registrationData, setRegistrationData] = useState({
     createdFor: '',
     name: '',
@@ -79,9 +95,31 @@ export default function Home() {
 
   const handleRegSearchSubmit = (e) => {
     e.preventDefault();
-    setFeedbackMessage(t('home.profileSearch'));
-    setTimeout(() => setFeedbackMessage(''), 3000);
+    const profile = DUMMY.find(p => p.regId.toLowerCase() === regNumber.toLowerCase());
+    if (profile) {
+      setSearchResult(profile);
+      setShowSearchResultModal(true);
+      setFeedbackMessage(t('home.profileSearch'));
+      setTimeout(() => setFeedbackMessage(''), 2000);
+    } else {
+      setFeedbackMessage('Profile not found');
+      setTimeout(() => setFeedbackMessage(''), 3000);
+    }
   };
+
+  const maskPhone = (phone) => {
+    if (!phone) return "";
+    const phoneStr = phone.toString();
+    if (phoneStr.length <= 5) return phoneStr;
+    return phoneStr.substring(0, 5) + "*".repeat(phoneStr.length - 5);
+  };
+
+  const getLabel = (options, value) => {
+    const found = options.find(o => o.value === value);
+    return found ? found.label : value;
+  };
+
+  const maritalColor = (m) => ({ "Single":"#e8fdf0:#1a7a40", "Divorce":"#fff3e0:#d35400", "Widow":"#f3e8fd:#7d3c98", "Awaiting Divorce":"#fef9e7:#b7950b" }[m] || "#f0f0f0:#666").split(":");
 
   return (
     <div style={{ fontFamily: "'Cormorant Garamond', 'Georgia', serif", minHeight: '100vh', background: '#fdf8f2' }}>
@@ -1496,7 +1534,7 @@ export default function Home() {
                 </div>
               </div>
 
-              <form onSubmit={handleQuickSearchSubmit}>
+              <form onSubmit={handleRegSearchSubmit}>
                 <div className="field">
                   <label>{t('home.regNumber')}</label>
                   <input
@@ -1551,7 +1589,7 @@ export default function Home() {
                 </div>
 
                 <button type="submit" className="btn-primary">
-                  <span>{t('home.search')}</span>
+                  <span>{t('home.findProfile')}</span>
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                     <path d="M6 12l4-4-4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
                   </svg>
@@ -1611,7 +1649,7 @@ export default function Home() {
 
             {/* WhatsApp Contact Card */}
             <a href="https://wa.me/9715976299" target="_blank" rel="noopener noreferrer" className="whatsapp-card" title="Contact us on WhatsApp">
-              <span className="whatsapp-card-text">For chat on WhatsApp Click This Image</span>
+              <span className="whatsapp-card-text">{t('home.whatsappCardText')}</span>
               <img src="/assets/whatsapp_contact_edit.png" alt="WhatsApp Contact" className="whatsapp-card-image" 
                 onError={(e) => { e.target.style.display = 'none'; }} />
             </a>
@@ -1628,7 +1666,7 @@ export default function Home() {
           <div>
             <div className="scroller-title">
               <span className="scroller-title-icon">👨</span>
-              <span>Find Male Profiles</span>
+              <span>{t('home.findMaleProfiles')}</span>
             </div>
             <div className="profiles-scroller">
               <div className="scroller-track">
@@ -1653,7 +1691,7 @@ export default function Home() {
           <div style={{marginTop: '40px'}}>
             <div className="scroller-title">
               <span className="scroller-title-icon">👩</span>
-              <span>Find Female Profiles</span>
+              <span>{t('home.findFemaleProfiles')}</span>
             </div>
             <div className="profiles-scroller">
               <div className="scroller-track">
@@ -1799,6 +1837,93 @@ export default function Home() {
                   {t('login.disclaimer')} <a href="#">{t('login.termsConditions')}</a> {t('login.and')} <a href="#">{t('login.privacyPolicy')}</a>
                 </div>
               </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Search Result Modal */}
+      {showSearchResultModal && searchResult && (
+        <div className="modal-overlay" onClick={() => setShowSearchResultModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <button 
+                className="modal-close-btn"
+                onClick={() => setShowSearchResultModal(false)}
+              >
+                ✕
+              </button>
+              <div className="modal-header-title">{t('detail.profileDetails') || 'Profile Details'}</div>
+            </div>
+
+            <div className="modal-body">
+              {/* Profile Card */}
+              <div style={{ background: "linear-gradient(135deg, #ffffff 0%, #fafbfc 100%)", borderRadius: 12, overflow: "hidden", boxShadow: "0 2px 8px rgba(0,0,0,0.1)", border: "2px solid rgba(201, 145, 58, 0.15)" }}>
+                <img 
+                  src={searchResult.photo} 
+                  alt={searchResult.name}
+                  style={{ width: "100%", height: 240, objectFit: "cover", background: "linear-gradient(135deg, #fdecea, #fff)" }}
+                  onError={(e) => { e.target.src=`https://ui-avatars.com/api/?name=${encodeURIComponent(searchResult.name)}&background=c0392b&color=fff&size=280`; }}
+                />
+                
+                <div style={{ padding: "16px 14px" }}>
+                  <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 16, fontWeight: 700, color: "#1a1a1a", marginBottom: 4 }}>{searchResult.name}</div>
+                  <div style={{ fontSize: 11, color: "#999", fontFamily: "Georgia,serif", marginBottom: 10, background: "#fdecea", color: "#c0392b", padding: "3px 9px", borderRadius: 4, display: "inline-block" }}>{searchResult.regId}</div>
+                  
+                  {/* Badges */}
+                  <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 12, marginTop: 8 }}>
+                    <span style={{ display: "inline-block", padding: "4px 10px", borderRadius: 16, fontSize: 11, fontWeight: 600, fontFamily: "Georgia,serif", background: searchResult.gender === "Male" ? "#e8f4fd" : "#fde8f0", color: searchResult.gender === "Male" ? "#1a6ea8" : "#c0392b" }}>
+                      {getLabel(genderOptions, searchResult.gender)}
+                    </span>
+                    <span style={{ display: "inline-block", padding: "4px 10px", borderRadius: 16, fontSize: 11, fontWeight: 600, fontFamily: "Georgia,serif", background: "#f5f5f5", color: "#666" }}>{searchResult.age} {t("detail.yrs")}</span>
+                    {(() => {
+                      const [bg, fg] = maritalColor(searchResult.marital);
+                      return (
+                        <span style={{ display: "inline-block", padding: "4px 10px", borderRadius: 16, fontSize: 11, fontWeight: 600, fontFamily: "Georgia,serif", background: bg, color: fg }}>
+                          {getLabel(maritalOptions, searchResult.marital)}
+                        </span>
+                      );
+                    })()}
+                  </div>
+
+                  {/* Info */}
+                  <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 12, fontSize: 12, color: "#666", fontFamily: "Georgia,serif" }}>
+                    <div><span style={{ fontWeight: 700, color: "#7B1C2E" }}>{t("search.casteLabel")}:</span> {searchResult.caste}</div>
+                    <div><span style={{ fontWeight: 700, color: "#7B1C2E" }}>{t("search.languageLabel")}:</span> {getLabel(languageOptions, searchResult.language)}</div>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div style={{ display: "flex", gap: 8, paddingTop: 10, borderTop: "1px solid #f0f0f0" }}>
+                    <button 
+                      onClick={() => {
+                        setShowSearchResultModal(false);
+                        navigate(`/detail/${searchResult.id}`, { state: { profile: searchResult } });
+                      }}
+                      style={{ flex: 1, padding: "8px 12px", borderRadius: 6, border: "none", fontSize: 12, fontFamily: "Georgia,serif", fontWeight: 600, cursor: "pointer", background: "linear-gradient(135deg, #7B1C2E, #9B2A40)", color: "#fff", transition: "all 0.2s" }}
+                      onMouseOver={(e) => e.target.style.background = "linear-gradient(135deg, #5A1620, #7B1C2E)"}
+                      onMouseOut={(e) => e.target.style.background = "linear-gradient(135deg, #7B1C2E, #9B2A40)"}
+                    >
+                      {t("search.moreDetails") || "More Details"}
+                    </button>
+                    <button 
+                      onClick={() => setShowContact(!showContact)}
+                      style={{ flex: 1, padding: "8px 12px", borderRadius: 6, border: "1px solid #ddd", fontSize: 12, fontFamily: "Georgia,serif", fontWeight: 600, cursor: "pointer", background: "#f0f0f0", color: "#333", transition: "all 0.2s" }}
+                      onMouseOver={(e) => e.target.style.background = "#e8e8e8"}
+                      onMouseOut={(e) => e.target.style.background = "#f0f0f0"}
+                    >
+                      {showContact ? "✕ Hide" : "📞 Contact"}
+                    </button>
+                  </div>
+
+                  {/* Contact Info */}
+                  {showContact && (
+                    <div style={{ background: "#fdecea", padding: "10px 12px", borderRadius: 6, marginTop: 10, textAlign: "center", border: "1px solid #e0c8c8" }}>
+                      <div style={{ fontSize: 11, color: "#666", marginBottom: 4 }}>{t("search.phoneLabel") || "Phone"}</div>
+                      <div style={{ fontSize: 14, fontWeight: 700, color: "#7B1C2E", fontFamily: "monospace", letterSpacing: "1px" }}>{maskPhone(searchResult.phone)}</div>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         </div>
