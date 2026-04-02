@@ -516,7 +516,7 @@ export default function Detail() {
               }}
             >
               <span style={{ fontSize: 16 }}>⚠️</span>
-              Report Profile
+              {t('common.reportProfile')}
             </button>
           </div>
         </div>
@@ -579,16 +579,8 @@ export default function Detail() {
                   margin: 0,
                   letterSpacing: "0.02em",
                 }}>
-                  Report Profile
+                  {t('common.reportProfile')}
                 </h2>
-                <p style={{
-                  color: "rgba(255, 215, 200, 0.9)",
-                  fontSize: "0.9rem",
-                  marginTop: "8px",
-                  margin: "8px 0 0",
-                }}>
-                  Help us maintain a safe community
-                </p>
               </div>
 
               {/* Modal Body */}
@@ -599,15 +591,15 @@ export default function Detail() {
                   marginBottom: "24px",
                   lineHeight: "1.6",
                 }}>
-                  Please select the reason for reporting this profile:
+                  {t('detail.reportReason')}
                 </p>
 
                 {/* Report Options */}
                 <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginBottom: "24px" }}>
                   {[
-                    { value: "already_married", label: "👰 Already Married", icon: "👰" },
-                    { value: "misinformation", label: "⚠️ Misinformation", icon: "⚠️" },
-                    { value: "fraud", label: "🚨 Fraud", icon: "🚨" },
+                    { value: "already_married", label: `👰 ${t('detail.reportAlreadyMarried')}`, icon: "👰" },
+                    { value: "misinformation", label: `⚠️ ${t('detail.reportMisinformation')}`, icon: "⚠️" },
+                    { value: "fraud", label: `🚨 ${t('detail.reportFraud')}`, icon: "🚨" },
                   ].map((option) => (
                     <label key={option.value} style={{
                       display: "flex",
@@ -714,7 +706,7 @@ export default function Detail() {
                   textAlign: "center",
                   lineHeight: "1.5",
                 }}>
-                  🔒 Your report will be reviewed by our moderation team. False reports may result in account restrictions.
+                  🔒 {t('detail.reportDisclaimer')}
                 </p>
               </div>
             </div>
