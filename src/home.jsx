@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
@@ -10,7 +10,24 @@ const DUMMY = [
   { id:4,  regId:"MAT1004", name:"Meena Lakshmi",     caste:"Nadar",       gender:"Female", language:"Tamil",     marital:"Widow",            age:29, phone:"9876543214", photo:"https://i.pravatar.cc/80?img=49" },
   { id:5,  regId:"MAT1005", name:"Venkatesh Raman",   caste:"Pillai",      gender:"Male",   language:"Telugu",    marital:"Single",           age:26, phone:"9876543215", photo:"https://i.pravatar.cc/80?img=13" },
   { id:6,  regId:"MAT1006", name:"Anitha Selvam",     caste:"Mudaliar",    gender:"Female", language:"Tamil",     marital:"Awaiting Divorce", age:33, phone:"9876543216", photo:"https://i.pravatar.cc/80?img=44" },
+  { id:7,  regId:"MAT1007", name:"Suresh Balaji",     caste:"Vishwakarma", gender:"Male",   language:"Tamil",     marital:"Single",           age:28, phone:"9876543217", photo:"https://i.pravatar.cc/80?img=17" },
+  { id:8,  regId:"MAT1008", name:"Kavitha Nair",      caste:"Others",      gender:"Female", language:"Malayalam", marital:"Single",           age:25, phone:"9876543218", photo:"https://i.pravatar.cc/80?img=48" },
+  { id:9,  regId:"MAT1009", name:"Dinesh Kannan",     caste:"Chettiar",    gender:"Male",   language:"Tamil",     marital:"Divorce",          age:35, phone:"9876543219", photo:"https://i.pravatar.cc/80?img=19" },
+  { id:10, regId:"MAT1010", name:"Saranya Priya",     caste:"Brahmin",     gender:"Female", language:"Tamil",     marital:"Single",           age:23, phone:"9876543220", photo:"https://i.pravatar.cc/80?img=46" },
+  { id:11, regId:"MAT1011", name:"Manikandan S",      caste:"Thevar",      gender:"Male",   language:"Tamil",     marital:"Single",           age:30, phone:"9876543221", photo:"https://i.pravatar.cc/80?img=12" },
+  { id:12, regId:"MAT1012", name:"Deepa Sundaram",    caste:"Naicker",     gender:"Female", language:"Telugu",    marital:"Widow",            age:32, phone:"9876543222", photo:"https://i.pravatar.cc/80?img=45" },
+  { id:13, regId:"MAT1013", name:"Rajesh Pandian",    caste:"Agamudayar",  gender:"Male",   language:"Tamil",     marital:"Single",           age:29, phone:"9876543223", photo:"https://i.pravatar.cc/80?img=14" },
+  { id:14, regId:"MAT1014", name:"Lakshmi Priya",     caste:"Vellalar",    gender:"Female", language:"Tamil",     marital:"Single",           age:26, phone:"9876543224", photo:"https://i.pravatar.cc/80?img=43" },
+  { id:15, regId:"MAT1015", name:"Balamurugan K",     caste:"Yadav",       gender:"Male",   language:"Tamil",     marital:"Single",           age:27, phone:"9876543225", photo:"https://i.pravatar.cc/80?img=16" },
 ];
+
+// Split by gender
+const DUMMY_MALE   = DUMMY.filter(p => p.gender === 'Male');
+const DUMMY_FEMALE = DUMMY.filter(p => p.gender === 'Female');
+
+// Duplicate for seamless loop
+const DUMMY_MALE_LOOP   = [...DUMMY_MALE,   ...DUMMY_MALE,   ...DUMMY_MALE];
+const DUMMY_FEMALE_LOOP = [...DUMMY_FEMALE, ...DUMMY_FEMALE, ...DUMMY_FEMALE];
 
 export default function Home() {
   const { t } = useTranslation();
@@ -42,6 +59,18 @@ export default function Home() {
     countryCode: '+91',
     phone: '',
   });
+  const [isPausedMale,   setIsPausedMale]   = useState(false);
+  const [isPausedFemale, setIsPausedFemale] = useState(false);
+  const [filteredResults, setFilteredResults] = useState([]);
+  const [showFilterResultsModal, setShowFilterResultsModal] = useState(false);
+
+  // Refs for vertical scrollers
+  const maleScrollRef    = useRef(null);
+  const femaleScrollRef  = useRef(null);
+  const maleAnimRef      = useRef(null);
+  const femaleAnimRef    = useRef(null);
+  const malePosRef       = useRef(0);
+  const femalePosRef     = useRef(0);
 
   // Advertisement images array
   const adImages = [
@@ -57,6 +86,42 @@ export default function Home() {
     }, 5000);
     return () => clearInterval(adTimer);
   }, [adImages.length]);
+
+  // Auto-scroll male vertical carousel
+  useEffect(() => {
+    const el = maleScrollRef.current;
+    if (!el) return;
+    const speed = 0.6;
+    const step = () => {
+      if (!isPausedMale && el) {
+        malePosRef.current += speed;
+        const oneSetHeight = el.scrollHeight / 3;
+        if (malePosRef.current >= oneSetHeight) malePosRef.current = 0;
+        el.scrollTop = malePosRef.current;
+      }
+      maleAnimRef.current = requestAnimationFrame(step);
+    };
+    maleAnimRef.current = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(maleAnimRef.current);
+  }, [isPausedMale]);
+
+  // Auto-scroll female vertical carousel
+  useEffect(() => {
+    const el = femaleScrollRef.current;
+    if (!el) return;
+    const speed = 0.6;
+    const step = () => {
+      if (!isPausedFemale && el) {
+        femalePosRef.current += speed;
+        const oneSetHeight = el.scrollHeight / 3;
+        if (femalePosRef.current >= oneSetHeight) femalePosRef.current = 0;
+        el.scrollTop = femalePosRef.current;
+      }
+      femaleAnimRef.current = requestAnimationFrame(step);
+    };
+    femaleAnimRef.current = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(femaleAnimRef.current);
+  }, [isPausedFemale]);
 
   // Profile data
   const maleProfiles = [
@@ -89,7 +154,37 @@ export default function Home() {
 
   const handleQuickSearchSubmit = (e) => {
     e.preventDefault();
-    setFeedbackMessage(t('home.findingMatch'));
+    
+    if (regNumber.trim()) {
+      const profile = DUMMY.find(p => p.regId.toLowerCase() === regNumber.toLowerCase());
+      if (profile) {
+        setSearchResult(profile);
+        setShowSearchResultModal(true);
+        setFeedbackMessage(t('home.profileSearch'));
+        setTimeout(() => setFeedbackMessage(''), 2000);
+        return;
+      } else {
+        setFeedbackMessage('Profile not found');
+        setTimeout(() => setFeedbackMessage(''), 3000);
+        return;
+      }
+    }
+    
+    const results = DUMMY.filter(profile => {
+      if (quickSearch.gender && profile.gender !== quickSearch.gender) return false;
+      if (quickSearch.language && quickSearch.language !== 'Any' && profile.language !== quickSearch.language) return false;
+      if (quickSearch.caste && profile.caste !== quickSearch.caste) return false;
+      if (quickSearch.subcaste && quickSearch.subcaste !== 'Any' && quickSearch.subcaste !== '') { }
+      return true;
+    });
+    
+    if (results.length > 0) {
+      setFilteredResults(results);
+      setShowFilterResultsModal(true);
+      setFeedbackMessage(t('home.foundProfiles') || `Found ${results.length} profile(s)`);
+    } else {
+      setFeedbackMessage(t('home.noProfilesFound') || 'No profiles found matching your criteria');
+    }
     setTimeout(() => setFeedbackMessage(''), 3000);
   };
 
@@ -263,17 +358,18 @@ export default function Home() {
 
         .whatsapp-card {
           background: linear-gradient(135deg, #ffffff 0%, #fafbfc 100%);
-          border-radius: 16px;
-          padding: clamp(20px, 5vw, 32px);
+          border-radius: 12px;
+          padding: 14px 16px;
           border: 1px solid rgba(201,145,58,0.15);
           box-shadow: var(--shadow-md);
           display: flex;
           flex-direction: column;
           align-items: center;
-          gap: 16px;
+          gap: 10px;
           text-align: center;
           transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
           cursor: pointer;
+          text-decoration: none;
         }
 
         .whatsapp-card:hover {
@@ -291,7 +387,7 @@ export default function Home() {
         }
 
         .whatsapp-card-text {
-          font-size: clamp(14px, 2vw, 16px);
+          font-size: 13px;
           color: var(--text-dark);
           font-weight: 600;
           font-family: 'Jost', sans-serif;
@@ -301,10 +397,134 @@ export default function Home() {
 
         .whatsapp-card-image {
           width: auto;
-          height: 60px;
+          height: 50px;
           object-fit: contain;
           display: block;
           transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* ── VERTICAL PROFILE CAROUSEL (AUTO-SCROLL) ── */
+        .vertical-carousel-wrapper {
+          position: relative;
+          border-radius: 12px;
+          overflow: hidden;
+          border: 1px solid rgba(201,145,58,0.15);
+          box-shadow: var(--shadow-sm);
+          background: linear-gradient(135deg, #ffffff 0%, #fafbfc 100%);
+          flex: 1;
+        }
+
+        /* Fade gradient top/bottom for polish */
+        .vertical-carousel-wrapper::before,
+        .vertical-carousel-wrapper::after {
+          content: '';
+          position: absolute;
+          left: 0; right: 0;
+          height: 40px;
+          z-index: 2;
+          pointer-events: none;
+        }
+        .vertical-carousel-wrapper::before {
+          top: 0;
+          background: linear-gradient(to bottom, rgba(255,255,255,0.95), transparent);
+        }
+        .vertical-carousel-wrapper::after {
+          bottom: 0;
+          background: linear-gradient(to top, rgba(255,255,255,0.95), transparent);
+        }
+
+        .profiles-scroller-vertical {
+          display: flex;
+          flex-direction: column;
+          gap: 0;
+          height: 420px;
+          overflow-y: hidden;
+          scroll-behavior: auto;
+          -webkit-overflow-scrolling: touch;
+          padding: 0;
+          position: relative;
+        }
+
+        .profile-card-vertical {
+          flex: 0 0 auto;
+          background: transparent;
+          border-radius: 0;
+          overflow: hidden;
+          transition: background 0.25s ease;
+          cursor: pointer;
+          border-bottom: 1px solid rgba(201,145,58,0.10);
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          gap: 10px;
+          padding: 8px 10px;
+        }
+
+        .profile-card-vertical:hover {
+          background: rgba(123, 28, 46, 0.04);
+        }
+
+        .profile-card-vertical:last-child {
+          border-bottom: none;
+        }
+
+        .profile-image-vertical {
+          width: 44px;
+          height: 44px;
+          object-fit: cover;
+          border-radius: 50%;
+          border: 2px solid rgba(201,145,58,0.3);
+          flex-shrink: 0;
+          background: linear-gradient(135deg, var(--gold-light), var(--maroon-light));
+          display: block;
+        }
+
+        .profile-info-vertical {
+          flex: 1;
+          min-width: 0;
+          text-align: left;
+        }
+
+        .profile-name-vertical {
+          font-family: 'Cormorant Garamond', serif;
+          font-size: 0.92rem;
+          font-weight: 700;
+          color: var(--text-dark);
+          margin-bottom: 1px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .profile-age-vertical {
+          font-family: 'Jost', sans-serif;
+          font-size: 0.68rem;
+          color: var(--text-light);
+          letter-spacing: 0.03em;
+        }
+
+        .profile-badge-vertical {
+          font-family: 'Jost', sans-serif;
+          font-size: 0.6rem;
+          font-weight: 600;
+          padding: 2px 7px;
+          border-radius: 10px;
+          flex-shrink: 0;
+          letter-spacing: 0.03em;
+        }
+
+        /* ── SPLIT CAROUSEL CONTAINER ── */
+        .split-carousel-container {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 10px;
+          flex: 1;
+        }
+
+        @media (max-width: 480px) {
+          .split-carousel-container {
+            grid-template-columns: 1fr;
+          }
         }
 
         /* ── TOAST ── */
@@ -351,14 +571,8 @@ export default function Home() {
         }
 
         @keyframes fadeInDown {
-          from {
-            opacity: 0;
-            transform: translateY(-10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
+          from { opacity: 0; transform: translateY(-10px); }
+          to { opacity: 1; transform: translateY(0); }
         }
 
         .section-heading {
@@ -376,14 +590,8 @@ export default function Home() {
         }
 
         @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
         }
 
         /* ── SEARCH CARDS ── */
@@ -399,17 +607,21 @@ export default function Home() {
           display: flex;
           flex-direction: column;
           gap: 24px;
+          align-items: stretch;
         }
 
         .cards-column-right {
           display: flex;
           flex-direction: column;
-          gap: 12px;
+          gap: 10px;
+          height: auto;
+          min-height: fit-content;
+          align-items: stretch;
         }
 
         @media (max-width: 720px) {
           .cards-grid { grid-template-columns: 1fr; gap: 28px; }
-          .cards-column-right { display: none; }
+          .cards-column-right { display: flex; order: -1; }
           .header-inner { flex-direction: column; text-align: center; gap: 28px; padding: 40px 16px 28px; }
           .header-logo-container { flex-direction: column; gap: 16px; }
           .header-divider { display: none; }
@@ -422,6 +634,28 @@ export default function Home() {
           .fields-row { grid-template-columns: 1fr; gap: 12px; }
           .footer-inner { flex-direction: column; text-align: center; gap: 12px; }
           .footer { padding: 24px 16px; }
+          .profiles-scroller-vertical { height: 320px; }
+          .scroller-title { font-size: clamp(1.2rem, 2vw, 1.4rem); }
+          .profile-card { flex: 0 0 160px; }
+          .profile-card:hover { transform: translateY(-6px) scale(1); }
+          .scroller-section { margin-top: 36px; }
+          .profiles-scroller { gap: 16px; }
+          .profile-image { height: 170px; font-size: 2.8rem; }
+          .profile-info { padding: 12px; }
+          .profile-name { font-size: 0.95rem; }
+          .ad-carousel { height: 220px; }
+          .ad-nav-btn { width: 35px; height: 35px; }
+          .btn-create-profile { padding: 14px 24px; font-size: 0.95rem; }
+        }
+
+        @media (min-width: 721px) and (max-width: 1024px) {
+          .cards-grid { grid-template-columns: 1.2fr 0.8fr; gap: 24px; }
+          .cards-column-right { gap: 10px; }
+          .main { padding: 28px 20px 48px; }
+          .profiles-scroller-vertical { height: 380px; }
+          .scroller-section { margin-top: 40px; }
+          .profile-card { flex: 0 0 180px; }
+          .profile-image { height: 180px; font-size: 2.8rem; }
         }
 
         @media (max-width: 480px) {
@@ -447,6 +681,21 @@ export default function Home() {
           .tip-box-text { font-size: 0.75rem; }
           .tip-box-icon { font-size: 1rem; }
           .ornament { gap: 10px; margin-bottom: 6px; }
+          .profiles-scroller-vertical { height: 280px; }
+          .profile-card-vertical { padding: 6px 8px; gap: 8px; }
+          .profile-image-vertical { width: 38px; height: 38px; }
+          .profile-name-vertical { font-size: 0.85rem; }
+          .scroller-title { font-size: 1.1rem; }
+          .scroller-title-icon { font-size: 1.4rem; }
+          .profile-card { flex: 0 0 140px; }
+          .profile-image { height: 150px; font-size: 2.5rem; }
+          .profile-info { padding: 10px; }
+          .profile-name { font-size: 0.9rem; }
+          .profile-age { font-size: 0.65rem; }
+          .ad-carousel { height: 200px; }
+          .ad-image { border-radius: 10px; }
+          .ad-nav-btn { width: 30px; height: 30px; font-size: 1.2rem; }
+          .btn-create-profile { padding: 14px 20px; font-size: 0.9rem; }
         }
 
         @media (max-width: 360px) {
@@ -456,6 +705,15 @@ export default function Home() {
           .main { padding: 16px 8px 24px; }
           .card { padding: 16px 12px; }
           .field select, .field input { font-size: 13px; }
+          .profiles-scroller-vertical { height: 240px; }
+          .profile-card { flex: 0 0 120px; }
+          .profile-image { height: 130px; font-size: 2rem; }
+          .ad-carousel { height: 150px; }
+          .ad-nav-btn { width: 28px; height: 28px; }
+          .btn-create-profile { padding: 12px 16px; font-size: 0.85rem; }
+          .scroller-section { margin-top: 28px; }
+          .profiles-scroller { gap: 12px; }
+          .scroller-track { gap: 12px; }
         }
 
         .card {
@@ -752,12 +1010,8 @@ export default function Home() {
         }
 
         @keyframes scrollLoop {
-          0% {
-            transform: translateX(0);
-          }
-          100% {
-            transform: translateX(-50%);
-          }
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
         }
 
         .profile-card {
@@ -808,44 +1062,10 @@ export default function Home() {
           letter-spacing: 0.05em;
         }
 
-        .scroller-controls {
-          display: flex;
-          justify-content: flex-end;
-          gap: 12px;
-          margin-top: 16px;
-        }
-
-        .scroller-btn {
-          width: 40px;
-          height: 40px;
-          border-radius: 50%;
-          background: linear-gradient(135deg, var(--maroon) 0%, var(--maroon-light) 100%);
-          border: none;
-          color: #fff;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          transition: all 0.3s ease;
-          box-shadow: 0 4px 12px rgba(123, 28, 46, 0.2);
-        }
-
-        .scroller-btn:hover {
-          transform: scale(1.1);
-          box-shadow: 0 6px 20px rgba(123, 28, 46, 0.3);
-        }
-
-        .scroller-btn:active {
-          transform: scale(0.95);
-        }
-
         /* ── REGISTRATION MODAL ── */
         .modal-overlay {
           position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
+          top: 0; left: 0; right: 0; bottom: 0;
           background: rgba(42, 24, 16, 0.7);
           display: flex;
           align-items: center;
@@ -856,12 +1076,8 @@ export default function Home() {
         }
 
         @keyframes fadeIn {
-          from {
-            opacity: 0;
-          }
-          to {
-            opacity: 1;
-          }
+          from { opacity: 0; }
+          to { opacity: 1; }
         }
 
         .modal-content {
@@ -877,14 +1093,8 @@ export default function Home() {
         }
 
         @keyframes slideUp {
-          from {
-            opacity: 0;
-            transform: translateY(30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
+          from { opacity: 0; transform: translateY(30px); }
+          to { opacity: 1; transform: translateY(0); }
         }
 
         .modal-header {
@@ -898,10 +1108,7 @@ export default function Home() {
         .modal-header::after {
           content: '';
           position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
+          top: 0; left: 0; right: 0; bottom: 0;
           background-image:
             repeating-linear-gradient(45deg, rgba(255,255,255,0.1) 0px, rgba(255,255,255,0.1) 1px, transparent 1px, transparent 12px),
             repeating-linear-gradient(-45deg, rgba(255,255,255,0.06) 0px, rgba(255,255,255,0.06) 1px, transparent 1px, transparent 12px);
@@ -917,9 +1124,7 @@ export default function Home() {
           letter-spacing: 0.02em;
         }
 
-        .modal-body {
-          padding: 32px 24px;
-        }
+        .modal-body { padding: 32px 24px; }
 
         .modal-title {
           font-family: 'Cormorant Garamond', serif;
@@ -930,9 +1135,7 @@ export default function Home() {
           margin-bottom: 28px;
         }
 
-        .modal-form-group {
-          margin-bottom: 20px;
-        }
+        .modal-form-group { margin-bottom: 20px; }
 
         .modal-label {
           display: block;
@@ -994,9 +1197,7 @@ export default function Home() {
           cursor: pointer;
         }
 
-        .modal-phone-code:focus {
-          border-color: var(--gold-dark);
-        }
+        .modal-phone-code:focus { border-color: var(--gold-dark); }
 
         .modal-button {
           width: 100%;
@@ -1021,14 +1222,8 @@ export default function Home() {
           box-shadow: 0 4px 16px rgba(255, 140, 0, 0.3);
         }
 
-        .modal-button:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 8px 24px rgba(255, 140, 0, 0.4);
-        }
-
-        .modal-button:active {
-          transform: translateY(0);
-        }
+        .modal-button:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(255, 140, 0, 0.4); }
+        .modal-button:active { transform: translateY(0); }
 
         .modal-disclaimer {
           font-family: 'Jost', sans-serif;
@@ -1047,10 +1242,8 @@ export default function Home() {
 
         .modal-close-btn {
           position: absolute;
-          top: 16px;
-          right: 16px;
-          width: 36px;
-          height: 36px;
+          top: 16px; right: 16px;
+          width: 36px; height: 36px;
           background: rgba(255, 255, 255, 0.2);
           border: none;
           border-radius: 50%;
@@ -1064,49 +1257,8 @@ export default function Home() {
           z-index: 10;
         }
 
-        .modal-close-btn:hover {
-          background: rgba(255, 255, 255, 0.3);
-        }
-
-        .modal-close-btn:active {
-          transform: scale(0.9);
-        }
-
-        .profile-options {
-          display: grid;
-          grid-template-columns: 1fr 1fr 1fr;
-          gap: 8px;
-          margin-bottom: 20px;
-        }
-
-        .profile-option {
-          padding: 12px;
-          border: 2px solid #ddd;
-          border-radius: 8px;
-          background: #fff;
-          font-family: 'Jost', sans-serif;
-          font-size: 0.8rem;
-          font-weight: 600;
-          color: var(--text-dark);
-          cursor: pointer;
-          transition: all 0.3s ease;
-          text-align: center;
-        }
-
-        .profile-option:hover,
-        .profile-option.active {
-          border-color: var(--maroon);
-          background: rgba(123, 28, 46, 0.05);
-          color: var(--maroon);
-        }
-
-        .modal-hint-text {
-          font-family: 'Jost', sans-serif;
-          font-size: 0.75rem;
-          color: var(--maroon);
-          margin-top: 6px;
-          text-align: right;
-        }
+        .modal-close-btn:hover { background: rgba(255, 255, 255, 0.3); }
+        .modal-close-btn:active { transform: scale(0.9); }
 
         /* ── TIP BOX ── */
         .tip-box {
@@ -1128,11 +1280,7 @@ export default function Home() {
           transform: translateX(2px);
         }
 
-        .tip-box-icon {
-          font-size: 1.1rem;
-          flex-shrink: 0;
-          margin-top: 1px;
-        }
+        .tip-box-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
 
         .tip-box-text {
           font-family: 'Jost', sans-serif;
@@ -1141,117 +1289,7 @@ export default function Home() {
           line-height: 1.6;
         }
 
-        .tip-box-text strong {
-          color: var(--gold);
-          font-weight: 600;
-        }
-
-        /* ── STATS ── */
-        .stats-section {
-          margin-top: clamp(40px, 8vw, 60px);
-          padding: clamp(24px, 5vw, 40px);
-          background: linear-gradient(135deg, rgba(123,28,46,0.04) 0%, rgba(201,145,58,0.06) 100%);
-          border-radius: 16px;
-          border: 1px solid rgba(201,145,58,0.1);
-        }
-
-        .stats-grid {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: clamp(16px, 3vw, 28px);
-          margin-top: 28px;
-          max-width: 100%;
-          align-items: stretch;
-        }
-
-        .stat-card {
-          background: linear-gradient(135deg, #ffffff 0%, #fafbfc 100%);
-          border: 1px solid rgba(201,145,58,0.15);
-          border-radius: 14px;
-          padding: clamp(24px, 5vw, 32px) clamp(16px, 4vw, 24px);
-          text-align: center;
-          position: relative;
-          overflow: hidden;
-          transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-          box-shadow: var(--shadow-md);
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-        }
-
-        .stat-card:hover {
-          transform: translateY(-6px) scale(1.02);
-          box-shadow: var(--shadow-lg);
-          border-color: rgba(201,145,58,0.3);
-        }
-
-        .stat-card::before {
-          content: '';
-          position: absolute;
-          top: 0; left: 0; right: 0;
-          height: 3px;
-          background: linear-gradient(90deg, var(--gold), var(--maroon));
-          transform: scaleX(0);
-          transform-origin: left;
-          transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .stat-card:hover::before {
-          transform: scaleX(1);
-        }
-
-        .stat-card::after {
-          content: '';
-          position: absolute;
-          bottom: 0; left: 0; right: 0;
-          height: 2px;
-          background: linear-gradient(90deg, var(--maroon), var(--gold));
-          transform: scaleX(0);
-          transition: transform 0.3s ease;
-        }
-
-        .stat-card:hover::after { transform: scaleX(1); }
-
-        .stat-icon {
-          font-size: clamp(1.8rem, 5vw, 2.4rem);
-          margin-bottom: 12px;
-          display: block;
-          animation: bounce 3s ease-in-out infinite;
-          transition: transform 0.3s ease;
-        }
-
-        .stat-card:hover .stat-icon {
-          transform: scale(1.15) rotate(5deg);
-          animation: none;
-        }
-
-        @keyframes bounce {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-8px); }
-        }
-
-        .stat-number {
-          font-family: 'Cormorant Garamond', serif;
-          font-size: clamp(2rem, 6vw, 2.8rem);
-          font-weight: 700;
-          color: var(--maroon);
-          line-height: 1;
-        }
-
-        .stat-label {
-          font-family: 'Jost', sans-serif;
-          font-size: clamp(0.7rem, 2.5vw, 0.78rem);
-          letter-spacing: 0.12em;
-          text-transform: uppercase;
-          color: var(--text-light);
-          margin-top: 12px;
-          font-weight: 500;
-          transition: color 0.3s ease;
-        }
-
-        .stat-card:hover .stat-label {
-          color: var(--gold);
-        }
+        .tip-box-text strong { color: var(--gold); font-weight: 600; }
 
         /* ── ORNAMENT ── */
         .ornament {
@@ -1263,14 +1301,8 @@ export default function Home() {
         }
 
         @keyframes fadeInSlide {
-          from {
-            opacity: 0;
-            transform: translateY(-8px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
+          from { opacity: 0; transform: translateY(-8px); }
+          to { opacity: 1; transform: translateY(0); }
         }
 
         .ornament-line {
@@ -1310,6 +1342,7 @@ export default function Home() {
           transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
           border: 1px solid rgba(201,145,58,0.15);
           background: linear-gradient(135deg, #ffffff 0%, #fafbfc 100%);
+          margin-top: auto;
         }
 
         .ad-carousel:hover {
@@ -1338,8 +1371,7 @@ export default function Home() {
         .ad-image.fade-out {
           opacity: 0;
           position: absolute;
-          top: 0;
-          left: 0;
+          top: 0; left: 0;
         }
 
         .ad-dots {
@@ -1353,8 +1385,7 @@ export default function Home() {
         }
 
         .ad-dot {
-          width: 10px;
-          height: 10px;
+          width: 10px; height: 10px;
           border-radius: 50%;
           background: rgba(255, 255, 255, 0.4);
           border: 2px solid rgba(255, 255, 255, 0.6);
@@ -1368,16 +1399,13 @@ export default function Home() {
           transform: scale(1.2);
         }
 
-        .ad-dot:hover {
-          background: rgba(255, 255, 255, 0.7);
-        }
+        .ad-dot:hover { background: rgba(255, 255, 255, 0.7); }
 
         .ad-nav-btn {
           position: absolute;
           top: 50%;
           transform: translateY(-50%);
-          width: 44px;
-          height: 44px;
+          width: 44px; height: 44px;
           border-radius: 50%;
           background: rgba(255, 255, 255, 0.2);
           backdrop-filter: blur(4px);
@@ -1398,13 +1426,8 @@ export default function Home() {
           transform: translateY(-50%) scale(1.1);
         }
 
-        .ad-nav-btn.prev {
-          left: 16px;
-        }
-
-        .ad-nav-btn.next {
-          right: 16px;
-        }
+        .ad-nav-btn.prev { left: 16px; }
+        .ad-nav-btn.next { right: 16px; }
 
         /* ── ANNOUNCEMENT BAR ── */
         .top-scroll-bar {
@@ -1442,54 +1465,68 @@ export default function Home() {
         }
 
         @keyframes scrollLeft {
-          from {
-            transform: translateX(0%);
-          }
-          to {
-            transform: translateX(-100%);
-          }
+          from { transform: translateX(0%); }
+          to { transform: translateX(-100%); }
         }
 
-        @media (max-width: 768px) {
-          .top-scroll-bar {
-            padding: 8px 0;
-          }
-
-          .scroll-text {
-            font-size: clamp(0.65rem, 1.2vw, 0.8rem);
-            padding-right: 40px;
-          }
+        /* ── VERTICAL CAROUSEL HEADER ── */
+        .vertical-carousel-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 8px 10px 0;
+          margin-bottom: 0;
         }
 
-        @media (max-width: 480px) {
-          .top-scroll-bar {
-            padding: 6px 0;
-          }
+        .vertical-carousel-title {
+          font-family: 'Jost', sans-serif;
+          font-size: 0.68rem;
+          font-weight: 700;
+          letter-spacing: 0.2em;
+          text-transform: uppercase;
+          color: var(--gold-dark);
+        }
 
-          .scroll-text {
-            font-size: clamp(0.6rem, 1vw, 0.75rem);
-            padding-right: 30px;
-          }
+        .vertical-carousel-count {
+          font-family: 'Jost', sans-serif;
+          font-size: 0.65rem;
+          color: var(--text-light);
+          background: rgba(201,145,58,0.1);
+          padding: 2px 7px;
+          border-radius: 10px;
+        }
+
+        /* ── GENDER LABEL BAR ── */
+        .gender-label-bar {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          padding: 6px 10px 4px;
+          border-bottom: 1px solid rgba(201,145,58,0.12);
+        }
+
+        .gender-label-icon {
+          font-size: 0.85rem;
+        }
+
+        .gender-label-text {
+          font-family: 'Jost', sans-serif;
+          font-size: 0.65rem;
+          font-weight: 700;
+          letter-spacing: 0.15em;
+          text-transform: uppercase;
+        }
+
+        .gender-label-count {
+          margin-left: auto;
+          font-family: 'Jost', sans-serif;
+          font-size: 0.6rem;
+          color: var(--text-light);
+          background: rgba(201,145,58,0.1);
+          padding: 1px 6px;
+          border-radius: 8px;
         }
       `}</style>
-
-      {/* Header - Commented Out */}
-      {/* 
-      <header className="header">
-        <div className="header-pattern" />
-        <div className="header-inner">
-          <div className="header-logo-container">
-            <img src="/assets/chennai_profiles.png" alt="Logo" className="header-logo"
-              onError={(e) => { e.target.style.display = 'none'; }} />
-            <div className="header-text">
-              <div className="header-title">
-                Chennai<span>Profiles</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </header>
-      */}
 
       {/* Combined Announcement Bar */}
       <div className="top-scroll-bar">
@@ -1516,7 +1553,7 @@ export default function Home() {
 
         <div className="cards-grid">
 
-          {/* Left Column - Create Profile, Quick Search and Advertisement */}
+          {/* Left Column */}
           <div className="cards-column-left">
             {/* Create New Profile Button */}
             <div style={{marginTop: '0', marginBottom: '8px'}}>
@@ -1524,6 +1561,7 @@ export default function Home() {
                 <span>{t('home.createNewProfile')}</span>
               </button>
             </div>
+
             {/* Quick Search Card */}
             <div className="card">
               <div className="card-header">
@@ -1534,7 +1572,7 @@ export default function Home() {
                 </div>
               </div>
 
-              <form onSubmit={handleRegSearchSubmit}>
+              <form onSubmit={handleQuickSearchSubmit}>
                 <div className="field">
                   <label>{t('home.regNumber')}</label>
                   <input
@@ -1597,6 +1635,14 @@ export default function Home() {
               </form>
             </div>
 
+            {/* Our Other Services Heading */}
+            <div className="ornament">
+              <div className="ornament-line" />
+              <div className="ornament-diamond" />
+              <div className="ornament-line" />
+            </div>
+            <div className="section-heading">{t('home.otherServicesTitle') || 'Our Other Services'}</div>
+
             {/* Advertisement Carousel */}
             <div className="ad-carousel">
               <div className="ad-image-container">
@@ -1611,52 +1657,123 @@ export default function Home() {
                       position: index === adIndex ? 'relative' : 'absolute',
                       transition: 'opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
                     }}
-                    onError={(e) => {
-                      e.target.style.display = 'none';
-                    }}
+                    onError={(e) => { e.target.style.display = 'none'; }}
                   />
                 ))}
               </div>
-
-              {/* Navigation Buttons */}
-              <button
-                className="ad-nav-btn prev"
-                onClick={() => setAdIndex((prev) => (prev - 1 + adImages.length) % adImages.length)}
-                aria-label="Previous ad"
-              >
-                ‹
-              </button>
-              <button
-                className="ad-nav-btn next"
-                onClick={() => setAdIndex((prev) => (prev + 1) % adImages.length)}
-                aria-label="Next ad"
-              >
-                ›
-              </button>
-
-              {/* Indicator Dots */}
+              <button className="ad-nav-btn prev" onClick={() => setAdIndex((prev) => (prev - 1 + adImages.length) % adImages.length)} aria-label="Previous ad">‹</button>
+              <button className="ad-nav-btn next" onClick={() => setAdIndex((prev) => (prev + 1) % adImages.length)} aria-label="Next ad">›</button>
               <div className="ad-dots">
                 {adImages.map((_, index) => (
-                  <button
-                    key={index}
-                    className={`ad-dot ${index === adIndex ? 'active' : ''}`}
-                    onClick={() => setAdIndex(index)}
-                    aria-label={`Go to ad ${index + 1}`}
-                  />
+                  <button key={index} className={`ad-dot ${index === adIndex ? 'active' : ''}`} onClick={() => setAdIndex(index)} aria-label={`Go to ad ${index + 1}`} />
                 ))}
               </div>
             </div>
+          </div>
 
+          {/* Right Column - WhatsApp + Split Male/Female Vertical Carousels */}
+          <div className="cards-column-right">
             {/* WhatsApp Contact Card */}
             <a href="https://wa.me/9715976299" target="_blank" rel="noopener noreferrer" className="whatsapp-card" title="Contact us on WhatsApp">
               <span className="whatsapp-card-text">{t('home.whatsappCardText')}</span>
-              <img src="/assets/whatsapp_contact_edit.png" alt="WhatsApp Contact" className="whatsapp-card-image" 
+              <img src="/assets/whatsapp_contact_edit.png" alt="WhatsApp Contact" className="whatsapp-card-image"
                 onError={(e) => { e.target.style.display = 'none'; }} />
             </a>
-          </div>
 
-          {/* Right Column - Reserved for future content */}
-          <div className="cards-column-right">
+            {/* Split Male / Female Vertical Carousels */}
+            <div className="split-carousel-container">
+
+              {/* ── MALE CAROUSEL ── */}
+              <div className="vertical-carousel-wrapper">
+                <div className="gender-label-bar">
+                  <span className="gender-label-icon">👨</span>
+                  <span className="gender-label-text" style={{ color: '#1a6ea8' }}>Grooms</span>
+                  <span className="gender-label-count">{DUMMY_MALE.length}</span>
+                </div>
+                <div
+                  className="profiles-scroller-vertical"
+                  ref={maleScrollRef}
+                  onMouseEnter={() => setIsPausedMale(true)}
+                  onMouseLeave={() => setIsPausedMale(false)}
+                >
+                  {DUMMY_MALE_LOOP.map((profile, index) => {
+                    const [bg, fg] = maritalColor(profile.marital);
+                    return (
+                      <div
+                        key={`m-${profile.id}-${index}`}
+                        className="profile-card-vertical"
+                        onClick={() => navigate(`/detail/${profile.id}`, { state: { profile } })}
+                      >
+                        <img
+                          src={profile.photo}
+                          alt={profile.name}
+                          className="profile-image-vertical"
+                          onError={(e) => {
+                            e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.name)}&background=1a6ea8&color=fff&size=80`;
+                          }}
+                        />
+                        <div className="profile-info-vertical">
+                          <div className="profile-name-vertical">{profile.name}</div>
+                          <div className="profile-age-vertical">{profile.age} yrs · {profile.caste}</div>
+                        </div>
+                        <span
+                          className="profile-badge-vertical"
+                          style={{ background: bg, color: fg }}
+                        >
+                          {profile.marital === 'Awaiting Divorce' ? 'Await.' : profile.marital}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* ── FEMALE CAROUSEL ── */}
+              <div className="vertical-carousel-wrapper">
+                <div className="gender-label-bar">
+                  <span className="gender-label-icon">👩</span>
+                  <span className="gender-label-text" style={{ color: '#c0392b' }}>Brides</span>
+                  <span className="gender-label-count">{DUMMY_FEMALE.length}</span>
+                </div>
+                <div
+                  className="profiles-scroller-vertical"
+                  ref={femaleScrollRef}
+                  onMouseEnter={() => setIsPausedFemale(true)}
+                  onMouseLeave={() => setIsPausedFemale(false)}
+                >
+                  {DUMMY_FEMALE_LOOP.map((profile, index) => {
+                    const [bg, fg] = maritalColor(profile.marital);
+                    return (
+                      <div
+                        key={`f-${profile.id}-${index}`}
+                        className="profile-card-vertical"
+                        onClick={() => navigate(`/detail/${profile.id}`, { state: { profile } })}
+                      >
+                        <img
+                          src={profile.photo}
+                          alt={profile.name}
+                          className="profile-image-vertical"
+                          onError={(e) => {
+                            e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.name)}&background=c0392b&color=fff&size=80`;
+                          }}
+                        />
+                        <div className="profile-info-vertical">
+                          <div className="profile-name-vertical">{profile.name}</div>
+                          <div className="profile-age-vertical">{profile.age} yrs · {profile.caste}</div>
+                        </div>
+                        <span
+                          className="profile-badge-vertical"
+                          style={{ background: bg, color: fg }}
+                        >
+                          {profile.marital === 'Awaiting Divorce' ? 'Await.' : profile.marital}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+            </div>{/* end split-carousel-container */}
           </div>
         </div>
 
@@ -1671,8 +1788,8 @@ export default function Home() {
             <div className="profiles-scroller">
               <div className="scroller-track">
                 {loopMaleProfiles.map((profile, index) => (
-                  <div 
-                    key={index} 
+                  <div
+                    key={index}
                     className="profile-card"
                     onClick={() => navigate(`/detail/${profile.id}`, { state: { profile } })}
                   >
@@ -1696,8 +1813,8 @@ export default function Home() {
             <div className="profiles-scroller">
               <div className="scroller-track">
                 {loopFemaleProfiles.map((profile, index) => (
-                  <div 
-                    key={index} 
+                  <div
+                    key={index}
                     className="profile-card"
                     onClick={() => navigate(`/detail/${profile.id}`, { state: { profile } })}
                   >
@@ -1713,34 +1830,6 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Stats */}
-        {/* <div className="stats-section">
-          <div className="section-label">Our Community</div>
-          <div className="ornament">
-            <div className="ornament-line" />
-            <div className="ornament-diamond" />
-            <div className="ornament-line" />
-          </div>
-
-          <div className="stats-grid">
-            <div className="stat-card">
-              <span className="stat-icon">👥</span>
-              <div className="stat-number">10,000+</div>
-              <div className="stat-label">Active Members</div>
-            </div>
-            <div className="stat-card">
-              <span className="stat-icon">💍</span>
-              <div className="stat-number">2,500+</div>
-              <div className="stat-label">Successful Matches</div>
-            </div>
-            <div className="stat-card">
-              <span className="stat-icon">⭐</span>
-              <div className="stat-number">4.8 / 5</div>
-              <div className="stat-label">User Rating</div>
-            </div>
-          </div>
-        </div> */}
-
       </main>
 
       {/* Registration Modal */}
@@ -1748,33 +1837,20 @@ export default function Home() {
         <div className="modal-overlay" onClick={() => setShowRegistrationModal(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <button 
-                className="modal-close-btn"
-                onClick={() => setShowRegistrationModal(false)}
-              >
-                ✕
-              </button>
+              <button className="modal-close-btn" onClick={() => setShowRegistrationModal(false)}>✕</button>
               <div className="modal-header-title">{t('login.headerTitle')}</div>
             </div>
-
             <div className="modal-body">
               <div className="modal-title">{t('login.subtitle')}</div>
-
               <form onSubmit={(e) => {
                 e.preventDefault();
                 setFeedbackMessage(t('login.registrationInProgress'));
                 setShowRegistrationModal(false);
                 setTimeout(() => setFeedbackMessage(''), 3000);
               }}>
-                {/* Profile Created For */}
                 <div className="modal-form-group">
                   <label className="modal-label">{t('login.profileCreatedFor')}</label>
-                  <select 
-                    className="modal-select"
-                    value={registrationData.createdFor}
-                    onChange={(e) => setRegistrationData({...registrationData, createdFor: e.target.value})}
-                    required
-                  >
+                  <select className="modal-select" value={registrationData.createdFor} onChange={(e) => setRegistrationData({...registrationData, createdFor: e.target.value})} required>
                     <option value="">{t('login.selectOption')}</option>
                     <option value="Myself">{t('login.myself')}</option>
                     <option value="Daughter">{t('login.daughter')}</option>
@@ -1785,54 +1861,28 @@ export default function Home() {
                     <option value="Friend">{t('login.friend')}</option>
                   </select>
                 </div>
-
-                {/* Name Input */}
                 <div className="modal-form-group">
                   <label className="modal-label">{t('login.enterName')}</label>
-                  <input
-                    type="text"
-                    className="modal-input"
-                    placeholder={t('login.enterNamePlaceholder')}
-                    value={registrationData.name}
-                    onChange={(e) => setRegistrationData({...registrationData, name: e.target.value})}
-                    required
-                  />
+                  <input type="text" className="modal-input" placeholder={t('login.enterNamePlaceholder')} value={registrationData.name} onChange={(e) => setRegistrationData({...registrationData, name: e.target.value})} required />
                 </div>
-
-                {/* Phone Number */}
                 <div className="modal-form-group">
                   <label className="modal-label">{t('login.phoneNumber')}</label>
                   <div className="modal-form-row">
-                    <select 
-                      className="modal-phone-code"
-                      value={registrationData.countryCode}
-                      onChange={(e) => setRegistrationData({...registrationData, countryCode: e.target.value})}
-                    >
+                    <select className="modal-phone-code" value={registrationData.countryCode} onChange={(e) => setRegistrationData({...registrationData, countryCode: e.target.value})}>
                       <option value="+91">+91</option>
                       <option value="+1">+1</option>
                       <option value="+44">+44</option>
                       <option value="+61">+61</option>
                     </select>
-                    <input
-                      type="tel"
-                      className="modal-input"
-                      placeholder={t('login.enterNumber')}
-                      value={registrationData.phone}
-                      onChange={(e) => setRegistrationData({...registrationData, phone: e.target.value})}
-                      required
-                    />
+                    <input type="tel" className="modal-input" placeholder={t('login.enterNumber')} value={registrationData.phone} onChange={(e) => setRegistrationData({...registrationData, phone: e.target.value})} required />
                   </div>
                 </div>
-
-                {/* Register Button */}
                 <button type="submit" className="modal-button">
                   <span>{t('login.registerFree')}</span>
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                     <path d="M6 12l4-4-4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
                   </svg>
                 </button>
-
-                {/* Disclaimer */}
                 <div className="modal-disclaimer">
                   {t('login.disclaimer')} <a href="#">{t('login.termsConditions')}</a> {t('login.and')} <a href="#">{t('login.privacyPolicy')}</a>
                 </div>
@@ -1847,30 +1897,20 @@ export default function Home() {
         <div className="modal-overlay" onClick={() => setShowSearchResultModal(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <button 
-                className="modal-close-btn"
-                onClick={() => setShowSearchResultModal(false)}
-              >
-                ✕
-              </button>
+              <button className="modal-close-btn" onClick={() => setShowSearchResultModal(false)}>✕</button>
               <div className="modal-header-title">{t('detail.profileDetails')}</div>
             </div>
-
             <div className="modal-body">
-              {/* Profile Card */}
               <div style={{ background: "linear-gradient(135deg, #ffffff 0%, #fafbfc 100%)", borderRadius: 12, overflow: "hidden", boxShadow: "0 2px 8px rgba(0,0,0,0.1)", border: "2px solid rgba(201, 145, 58, 0.15)" }}>
-                <img 
-                  src={searchResult.photo} 
+                <img
+                  src={searchResult.photo}
                   alt={searchResult.name}
                   style={{ width: "100%", height: 240, objectFit: "cover", background: "linear-gradient(135deg, #fdecea, #fff)" }}
                   onError={(e) => { e.target.src=`https://ui-avatars.com/api/?name=${encodeURIComponent(searchResult.name)}&background=c0392b&color=fff&size=280`; }}
                 />
-                
                 <div style={{ padding: "16px 14px" }}>
                   <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 16, fontWeight: 700, color: "#1a1a1a", marginBottom: 4 }}>{searchResult.name}</div>
                   <div style={{ fontSize: 11, color: "#999", fontFamily: "Georgia,serif", marginBottom: 10, background: "#fdecea", color: "#c0392b", padding: "3px 9px", borderRadius: 4, display: "inline-block" }}>{searchResult.regId}</div>
-                  
-                  {/* Badges */}
                   <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 12, marginTop: 8 }}>
                     <span style={{ display: "inline-block", padding: "4px 10px", borderRadius: 16, fontSize: 11, fontWeight: 600, fontFamily: "Georgia,serif", background: searchResult.gender === "Male" ? "#e8f4fd" : "#fde8f0", color: searchResult.gender === "Male" ? "#1a6ea8" : "#c0392b" }}>
                       {getLabel(genderOptions, searchResult.gender)}
@@ -1885,27 +1925,20 @@ export default function Home() {
                       );
                     })()}
                   </div>
-
-                  {/* Info */}
                   <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 12, fontSize: 12, color: "#666", fontFamily: "Georgia,serif" }}>
                     <div><span style={{ fontWeight: 700, color: "#7B1C2E" }}>{t("search.casteLabel")}:</span> {searchResult.caste}</div>
                     <div><span style={{ fontWeight: 700, color: "#7B1C2E" }}>{t("search.languageLabel")}:</span> {getLabel(languageOptions, searchResult.language)}</div>
                   </div>
-
-                  {/* Action Buttons */}
                   <div style={{ display: "flex", gap: 8, paddingTop: 10, borderTop: "1px solid #f0f0f0" }}>
-                    <button 
-                      onClick={() => {
-                        setShowSearchResultModal(false);
-                        navigate(`/detail/${searchResult.id}`, { state: { profile: searchResult } });
-                      }}
+                    <button
+                      onClick={() => { setShowSearchResultModal(false); navigate(`/detail/${searchResult.id}`, { state: { profile: searchResult } }); }}
                       style={{ flex: 1, padding: "8px 12px", borderRadius: 6, border: "none", fontSize: 12, fontFamily: "Georgia,serif", fontWeight: 600, cursor: "pointer", background: "linear-gradient(135deg, #7B1C2E, #9B2A40)", color: "#fff", transition: "all 0.2s" }}
                       onMouseOver={(e) => e.target.style.background = "linear-gradient(135deg, #5A1620, #7B1C2E)"}
                       onMouseOut={(e) => e.target.style.background = "linear-gradient(135deg, #7B1C2E, #9B2A40)"}
                     >
                       {t("search.moreDetails") || "More Details"}
                     </button>
-                    <button 
+                    <button
                       onClick={() => setShowContact(!showContact)}
                       style={{ flex: 1, padding: "8px 12px", borderRadius: 6, border: "1px solid #ddd", fontSize: 12, fontFamily: "Georgia,serif", fontWeight: 600, cursor: "pointer", background: "#f0f0f0", color: "#333", transition: "all 0.2s" }}
                       onMouseOver={(e) => e.target.style.background = "#e8e8e8"}
@@ -1914,8 +1947,6 @@ export default function Home() {
                       {showContact ? `✕ ${t('common.hide')}` : `📞 ${t('common.contact')}`}
                     </button>
                   </div>
-
-                  {/* Contact Info */}
                   {showContact && (
                     <div style={{ background: "#fdecea", padding: "10px 12px", borderRadius: 6, marginTop: 10, textAlign: "center", border: "1px solid #e0c8c8" }}>
                       <div style={{ fontSize: 11, color: "#666", marginBottom: 4 }}>{t("search.phoneLabel") || "Phone"}</div>
@@ -1923,6 +1954,58 @@ export default function Home() {
                     </div>
                   )}
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Filter Results Modal */}
+      {showFilterResultsModal && (
+        <div className="modal-overlay" onClick={() => setShowFilterResultsModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <button className="modal-close-btn" onClick={() => setShowFilterResultsModal(false)}>✕</button>
+              <div className="modal-header-title">{t('home.searchResults') || 'Search Results'}</div>
+            </div>
+            <div className="modal-body">
+              <div style={{ fontSize: 12, color: "#666", marginBottom: 16, textAlign: "center" }}>
+                Found {filteredResults.length} {filteredResults.length === 1 ? 'profile' : 'profiles'}
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: window.innerWidth > 768 ? 'repeat(2, 1fr)' : '1fr', gap: 16, maxHeight: '60vh', overflowY: 'auto' }}>
+                {filteredResults.map((profile) => (
+                  <div key={profile.id} style={{ background: "linear-gradient(135deg, #ffffff 0%, #fafbfc 100%)", borderRadius: 12, overflow: "hidden", boxShadow: "0 2px 8px rgba(0,0,0,0.1)", border: "2px solid rgba(201, 145, 58, 0.15)", transition: "all 0.3s ease" }} onMouseOver={(e) => { e.currentTarget.style.transform = "translateY(-4px)"; e.currentTarget.style.boxShadow = "0 12px 24px rgba(123,28,46,0.2)"; }} onMouseOut={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.1)"; }}>
+                    <img
+                      src={profile.photo}
+                      alt={profile.name}
+                      style={{ width: "100%", height: 160, objectFit: "cover", background: "linear-gradient(135deg, #fdecea, #fff)" }}
+                      onError={(e) => { e.target.src=`https://ui-avatars.com/api/?name=${encodeURIComponent(profile.name)}&background=c0392b&color=fff&size=200`; }}
+                    />
+                    <div style={{ padding: "14px 12px" }}>
+                      <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 14, fontWeight: 700, color: "#1a1a1a", marginBottom: 4 }}>{profile.name}</div>
+                      <div style={{ fontSize: 11, color: "#999", fontFamily: "Georgia,serif", marginBottom: 8, background: "#fdecea", color: "#c0392b", padding: "3px 9px", borderRadius: 4, display: "inline-block" }}>{profile.regId}</div>
+                      <div style={{ display: "flex", gap: 4, flexWrap: "wrap", marginBottom: 10, marginTop: 6 }}>
+                        <span style={{ display: "inline-block", padding: "3px 8px", borderRadius: 12, fontSize: 10, fontWeight: 600, fontFamily: "Georgia,serif", background: profile.gender === "Male" ? "#e8f4fd" : "#fde8f0", color: profile.gender === "Male" ? "#1a6ea8" : "#c0392b" }}>
+                          {profile.gender}
+                        </span>
+                        <span style={{ display: "inline-block", padding: "3px 8px", borderRadius: 12, fontSize: 10, fontWeight: 600, fontFamily: "Georgia,serif", background: "#fff3e0", color: "#d35400" }}>
+                          {profile.language}
+                        </span>
+                        <span style={{ display: "inline-block", padding: "3px 8px", borderRadius: 12, fontSize: 10, fontWeight: 600, fontFamily: "Georgia,serif", background: "#f0f0f0", color: "#666" }}>
+                          {profile.caste}
+                        </span>
+                      </div>
+                      <button
+                        onClick={() => { setShowFilterResultsModal(false); navigate(`/detail/${profile.id}`, { state: { profile } }); }}
+                        style={{ width: "100%", padding: "6px 10px", borderRadius: 6, border: "none", fontSize: 11, fontFamily: "Georgia,serif", fontWeight: 600, cursor: "pointer", background: "linear-gradient(135deg, #7B1C2E, #9B2A40)", color: "#fff", transition: "all 0.2s" }}
+                        onMouseOver={(e) => e.target.style.background = "linear-gradient(135deg, #5A1620, #7B1C2E)"}
+                        onMouseOut={(e) => e.target.style.background = "linear-gradient(135deg, #7B1C2E, #9B2A40)"}
+                      >
+                        View Profile
+                      </button>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
