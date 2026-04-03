@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import './GoogleFormStyle.css';
 
 export default function GoogleForm() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [selectedPhotos, setSelectedPhotos] = useState([]);
   const [rasiChart, setRasiChart] = useState(null);
   const [formData, setFormData] = useState({});
@@ -142,15 +144,32 @@ export default function GoogleForm() {
   return (
     <div className="form-container">
       {/* Header */}
-      <div className="form-header">
-        <h1>CHENNAI PROFILES</h1>
-        <div className="subtitle">Register your profile</div>
-        <div className="notice">
-          <strong>Profile Registration Form</strong><br />
-          Fill all mandatory fields marked with <strong style={{ color: '#d93025' }}>*</strong><br />
-          Your information will be kept confidential and secure.
+      <div className="form-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '24px' }}>
+        <div style={{ flex: 1 }}>
+          <h1>CHENNAI PROFILES</h1>
+          <div className="subtitle">Register your profile</div>
+          <div className="notice">
+            <strong>Profile Registration Form</strong><br />
+            Fill all mandatory fields marked with <strong style={{ color: '#d93025' }}>*</strong><br />
+            Your information will be kept confidential and secure.
+          </div>
+          <div className="required-note">* Required fields</div>
         </div>
-        <div className="required-note">* Required fields</div>
+        <div style={{ textAlign: 'right', paddingTop: '8px' }}>
+          <div style={{ fontSize: '14px', fontWeight: '500', marginBottom: '12px', color: '#202124' }}>
+            மொழியை மாற்று
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', minWidth: '120px' }}>
+            <button 
+              onClick={() => navigate('/google-form-ta')}
+              style={{ padding: '8px 16px', border: '1px solid #dadce0', backgroundColor: '#fff', borderRadius: '4px', cursor: 'pointer', fontSize: '13px', fontWeight: '500', color: '#1f2937', transition: 'all 0.2s' }}
+              onMouseEnter={(e) => e.target.style.backgroundColor = '#f8f9fa'}
+              onMouseLeave={(e) => e.target.style.backgroundColor = '#fff'}
+            >
+              தமிழ்
+            </button>
+          </div>
+        </div>
       </div>
 
       <form id="matrimonyForm" onSubmit={handleSubmit}>
