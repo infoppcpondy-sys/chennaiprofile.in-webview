@@ -454,10 +454,10 @@ export default function Home() {
           cursor: pointer;
           border-bottom: 1px solid rgba(201,145,58,0.10);
           display: flex;
-          flex-direction: row;
+          flex-direction: column;
           align-items: center;
-          gap: 10px;
-          padding: 8px 10px;
+          gap: 8px;
+          padding: 20px 10px;
         }
 
         .profile-card-vertical:hover {
@@ -469,10 +469,10 @@ export default function Home() {
         }
 
         .profile-image-vertical {
-          width: 44px;
-          height: 44px;
+          width: 95px;
+          height: 95px;
           object-fit: cover;
-          border-radius: 50%;
+          border-radius: 4px;
           border: 2px solid rgba(201,145,58,0.3);
           flex-shrink: 0;
           background: linear-gradient(135deg, var(--gold-light), var(--maroon-light));
@@ -482,35 +482,39 @@ export default function Home() {
         .profile-info-vertical {
           flex: 1;
           min-width: 0;
-          text-align: left;
+          text-align: center;
+          width: 100%;
         }
 
         .profile-name-vertical {
           font-family: 'Cormorant Garamond', serif;
-          font-size: 0.92rem;
+          font-size: 1.35rem;
           font-weight: 700;
           color: var(--text-dark);
-          margin-bottom: 1px;
+          margin-bottom: 4px;
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
+          width: 100%;
         }
 
         .profile-age-vertical {
           font-family: 'Jost', sans-serif;
-          font-size: 0.68rem;
+          font-size: 0.92rem;
           color: var(--text-light);
           letter-spacing: 0.03em;
+          margin-bottom: 2px;
         }
 
         .profile-badge-vertical {
           font-family: 'Jost', sans-serif;
-          font-size: 0.6rem;
+          font-size: 0.85rem;
           font-weight: 600;
-          padding: 2px 7px;
+          padding: 6px 14px;
           border-radius: 10px;
           flex-shrink: 0;
           letter-spacing: 0.03em;
+          margin-top: 2px;
         }
 
         /* ── SPLIT CAROUSEL CONTAINER ── */
