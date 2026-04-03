@@ -35,9 +35,14 @@
     "regNumber": "Profile Registration Number",
     "regNumberPlaceholder": "e.g. CMN-123456",
     "findProfile": "Find Profile",
+    "searchResults": "Search Results",
     "createNewProfile": "Create New Profile",
     "findingMatch": "✓ Finding your perfect match...",
-    "profileSearch": "✓ Profile search initiated..."
+    "profileSearch": "✓ Profile search initiated...",
+    "whatsappCardText": "For chat on WhatsApp Click This Image",
+    "findMaleProfiles": "Find Male Profiles",
+    "findFemaleProfiles": "Find Female Profiles",
+    "otherServicesTitle": "Our Other Services"
   },
   "registration": {
     "heading": "Matrimony Profile Registration",
@@ -205,6 +210,24 @@
     "mandatoryNote": "Fields marked with ✦ are mandatory",
     "submitting": "Submitting...",
     "profileCreated": "Profile Created!",
+    "casteOptions": [
+      { "value": "-Select-", "label": "-Select-" },
+      { "value": "Brahmin", "label": "Brahmin" },
+      { "value": "Kshatriya", "label": "Kshatriya" },
+      { "value": "Vellalar", "label": "Vellalar" },
+      { "value": "Nadar", "label": "Nadar" },
+      { "value": "Mudaliar", "label": "Mudaliar" },
+      { "value": "Pillai", "label": "Pillai" },
+      { "value": "Gounder", "label": "Gounder" },
+      { "value": "Naicker", "label": "Naicker" },
+      { "value": "Chettiar", "label": "Chettiar" },
+      { "value": "Vishwakarma", "label": "Vishwakarma" },
+      { "value": "Yadav", "label": "Yadav" },
+      { "value": "Vanniyar", "label": "Vanniyar" },
+      { "value": "Thevar", "label": "Thevar" },
+      { "value": "Agamudayar", "label": "Agamudayar" },
+      { "value": "Others", "label": "Others" }
+    ],
     "profileSubmittedSuccess": "Your matrimony profile has been submitted successfully. We will review and activate it shortly.",
     "createAnotherProfile": "Create Another Profile",
     "rasiList": {
@@ -349,6 +372,7 @@
     "regId": "Reg ID",
     "name": "Name",
     "details": "Details",
+    "phoneLabel": "Contact Number",
     "genderOptions": [
       { "value": "Male",   "label": "Male"   },
       { "value": "Female", "label": "Female" }
@@ -420,10 +444,16 @@
     ]
   },
   "detail": {
+    "profileDetails": "Profile Detail",
     "profileNotFound": "Profile Not Found",
     "profileNotFoundDesc": "The profile you're looking for doesn't exist or has been removed.",
     "backToProfiles": "← Back to Profiles",
     "personalDetails": "Personal Details",
+    "reportReason": "Please select the reason for reporting this profile:",
+    "reportAlreadyMarried": "Already Married",
+    "reportMisinformation": "Misinformation",
+    "reportFraud": "Fraud",
+    "reportDisclaimer": "Your report will be reviewed by our moderation team. False reports may result in account restrictions.",
     "familyDetails": "Family Details",
     "physicalAttributes": "Physical Attributes",
     "educationCareer": "Education & Career",
@@ -584,6 +614,11 @@
     "delete": "Delete",
     "edit": "Edit",
     "back": "Back",
-    "next": "Next"
+    "next": "Next",
+    "contact": "Contact",
+    "hide": "Hide",
+    "reportProfile": "Report Profile",
+    "submitReport": "Submit Report",
+    "viewContact": "View Contact"
   }
 }

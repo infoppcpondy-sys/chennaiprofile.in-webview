@@ -35,9 +35,14 @@
     "regNumber": "சுயவிவரப் பதிவு எண்",
     "regNumberPlaceholder": "எ.கா. CMN-123456",
     "findProfile": "சுயவிவரத்தைக் கண்டுபிடி",
+    "searchResults": "தேடல் முடிவு",
     "createNewProfile": "புதிய சுயவிவரத்தை உருவாக்கவும்",
     "findingMatch": "✓ உங்கள் சரியான ஜோடிக்கு தேடுகிறது...",
-    "profileSearch": "✓ சுயவிவரம் தேடல் தொடங்கப்பட்டது..."
+    "profileSearch": "✓ சுயவிவரம் தேடல் தொடங்கப்பட்டது...",
+    "whatsappCardText": "வாட்சப்பில் உரையாட செய்ய இந்த படத்தை கிளிக் செய்யவும்",
+    "findMaleProfiles": "ஆண் சுயவிவரம்",
+    "findFemaleProfiles": "பெண் சுயவிவரம்",
+    "otherServicesTitle": "எங்கள் மற்ற சேவைகள்"
   },
   "registration": {
     "heading": "திருமண சுயவிவர பதிவு",
@@ -205,6 +210,24 @@
     "mandatoryNote": "✦ குறிப்பிடப்பட்ட புலங்கள் கட்டாயமாகும்",
     "submitting": "சமர்ப்பிக்கிறது...",
     "profileCreated": "சுயவிவரம் உருவாக்கப்பட்டது!",
+    "casteOptions": [
+      { "value": "-Select-", "label": "-தேர்ந்தெடுக்கவும்-" },
+      { "value": "Brahmin", "label": "பிராமணர்" },
+      { "value": "Kshatriya", "label": "க்ஷத்திரியர்" },
+      { "value": "Vellalar", "label": "வெள்ளாளர்" },
+      { "value": "Nadar", "label": "நாடார்" },
+      { "value": "Mudaliar", "label": "முதலியார்" },
+      { "value": "Pillai", "label": "பிள்ளை" },
+      { "value": "Gounder", "label": "கவுண்டர்" },
+      { "value": "Naicker", "label": "நாய்க்கர்" },
+      { "value": "Chettiar", "label": "செட்டியார்" },
+      { "value": "Vishwakarma", "label": "விஸ்வகர்மா" },
+      { "value": "Yadav", "label": "யாதவர்" },
+      { "value": "Vanniyar", "label": "வன்னியர்" },
+      { "value": "Thevar", "label": "தேவர்" },
+      { "value": "Agamudayar", "label": "ஆகமுடையர்" },
+      { "value": "Others", "label": "மற்றவை" }
+    ],
     "profileSubmittedSuccess": "உங்கள் திருமண சுயவிவரம் வெற்றிகரமாக சமர்ப்பிக்கப்பட்டது. நாங்கள் சரிபார்த்து விரைவில் செயல்படுத்துவோம்.",
     "createAnotherProfile": "மற்றொரு சுயவிவரத்தை உருவாக்கவும்",
     "rasiList": {
@@ -349,6 +372,7 @@
     "regId": "பதிவு எண்",
     "name": "பெயர்",
     "details": "விவரங்கள்",
+    "phoneLabel": "தொடர்பு எண்",
     "genderOptions": [
       {
         "value": "Male",
@@ -568,10 +592,16 @@
     ]
   },
   "detail": {
+    "profileDetails": "சுயவிவரம்",
     "profileNotFound": "சுயவிவரம் கிடைக்கவில்லை",
     "profileNotFoundDesc": "நீங்கள் தேடும் சுயவிவரம் இல்லை அல்லது அகற்றப்பட்டுள்ளது.",
     "backToProfiles": "← சுயவிவரங்களுக்கு திரும்பு",
     "personalDetails": "தனிப்பட்ட விவரங்கள்",
+    "reportReason": "புகாரளிக்கும் காரணத்தைத் தேர்ந்தெடுக்கவும்:",
+    "reportAlreadyMarried": "ஏற்கனவே திருமணம் ஆனவர்",
+    "reportMisinformation": "தவறான தகவல்",
+    "reportFraud": "மோசடி",
+    "reportDisclaimer": "உங்கள் புகார் எங்கள் பரிசோதனை குழுவால் மதிப்பாய்வு செய்யப்படும். தவறான புகார்கள் அளித்தால் உங்கள் கணக்கில் கட்டுப்பாடுகள் விதிக்கப்படலாம்.",
     "familyDetails": "குடும்ப விவரங்கள்",
     "physicalAttributes": "உடல் பண்புகள்",
     "educationCareer": "கல்வி & தொழில்",
@@ -1003,6 +1033,11 @@
     "delete": "நீக்கு",
     "edit": "திருத்து",
     "back": "பின்னுக்குத் திரும்பவும்",
-    "next": "அடுத்தது"
+    "next": "அடுத்தது",
+    "contact": "தொடர்பு",
+    "hide": "மறை",
+    "reportProfile": "சுயவிவரத்தை புகாரளி",
+    "submitReport": "புகாரை சமர்ப்பிக்கவும்",
+    "viewContact": "தொடர்பு விவரங்கள்"
   }
 }

@@ -1,38 +1,53 @@
-import { useState, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useMemo, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 // Static data kept as-is — values are locale-neutral keys used for filtering.
 // Labels shown in the UI come from the JSON via t("search.*Options").
 const DUMMY = [
-  { id:1,  regId:"MAT1001", name:"Aravind Kumar",    caste:"Brahmin",     gender:"Male",   language:"Tamil",     marital:"Single",           age:27, photo:"https://i.pravatar.cc/80?img=11" },
-  { id:2,  regId:"MAT1002", name:"Priya Devi",        caste:"Vellalar",    gender:"Female", language:"Tamil",     marital:"Single",           age:24, photo:"https://i.pravatar.cc/80?img=47" },
-  { id:3,  regId:"MAT1003", name:"Karthik Raja",      caste:"Gounder",     gender:"Male",   language:"Tamil",     marital:"Divorce",          age:31, photo:"https://i.pravatar.cc/80?img=15" },
-  { id:4,  regId:"MAT1004", name:"Meena Lakshmi",     caste:"Nadar",       gender:"Female", language:"Tamil",     marital:"Widow",            age:29, photo:"https://i.pravatar.cc/80?img=49" },
-  { id:5,  regId:"MAT1005", name:"Venkatesh Raman",   caste:"Pillai",      gender:"Male",   language:"Telugu",    marital:"Single",           age:26, photo:"https://i.pravatar.cc/80?img=13" },
-  { id:6,  regId:"MAT1006", name:"Anitha Selvam",     caste:"Mudaliar",    gender:"Female", language:"Tamil",     marital:"Awaiting Divorce", age:33, photo:"https://i.pravatar.cc/80?img=44" },
-  { id:7,  regId:"MAT1007", name:"Suresh Balaji",     caste:"Vishwakarma", gender:"Male",   language:"Tamil",     marital:"Single",           age:28, photo:"https://i.pravatar.cc/80?img=17" },
-  { id:8,  regId:"MAT1008", name:"Kavitha Nair",      caste:"Others",      gender:"Female", language:"Malayalam", marital:"Single",           age:25, photo:"https://i.pravatar.cc/80?img=48" },
-  { id:9,  regId:"MAT1009", name:"Dinesh Kannan",     caste:"Chettiar",    gender:"Male",   language:"Tamil",     marital:"Divorce",          age:35, photo:"https://i.pravatar.cc/80?img=19" },
-  { id:10, regId:"MAT1010", name:"Saranya Priya",     caste:"Brahmin",     gender:"Female", language:"Tamil",     marital:"Single",           age:23, photo:"https://i.pravatar.cc/80?img=46" },
-  { id:11, regId:"MAT1011", name:"Manikandan S",      caste:"Thevar",      gender:"Male",   language:"Tamil",     marital:"Single",           age:30, photo:"https://i.pravatar.cc/80?img=12" },
-  { id:12, regId:"MAT1012", name:"Deepa Sundaram",    caste:"Naicker",     gender:"Female", language:"Telugu",    marital:"Widow",            age:32, photo:"https://i.pravatar.cc/80?img=45" },
-  { id:13, regId:"MAT1013", name:"Rajesh Pandian",    caste:"Agamudayar",  gender:"Male",   language:"Tamil",     marital:"Single",           age:29, photo:"https://i.pravatar.cc/80?img=14" },
-  { id:14, regId:"MAT1014", name:"Lakshmi Priya",     caste:"Vellalar",    gender:"Female", language:"Tamil",     marital:"Single",           age:26, photo:"https://i.pravatar.cc/80?img=43" },
-  { id:15, regId:"MAT1015", name:"Balamurugan K",     caste:"Yadav",       gender:"Male",   language:"Tamil",     marital:"Single",           age:27, photo:"https://i.pravatar.cc/80?img=16" },
+  { id:1,  regId:"MAT1001", name:"Aravind Kumar",    caste:"Brahmin",     gender:"Male",   language:"Tamil",     marital:"Single",           age:27, phone:"9876543211", photo:"https://i.pravatar.cc/80?img=11" },
+  { id:2,  regId:"MAT1002", name:"Priya Devi",        caste:"Vellalar",    gender:"Female", language:"Tamil",     marital:"Single",           age:24, phone:"9876543212", photo:"https://i.pravatar.cc/80?img=47" },
+  { id:3,  regId:"MAT1003", name:"Karthik Raja",      caste:"Gounder",     gender:"Male",   language:"Tamil",     marital:"Divorce",          age:31, phone:"9876543213", photo:"https://i.pravatar.cc/80?img=15" },
+  { id:4,  regId:"MAT1004", name:"Meena Lakshmi",     caste:"Nadar",       gender:"Female", language:"Tamil",     marital:"Widow",            age:29, phone:"9876543214", photo:"https://i.pravatar.cc/80?img=49" },
+  { id:5,  regId:"MAT1005", name:"Venkatesh Raman",   caste:"Pillai",      gender:"Male",   language:"Telugu",    marital:"Single",           age:26, phone:"9876543215", photo:"https://i.pravatar.cc/80?img=13" },
+  { id:6,  regId:"MAT1006", name:"Anitha Selvam",     caste:"Mudaliar",    gender:"Female", language:"Tamil",     marital:"Awaiting Divorce", age:33, phone:"9876543216", photo:"https://i.pravatar.cc/80?img=44" },
+  { id:7,  regId:"MAT1007", name:"Suresh Balaji",     caste:"Vishwakarma", gender:"Male",   language:"Tamil",     marital:"Single",           age:28, phone:"9876543217", photo:"https://i.pravatar.cc/80?img=17" },
+  { id:8,  regId:"MAT1008", name:"Kavitha Nair",      caste:"Others",      gender:"Female", language:"Malayalam", marital:"Single",           age:25, phone:"9876543218", photo:"https://i.pravatar.cc/80?img=48" },
+  { id:9,  regId:"MAT1009", name:"Dinesh Kannan",     caste:"Chettiar",    gender:"Male",   language:"Tamil",     marital:"Divorce",          age:35, phone:"9876543219", photo:"https://i.pravatar.cc/80?img=19" },
+  { id:10, regId:"MAT1010", name:"Saranya Priya",     caste:"Brahmin",     gender:"Female", language:"Tamil",     marital:"Single",           age:23, phone:"9876543220", photo:"https://i.pravatar.cc/80?img=46" },
+  { id:11, regId:"MAT1011", name:"Manikandan S",      caste:"Thevar",      gender:"Male",   language:"Tamil",     marital:"Single",           age:30, phone:"9876543221", photo:"https://i.pravatar.cc/80?img=12" },
+  { id:12, regId:"MAT1012", name:"Deepa Sundaram",    caste:"Naicker",     gender:"Female", language:"Telugu",    marital:"Widow",            age:32, phone:"9876543222", photo:"https://i.pravatar.cc/80?img=45" },
+  { id:13, regId:"MAT1013", name:"Rajesh Pandian",    caste:"Agamudayar",  gender:"Male",   language:"Tamil",     marital:"Single",           age:29, phone:"9876543223", photo:"https://i.pravatar.cc/80?img=14" },
+  { id:14, regId:"MAT1014", name:"Lakshmi Priya",     caste:"Vellalar",    gender:"Female", language:"Tamil",     marital:"Single",           age:26, phone:"9876543224", photo:"https://i.pravatar.cc/80?img=43" },
+  { id:15, regId:"MAT1015", name:"Balamurugan K",     caste:"Yadav",       gender:"Male",   language:"Tamil",     marital:"Single",           age:27, phone:"9876543225", photo:"https://i.pravatar.cc/80?img=16" },
 ];
 
 const INIT = { gender:"Female", language:"Any", caste:"Any", sortId:"asc", ageFrom:"", ageTo:"", marital:"Any" };
 
 export default function MatrimonySearch() {
   const navigate   = useNavigate();
+  const location   = useLocation();
   const { t }      = useTranslation();
   const [filters,  setFilters]  = useState(INIT);
   const [applied,  setApplied]  = useState(INIT);
   const [preview,  setPreview]  = useState(null);
+  const [showContact, setShowContact] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [viewMode, setViewMode] = useState("card");
+  const [quickSearchData, setQuickSearchData] = useState(null);
   const itemsPerPage = 10;
+
+  // ── Handle quick search results from home page ──
+  useEffect(() => {
+    if (location.state?.quickSearchResults) {
+      setQuickSearchData({
+        results: location.state.quickSearchResults,
+        filters: location.state.quickSearchFilters
+      });
+      // Clear the state to prevent issues on page reload
+      window.history.replaceState({}, document.title);
+    }
+  }, [location]);
 
   // ── Dropdown option arrays — sourced entirely from JSON ──────────────────
   const genderOptions  = t("search.genderOptions",  { returnObjects: true }) || [];
@@ -42,7 +57,20 @@ export default function MatrimonySearch() {
 
   const set = (k, v) => setFilters(f => ({ ...f, [k]: v }));
 
+  const maskPhone = (phone) => {
+    if (!phone) return "";
+    const phoneStr = phone.toString();
+    if (phoneStr.length <= 5) return phoneStr;
+    return phoneStr.substring(0, 5) + "*".repeat(phoneStr.length - 5);
+  };
+
   const results = useMemo(() => {
+    // If quick search data exists, use those results
+    if (quickSearchData) {
+      return quickSearchData.results;
+    }
+    
+    // Otherwise, apply normal filters
     let d = [...DUMMY];
     if (applied.gender   !== "Any") d = d.filter(r => r.gender   === applied.gender);
     if (applied.language !== "Any") d = d.filter(r => r.language === applied.language);
@@ -52,7 +80,7 @@ export default function MatrimonySearch() {
     if (applied.ageTo)              d = d.filter(r => r.age <= Number(applied.ageTo));
     d.sort((a, b) => applied.sortId === "asc" ? a.id - b.id : b.id - a.id);
     return d;
-  }, [applied]);
+  }, [applied, quickSearchData]);
 
   // Helper: get translated label for a value from an options array
   const getLabel = (options, value) => {
@@ -265,7 +293,16 @@ export default function MatrimonySearch() {
                               </div>
                               <div className="card-actions">
                                 <button className="card-btn card-btn-primary">{t("search.moreDetails")}</button>
+                                <button className="card-btn" style={{background:"#f0f0f0", color:"#333", border:"1px solid #ddd"}} onClick={e => { e.stopPropagation(); setShowContact(showContact === r.id ? null : r.id); }}>
+                                  {showContact === r.id ? `✕ ${t('common.hide')}` : `📞 ${t('common.contact')}`}
+                                </button>
                               </div>
+                              {showContact === r.id && (
+                                <div style={{background:"#fdecea", padding:"10px 12px", borderRadius:"6px", marginTop:"10px", textAlign:"center", border:"1px solid #e0c8c8"}}>
+                                  <div style={{fontSize:"11px", color:"#666", marginBottom:"4px"}}>{t("search.phoneLabel") || "Phone"}</div>
+                                  <div style={{fontSize:"14px", fontWeight:"700", color:"#c0392b", fontFamily:"monospace", letterSpacing:"1px"}}>{maskPhone(r.phone)}</div>
+                                </div>
+                              )}
                             </div>
                           </div>
                         );
@@ -301,6 +338,15 @@ export default function MatrimonySearch() {
                                   <div style={{ marginBottom:"6px" }}><strong style={{ color:"#c0392b" }}>{t("search.casteLabel")}:</strong> {r.caste}</div>
                                   <div style={{ marginBottom:"6px" }}><strong style={{ color:"#c0392b" }}>{t("search.languageLabel")}:</strong> {getLabel(languageOptions, r.language)}</div>
                                   <div style={{ marginBottom:"6px" }}><strong style={{ color:"#c0392b" }}>{t("search.maritalLabel")}:</strong> {getLabel(maritalOptions, r.marital)}</div>
+                                  <button className="btn-r" onClick={e => { e.stopPropagation(); setShowContact(showContact === r.id ? null : r.id); }} style={{marginTop:"8px", width:"100%", fontSize:"11px", padding:"6px 8px"}}>
+                                    {showContact === r.id ? "✕ Hide" : "📞 Contact"}
+                                  </button>
+                                  {showContact === r.id && (
+                                    <div style={{background:"#fdecea", padding:"8px 10px", marginTop:"8px", borderRadius:"4px", border:"1px solid #e0c8c8", fontSize:"12px", fontFamily:"monospace"}}>
+                                      <div style={{fontSize:"10px", color:"#666", marginBottom:"3px"}}>{t("search.phoneLabel") || "Phone"}</div>
+                                      <div style={{fontWeight:"700", color:"#c0392b", letterSpacing:"1px"}}>{maskPhone(r.phone)}</div>
+                                    </div>
+                                  )}
                                 </td>
                               </tr>
                             );

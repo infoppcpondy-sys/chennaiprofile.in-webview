@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { checkIfFaceExists } from "./utils/faceDetection";
+import { generateFormPDF } from "./utils/generatePDF";
 
 // ─── Helper Components (defined outside to prevent recreation on re-render) ───
 const SectionHeader = ({ icon, title }) => (
@@ -182,7 +183,11 @@ export default function PersonalFamilyForm() {
   const HEIGHTS = [t("registration.genderSelect"), "4'8\"", "4'9\"", "4'10\"", "4'11\"", "5'0\"", "5'1\"", "5'2\"", "5'3\"", "5'4\"", "5'5\"", "5'6\"", "5'7\"", "5'8\"", "5'9\"", "5'10\"", "5'11\"", "6'0\""];
   const WEIGHTS = [t("registration.genderSelect"), "40kg", "45kg", "50kg", "55kg", "60kg", "65kg", "70kg", "75kg", "80kg", "85kg", "90kg"];
   const BLOOD_GROUPS = [t("registration.genderSelect"), "O+", "O-", "A+", "A-", "B+", "B-", "AB+", "AB-"];
-  const CASTES = [t("registration.genderSelect"), "Brahmin", "Kshatriya", "Vaishya", "Shudra", "Others"];
+  
+  // Get caste options from translations
+  const casteOptionsRaw = t("registration.casteOptions", { returnObjects: true }) || [];
+  const CASTES = casteOptionsRaw.map(o => o.label);
+  
   const SUB_CASTES = [t("registration.selectSubCaste"), "Subgroup 1", "Subgroup 2", "Subgroup 3"];
   
   // Rasi keys in order
@@ -241,9 +246,23 @@ export default function PersonalFamilyForm() {
   const [errors, setErrors] = useState({});
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [downloadingPDF, setDownloadingPDF] = useState(false);
+  const [pdfLanguage, setPdfLanguage] = useState("en");
 
   // Global open dropdown tracker — only one open at a time
   const [openDropdownId, setOpenDropdownId] = useState(null);
+
+  const handleDownloadPDF = async () => {
+    setDownloadingPDF(true);
+    try {
+      await generateFormPDF(pdfLanguage);
+    } catch (err) {
+      console.error("Error downloading PDF:", err);
+      alert("Error downloading PDF. Please try again.");
+    } finally {
+      setDownloadingPDF(false);
+    }
+  };
 
   // Close all dropdowns when clicking outside
   useEffect(() => {
@@ -389,6 +408,7 @@ export default function PersonalFamilyForm() {
     setHoroscopePreview({ rasi: null, amsam: null });
     setPhotoProgress(0);
     setOpenDropdownId(null);
+    setPdfLanguage("en");
   };
 
   // ─── Helpers ─────────────────────────────────────────────────────────────
@@ -459,6 +479,62 @@ export default function PersonalFamilyForm() {
 
       <div className="form-outer" style={{ minHeight: "100vh", background: "linear-gradient(160deg,#F9EEF0 0%,#FFF8F0 50%,#F9EEF0 100%)", padding: "0 16px 48px" }}>
         <div style={{ maxWidth: 860, margin: "0 auto" }}>
+
+          {/* ── Download Form PDF ──────────────────────────────────────── */}
+          <div style={{ ...sectionBox, marginBottom: 20, background: "linear-gradient(135deg,#FFF5F5 0%,#FFF9F0 100%)", borderLeft: "4px solid #8B0000" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <div style={{ fontSize: 20 }}>📄</div>
+                <div>
+                  <h3 style={{ margin: 0, fontSize: "0.95rem", fontFamily: "'Playfair Display',serif", fontWeight: 700, color: "#5A0010", marginBottom: 4 }}>Print or Fill Form Manually</h3>
+                  <p style={{ margin: 0, fontSize: "0.8rem", color: "#8A5060", fontStyle: "italic" }}>Download the form as PDF for manual filling and printing</p>
+                </div>
+              </div>
+              <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
+                <select 
+                  value={pdfLanguage} 
+                  onChange={e => setPdfLanguage(e.target.value)}
+                  disabled={downloadingPDF}
+                  style={{
+                    padding: "8px 12px",
+                    border: "1.5px solid #D4A0A8",
+                    borderRadius: 8,
+                    fontSize: "0.85rem",
+                    fontFamily: "'Lato',sans-serif",
+                    background: "#FFFAF9",
+                    color: "#2A0A0E",
+                    cursor: "pointer",
+                    outline: "none",
+                  }}
+                >
+                  <option value="en">English</option>
+                  <option value="ta">தமிழ் (Tamil)</option>
+                </select>
+                <button
+                  type="button"
+                  onClick={handleDownloadPDF}
+                  disabled={downloadingPDF}
+                  style={{
+                    background: downloadingPDF ? "#aaa" : "linear-gradient(135deg,#8B0000,#C41E3A)",
+                    color: "white",
+                    border: "none",
+                    padding: "8px 20px",
+                    borderRadius: 8,
+                    fontWeight: 700,
+                    cursor: downloadingPDF ? "not-allowed" : "pointer",
+                    fontSize: "0.85rem",
+                    letterSpacing: "0.05em",
+                    boxShadow: "0 4px 12px rgba(139,0,0,0.2)",
+                    transition: "all 0.2s",
+                    minWidth: 120,
+                    whiteSpace: "nowrap"
+                  }}
+                >
+                  {downloadingPDF ? "⏳ Generating..." : "📥 Download PDF"}
+                </button>
+              </div>
+            </div>
+          </div>
 
           {/* ── Photo Upload ───────────────────────────────────────────── */}
           <div style={{ ...sectionBox, marginBottom: 20 }}>

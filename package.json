@@ -11,7 +11,9 @@
   },
   "dependencies": {
     "face-api.js": "^0.22.2",
+    "html2canvas": "^1.4.1",
     "i18next": "^25.10.10",
+    "jspdf": "^4.2.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-i18next": "^16.6.6",

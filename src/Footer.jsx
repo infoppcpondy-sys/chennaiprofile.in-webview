@@ -1,9 +1,10 @@
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 
 export default function Footer() {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   return (
     <>
@@ -67,6 +68,11 @@ export default function Footer() {
 
           <div className="footer-section">
             <div className="footer-section-title">{t("footer.quickLinks")}</div>
+            <div className="footer-item">
+              <Link to={i18n.language === 'ta' ? "/google-form-ta" : "/google-form"} style={{ color: '#c9913a', textDecoration: 'none', transition: 'all 0.3s ease', cursor: 'pointer' }} onMouseEnter={(e) => e.target.style.color = '#e8b76a'} onMouseLeave={(e) => e.target.style.color = '#c9913a'}>
+                {i18n.language === 'ta' ? 'பதிவு படிவம்' : 'Register Form'}
+              </Link>
+            </div>
             <div className="footer-item">
               <a onClick={() => navigate("/terms-and-conditions")}>{t("footer.terms")}</a>
             </div>

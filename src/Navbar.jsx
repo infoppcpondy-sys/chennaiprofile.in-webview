@@ -23,7 +23,8 @@ export default function Navbar() {
     fontWeight: '500',
     padding: '8px 12px',
     borderRadius: '6px',
-    position: 'relative'
+    position: 'relative',
+    whiteSpace: 'nowrap'
   };
 
   const disabledStyle = {
@@ -36,6 +37,33 @@ export default function Navbar() {
     <>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700&display=swap');
+
+        html, body {
+          overflow-x: hidden;
+        }
+
+        /* ── TAMIL LANGUAGE SPECIFIC ADJUSTMENTS ── */
+        html[lang="ta"] .navbar-brand-title {
+          font-size: clamp(1.2rem, 3vw, 1.6rem) !important;
+        }
+
+        html[lang="ta"] .navbar-brand-subtitle {
+          font-size: clamp(0.85rem, 2vw, 1.1rem) !important;
+        }
+
+        html[lang="ta"] .desktop-nav {
+          gap: clamp(15px, 3vw, 30px) !important;
+        }
+
+        html[lang="ta"] .desktop-nav a,
+        html[lang="ta"] .desktop-nav select {
+          font-size: 13px !important;
+          white-space: nowrap;
+        }
+
+        html[lang="ta"] .navbar-tagline {
+          font-size: clamp(0.8rem, 1.8vw, 1.1rem) !important;
+        }
 
         /* ── NAVBAR BRANDING ── */
         .navbar-brand-container {
@@ -123,6 +151,19 @@ export default function Navbar() {
           .navbar-brand-subtitle {
             font-size: clamp(0.9rem, 2vw, 1.2rem);
           }
+
+          html[lang="ta"] .navbar-brand-title {
+            font-size: clamp(1rem, 3vw, 1.4rem) !important;
+          }
+
+          html[lang="ta"] .navbar-brand-subtitle {
+            font-size: clamp(0.8rem, 1.8vw, 1rem) !important;
+          }
+
+          html[lang="ta"] .mobile-menu a,
+          html[lang="ta"] .mobile-menu div {
+            font-size: clamp(12px, 2.5vw, 14px) !important;
+          }
         }
 
         @media (max-width: 480px) {
@@ -141,6 +182,19 @@ export default function Navbar() {
 
           .navbar-brand-subtitle {
             font-size: clamp(0.8rem, 1.8vw, 1rem);
+          }
+
+          html[lang="ta"] .navbar-brand-title {
+            font-size: clamp(0.9rem, 2.8vw, 1.2rem) !important;
+          }
+
+          html[lang="ta"] .navbar-brand-subtitle {
+            font-size: clamp(0.7rem, 1.6vw, 0.9rem) !important;
+          }
+
+          html[lang="ta"] .mobile-menu a,
+          html[lang="ta"] .mobile-menu div {
+            font-size: 12px !important;
           }
         }
         
@@ -249,6 +303,23 @@ export default function Navbar() {
           .mobile-menu {
             display: none !important;
           }
+          
+          nav {
+            flex-wrap: nowrap !important;
+          }
+          
+          .desktop-nav {
+            flex-wrap: nowrap !important;
+          }
+          
+          .desktop-nav select {
+            position: relative;
+            z-index: 1001;
+          }
+          
+          .desktop-nav select option {
+            position: relative;
+          }
         }
 
         /* ── NAVBAR TAGLINE ── */
@@ -303,6 +374,18 @@ export default function Navbar() {
             margin: 0 8px;
             padding-top: 6px;
           }
+
+          html[lang="ta"] .navbar-brand-title {
+            font-size: clamp(0.85rem, 2.5vw, 1.1rem) !important;
+          }
+
+          html[lang="ta"] .navbar-brand-subtitle {
+            font-size: clamp(0.65rem, 1.4vw, 0.85rem) !important;
+          }
+
+          html[lang="ta"] .navbar-tagline {
+            font-size: clamp(0.65rem, 1.3vw, 0.8rem) !important;
+          }
         }
       `}</style>
 
@@ -317,10 +400,12 @@ export default function Navbar() {
         position: 'sticky',
         top: 0,
         zIndex: 1000,
-        flexWrap: 'wrap'
+        flexWrap: 'wrap',
+        minHeight: '70px',
+        overflow: 'visible'
       }}>
         {/* Brand Logo and Text */}
-        <Link to="/" style={{ textDecoration: 'none', color: 'inherit', display: 'flex' }}>
+        <Link to="/" style={{ textDecoration: 'none', color: 'inherit', display: 'flex', flexShrink: 0 }}>
           <div className="navbar-brand-container">
             <div className="navbar-logo">
               <img src="/assets/chennai_profiles.png" alt="Chennai Profiles Logo" 
@@ -334,13 +419,14 @@ export default function Navbar() {
         </Link>
         
         {/* Navbar Tagline */}
-        <div className="navbar-tagline">Where Hearts Meet Their Perfect Match ❤️</div>
+        {/* <div className="navbar-tagline">Where Hearts Meet Their Perfect Match ❤️</div> */}
         
         {/* Desktop Navigation */}
         <div className="desktop-nav" style={{
           display: 'flex',
-          gap: 'clamp(20px, 5vw, 40px)',
-          alignItems: 'center'
+          gap: 'clamp(12px, 3vw, 25px)',
+          alignItems: 'center',
+          flexWrap: 'nowrap'
         }}>
           <Link to="/" style={navLinkStyle} 
             onMouseEnter={(e) => {
@@ -356,7 +442,7 @@ export default function Navbar() {
             {t('navbar.home')}
           </Link>
           
-          <Link to="/registration" style={navLinkStyle}
+          {/* <Link to="/registration" style={navLinkStyle}
             onMouseEnter={(e) => {
               e.target.style.color = '#E8B76A';
               e.target.style.backgroundColor = 'rgba(232,183,106,0.1)';
@@ -368,7 +454,7 @@ export default function Navbar() {
               e.target.style.transform = 'translateY(0)';
             }}>
             {t('navbar.registration')}
-          </Link>
+          </Link> */}
 
           <Link to="/search" style={navLinkStyle}
             onMouseEnter={(e) => {
@@ -411,7 +497,14 @@ export default function Navbar() {
               cursor: 'pointer',
               fontSize: '14px',
               fontWeight: '500',
-              transition: 'all 0.3s ease'
+              transition: 'all 0.3s ease',
+              flexShrink: 0,
+              marginLeft: 'auto',
+              minWidth: '120px',
+              maxWidth: '150px',
+              overflow: 'hidden',
+              position: 'relative',
+              zIndex: 1001
             }}
             onMouseEnter={(e) => {
               e.target.style.backgroundColor = 'rgba(232,183,106,0.2)';
@@ -439,7 +532,7 @@ export default function Navbar() {
         <div className={`mobile-menu ${!menuOpen ? 'closed' : ''}`}>
           <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }} onClick={() => setMenuOpen(false)}>{t('navbar.home')}</Link>
           <Link to="/registration" style={{ textDecoration: 'none', color: 'inherit' }} onClick={() => setMenuOpen(false)}>{t('navbar.registration')}</Link>
-          <Link to="/search" style={{ textDecoration: 'none', color: 'inherit' }} onClick={() => setMenuOpen(false)}>Search</Link>
+          <Link to="/search" style={{ textDecoration: 'none', color: 'inherit' }} onClick={() => setMenuOpen(false)}>{t('navbar.search')}</Link>
           <Link to="/contact" style={{ textDecoration: 'none', color: 'inherit' }} onClick={() => setMenuOpen(false)}>{t('navbar.contact')}</Link>
           <select 
             value={i18n.language}
