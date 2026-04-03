@@ -23,8 +23,10 @@ const DUMMY = [
 
 const DUMMY_MALE   = DUMMY.filter(p => p.gender === 'Male');
 const DUMMY_FEMALE = DUMMY.filter(p => p.gender === 'Female');
-const DUMMY_MALE_LOOP   = [...DUMMY_MALE,   ...DUMMY_MALE,   ...DUMMY_MALE];
-const DUMMY_FEMALE_LOOP = [...DUMMY_FEMALE, ...DUMMY_FEMALE, ...DUMMY_FEMALE];
+
+// 2 copies for seamless loop
+const DUMMY_MALE_LOOP   = [...DUMMY_MALE,   ...DUMMY_MALE];
+const DUMMY_FEMALE_LOOP = [...DUMMY_FEMALE, ...DUMMY_FEMALE];
 
 export default function Home() {
   const { t } = useTranslation();
@@ -51,10 +53,10 @@ export default function Home() {
 
   const maleScrollRef   = useRef(null);
   const femaleScrollRef = useRef(null);
-  const maleAnimRef     = useRef(null);
-  const femaleAnimRef   = useRef(null);
-  const malePosRef      = useRef(0);
-  const femalePosRef    = useRef(0);
+  const maleInnerRef    = useRef(null);
+  const femaleInnerRef  = useRef(null);
+  const malePosRef      = useRef(null); // null = not yet initialised
+  const femalePosRef    = useRef(null);
 
   const adImages = [
     '/assets/addcarimg.png',
@@ -69,107 +71,76 @@ export default function Home() {
     return () => clearInterval(adTimer);
   }, [adImages.length]);
 
-  // Debug effect to check scroll element properties
+  // ── MALE carousel: scrolls top → bottom, seamless ──
   useEffect(() => {
-    const timer = setTimeout(() => {
-      if (maleScrollRef.current) {
-        console.log('Male scroll element:', {
-          scrollHeight: maleScrollRef.current.scrollHeight,
-          clientHeight: maleScrollRef.current.clientHeight,
-          children: maleScrollRef.current.children.length,
-        });
-      }
-      if (femaleScrollRef.current) {
-        console.log('Female scroll element:', {
-          scrollHeight: femaleScrollRef.current.scrollHeight,
-          clientHeight: femaleScrollRef.current.clientHeight,
-          children: femaleScrollRef.current.children.length,
-        });
-      }
-    }, 500);
-    return () => clearTimeout(timer);
-  }, []);
+    const inner = maleInnerRef.current;
+    if (!inner) return;
 
-  useEffect(() => {
-    const el = maleScrollRef.current;
-    if (!el) return;
-    
-    // Small delay to ensure DOM is fully rendered
-    const startTimer = setTimeout(() => {
-      const speed = 0.6;
-      let isFirstFrame = true;
-      
-      const step = () => {
-        if (!isPausedMale && el) {
-          const scrollHeight = el.scrollHeight;
-          const clientHeight = el.clientHeight;
-          const maxScroll = scrollHeight - clientHeight;
-          
-          if (isFirstFrame) {
-            console.log('Starting male scroll animation', { scrollHeight, clientHeight, maxScroll });
-            isFirstFrame = false;
-          }
-          
-          malePosRef.current -= speed;                        // ✅ decrement to scroll upward
-          const oneSetHeight = scrollHeight / 3;
-          
-          if (malePosRef.current <= -oneSetHeight) {          // ✅ reset when scrolled up one full set
-            malePosRef.current = 0;
-          }
-          
-          el.scrollTop = malePosRef.current;
+    const speed = 0.5;
+    let animationId = null;
+    let initialised = false;
+
+    const animate = () => {
+      // Wait one frame so the DOM has rendered and scrollHeight is correct
+      if (!initialised) {
+        const oneSetHeight = inner.scrollHeight / 2;
+        malePosRef.current = -oneSetHeight; // start showing the second copy
+        inner.style.transform = `translateY(${malePosRef.current}px)`;
+        initialised = true;
+      }
+
+      if (!isPausedMale) {
+        malePosRef.current += speed; // move downward
+
+        const oneSetHeight = inner.scrollHeight / 2;
+        // When the second copy has fully scrolled into view, jump back seamlessly
+        if (malePosRef.current >= 0) {
+          malePosRef.current = -oneSetHeight;
         }
-        maleAnimRef.current = requestAnimationFrame(step);
-      };
-      
-      maleAnimRef.current = requestAnimationFrame(step);
-    }, 100);
-    
-    return () => {
-      clearTimeout(startTimer);
-      if (maleAnimRef.current) cancelAnimationFrame(maleAnimRef.current);
+
+        inner.style.transform = `translateY(${malePosRef.current}px)`;
+      }
+
+      animationId = requestAnimationFrame(animate);
     };
+
+    animationId = requestAnimationFrame(animate);
+    return () => { if (animationId) cancelAnimationFrame(animationId); };
   }, [isPausedMale]);
 
+  // ── FEMALE carousel: same logic ──
   useEffect(() => {
-    const el = femaleScrollRef.current;
-    if (!el) return;
-    
-    // Small delay to ensure DOM is fully rendered
-    const startTimer = setTimeout(() => {
-      const speed = 0.6;
-      let isFirstFrame = true;
-      
-      const step = () => {
-        if (!isPausedFemale && el) {
-          const scrollHeight = el.scrollHeight;
-          const clientHeight = el.clientHeight;
-          const maxScroll = scrollHeight - clientHeight;
-          
-          if (isFirstFrame) {
-            console.log('Starting female scroll animation', { scrollHeight, clientHeight, maxScroll });
-            isFirstFrame = false;
-          }
-          
-          femalePosRef.current -= speed;                      // ✅ decrement to scroll upward
-          const oneSetHeight = scrollHeight / 3;
-          
-          if (femalePosRef.current <= -oneSetHeight) {        // ✅ reset when scrolled up one full set
-            femalePosRef.current = 0;
-          }
-          
-          el.scrollTop = femalePosRef.current;
+    const inner = femaleInnerRef.current;
+    if (!inner) return;
+
+    const speed = 0.5;
+    let animationId = null;
+    let initialised = false;
+
+    const animate = () => {
+      if (!initialised) {
+        const oneSetHeight = inner.scrollHeight / 2;
+        femalePosRef.current = -oneSetHeight;
+        inner.style.transform = `translateY(${femalePosRef.current}px)`;
+        initialised = true;
+      }
+
+      if (!isPausedFemale) {
+        femalePosRef.current += speed;
+
+        const oneSetHeight = inner.scrollHeight / 2;
+        if (femalePosRef.current >= 0) {
+          femalePosRef.current = -oneSetHeight;
         }
-        femaleAnimRef.current = requestAnimationFrame(step);
-      };
-      
-      femaleAnimRef.current = requestAnimationFrame(step);
-    }, 100);
-    
-    return () => {
-      clearTimeout(startTimer);
-      if (femaleAnimRef.current) cancelAnimationFrame(femaleAnimRef.current);
+
+        inner.style.transform = `translateY(${femalePosRef.current}px)`;
+      }
+
+      animationId = requestAnimationFrame(animate);
     };
+
+    animationId = requestAnimationFrame(animate);
+    return () => { if (animationId) cancelAnimationFrame(animationId); };
   }, [isPausedFemale]);
 
   const maleProfiles = [
@@ -331,44 +302,35 @@ export default function Home() {
           -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
         }
 
-        /* ══════════════════════════════════════════
-           TOP ROW: left (button + search) | right (whatsapp + carousels)
-           Both columns are equal height, no whitespace
-        ══════════════════════════════════════════ */
         .top-row {
           display: grid;
           grid-template-columns: 1fr 1fr;
           gap: 24px;
-          align-items: stretch;    /* both columns same height */
+          align-items: stretch;
           margin-bottom: 24px;
         }
 
-        /* Left column: button + search card stacked, fills height */
         .col-left {
           display: flex;
           flex-direction: column;
           gap: 16px;
         }
 
-        /* Right column: whatsapp + carousels, fills height */
         .col-right {
           display: flex;
           flex-direction: column;
           gap: 10px;
         }
 
-        /* The split carousel container fills remaining right-column space */
         .split-carousel-container {
           display: grid;
           grid-template-columns: 1fr 1fr;
           gap: 10px;
-          flex: 1;              /* grow to fill col-right */
-          min-height: 0;        /* allow shrink */
+          flex: 1;
+          min-height: 0;
         }
 
-        /* ══════════════════════════════════════════
-           FULL-WIDTH AD SECTION (below top row)
-        ══════════════════════════════════════════ */
+        /* ── AD SECTION ── */
         .ad-section {
           width: 100%;
           margin-bottom: 0;
@@ -381,7 +343,6 @@ export default function Home() {
           -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
         }
 
-        /* ── AD CAROUSEL – full width ── */
         .ad-carousel {
           position: relative;
           height: 380px;
@@ -572,14 +533,22 @@ export default function Home() {
         .vertical-carousel-wrapper::before { top: 0; background: linear-gradient(to bottom, rgba(255,255,255,0.95), transparent); }
         .vertical-carousel-wrapper::after  { bottom: 0; background: linear-gradient(to top, rgba(255,255,255,0.95), transparent); }
 
+        /* overflow:hidden clips the inner div; height constrains visible area */
         .profiles-scroller-vertical {
-          display: flex; flex-direction: column; gap: 0;
-          height: 420px; overflow-y: hidden; scroll-behavior: auto;
-          -webkit-overflow-scrolling: touch; padding: 0; position: relative;
+          height: 420px;
+          overflow: hidden;
+          position: relative;
+        }
+
+        /* inner div is absolutely free to move; no flex/gap so height is exact */
+        .profiles-scroller-inner {
+          position: absolute;
+          top: 0; left: 0; right: 0;
+          will-change: transform;
         }
 
         .profile-card-vertical {
-          flex: 0 0 auto; background: transparent; cursor: pointer;
+          background: transparent; cursor: pointer;
           border-bottom: 1px solid rgba(201,145,58,0.10);
           display: flex; flex-direction: column; align-items: center;
           gap: 8px; padding: 18px 10px;
@@ -715,7 +684,7 @@ export default function Home() {
         </div>
         <div className="section-heading">{t('home.title')}</div>
 
-        {/* ══ TOP ROW: Left (Create + Search) | Right (WhatsApp + Carousels) ══ */}
+        {/* ══ TOP ROW ══ */}
         <div className="top-row">
 
           {/* LEFT COLUMN */}
@@ -798,7 +767,7 @@ export default function Home() {
                 onError={(e) => { e.target.style.display = 'none'; }} />
             </a>
 
-            {/* Grooms + Brides carousels side by side, fills remaining height */}
+            {/* Grooms + Brides carousels */}
             <div className="split-carousel-container">
 
               {/* MALE CAROUSEL */}
@@ -808,25 +777,38 @@ export default function Home() {
                   <span className="gender-label-text" style={{ color: '#1a6ea8' }}>Grooms</span>
                   <span className="gender-label-count">{DUMMY_MALE.length}</span>
                 </div>
-                <div className="profiles-scroller-vertical" ref={maleScrollRef}
-                  onMouseEnter={() => setIsPausedMale(true)} onMouseLeave={() => setIsPausedMale(false)}>
-                  {DUMMY_MALE_LOOP.map((profile, index) => {
-                    const [bg, fg] = maritalColor(profile.marital);
-                    return (
-                      <div key={`m-${profile.id}-${index}`} className="profile-card-vertical"
-                        onClick={() => navigate(`/detail/${profile.id}`, { state: { profile } })}>
-                        <img src={profile.photo} alt={profile.name} className="profile-image-vertical"
-                          onError={(e) => { e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.name)}&background=1a6ea8&color=fff&size=80`; }} />
-                        <div className="profile-info-vertical">
-                          <div className="profile-name-vertical">{profile.name}</div>
-                          <div className="profile-age-vertical">{profile.age} yrs · {profile.caste}</div>
+                <div
+                  className="profiles-scroller-vertical"
+                  ref={maleScrollRef}
+                  onMouseEnter={() => setIsPausedMale(true)}
+                  onMouseLeave={() => setIsPausedMale(false)}
+                >
+                  <div className="profiles-scroller-inner" ref={maleInnerRef}>
+                    {DUMMY_MALE_LOOP.map((profile, index) => {
+                      const [bg, fg] = maritalColor(profile.marital);
+                      return (
+                        <div
+                          key={`m-${profile.id}-${index}`}
+                          className="profile-card-vertical"
+                          onClick={() => navigate(`/detail/${profile.id}`, { state: { profile } })}
+                        >
+                          <img
+                            src={profile.photo}
+                            alt={profile.name}
+                            className="profile-image-vertical"
+                            onError={(e) => { e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.name)}&background=1a6ea8&color=fff&size=80`; }}
+                          />
+                          <div className="profile-info-vertical">
+                            <div className="profile-name-vertical">{profile.name}</div>
+                            <div className="profile-age-vertical">{profile.age} yrs · {profile.caste}</div>
+                          </div>
+                          <span className="profile-badge-vertical" style={{ background: bg, color: fg }}>
+                            {profile.marital === 'Awaiting Divorce' ? 'Await.' : profile.marital}
+                          </span>
                         </div>
-                        <span className="profile-badge-vertical" style={{ background: bg, color: fg }}>
-                          {profile.marital === 'Awaiting Divorce' ? 'Await.' : profile.marital}
-                        </span>
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
 
@@ -837,25 +819,38 @@ export default function Home() {
                   <span className="gender-label-text" style={{ color: '#c0392b' }}>Brides</span>
                   <span className="gender-label-count">{DUMMY_FEMALE.length}</span>
                 </div>
-                <div className="profiles-scroller-vertical" ref={femaleScrollRef}
-                  onMouseEnter={() => setIsPausedFemale(true)} onMouseLeave={() => setIsPausedFemale(false)}>
-                  {DUMMY_FEMALE_LOOP.map((profile, index) => {
-                    const [bg, fg] = maritalColor(profile.marital);
-                    return (
-                      <div key={`f-${profile.id}-${index}`} className="profile-card-vertical"
-                        onClick={() => navigate(`/detail/${profile.id}`, { state: { profile } })}>
-                        <img src={profile.photo} alt={profile.name} className="profile-image-vertical"
-                          onError={(e) => { e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.name)}&background=c0392b&color=fff&size=80`; }} />
-                        <div className="profile-info-vertical">
-                          <div className="profile-name-vertical">{profile.name}</div>
-                          <div className="profile-age-vertical">{profile.age} yrs · {profile.caste}</div>
+                <div
+                  className="profiles-scroller-vertical"
+                  ref={femaleScrollRef}
+                  onMouseEnter={() => setIsPausedFemale(true)}
+                  onMouseLeave={() => setIsPausedFemale(false)}
+                >
+                  <div className="profiles-scroller-inner" ref={femaleInnerRef}>
+                    {DUMMY_FEMALE_LOOP.map((profile, index) => {
+                      const [bg, fg] = maritalColor(profile.marital);
+                      return (
+                        <div
+                          key={`f-${profile.id}-${index}`}
+                          className="profile-card-vertical"
+                          onClick={() => navigate(`/detail/${profile.id}`, { state: { profile } })}
+                        >
+                          <img
+                            src={profile.photo}
+                            alt={profile.name}
+                            className="profile-image-vertical"
+                            onError={(e) => { e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.name)}&background=c0392b&color=fff&size=80`; }}
+                          />
+                          <div className="profile-info-vertical">
+                            <div className="profile-name-vertical">{profile.name}</div>
+                            <div className="profile-age-vertical">{profile.age} yrs · {profile.caste}</div>
+                          </div>
+                          <span className="profile-badge-vertical" style={{ background: bg, color: fg }}>
+                            {profile.marital === 'Awaiting Divorce' ? 'Await.' : profile.marital}
+                          </span>
                         </div>
-                        <span className="profile-badge-vertical" style={{ background: bg, color: fg }}>
-                          {profile.marital === 'Awaiting Divorce' ? 'Await.' : profile.marital}
-                        </span>
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
 

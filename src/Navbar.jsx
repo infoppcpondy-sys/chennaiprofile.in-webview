@@ -442,7 +442,7 @@ export default function Navbar() {
             {t('navbar.home')}
           </Link>
           
-          <Link to="/registration" style={navLinkStyle}
+          {/* <Link to="/registration" style={navLinkStyle}
             onMouseEnter={(e) => {
               e.target.style.color = '#E8B76A';
               e.target.style.backgroundColor = 'rgba(232,183,106,0.1)';
@@ -454,7 +454,7 @@ export default function Navbar() {
               e.target.style.transform = 'translateY(0)';
             }}>
             {t('navbar.registration')}
-          </Link>
+          </Link> */}
 
           <Link to="/search" style={navLinkStyle}
             onMouseEnter={(e) => {
