@@ -23,7 +23,8 @@ export default function Navbar() {
     fontWeight: '500',
     padding: '8px 12px',
     borderRadius: '6px',
-    position: 'relative'
+    position: 'relative',
+    whiteSpace: 'nowrap'
   };
 
   const disabledStyle = {
@@ -36,6 +37,10 @@ export default function Navbar() {
     <>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700&display=swap');
+
+        html, body {
+          overflow-x: hidden;
+        }
 
         /* ── TAMIL LANGUAGE SPECIFIC ADJUSTMENTS ── */
         html[lang="ta"] .navbar-brand-title {
@@ -53,6 +58,7 @@ export default function Navbar() {
         html[lang="ta"] .desktop-nav a,
         html[lang="ta"] .desktop-nav select {
           font-size: 13px !important;
+          white-space: nowrap;
         }
 
         html[lang="ta"] .navbar-tagline {
@@ -297,6 +303,23 @@ export default function Navbar() {
           .mobile-menu {
             display: none !important;
           }
+          
+          nav {
+            flex-wrap: nowrap !important;
+          }
+          
+          .desktop-nav {
+            flex-wrap: nowrap !important;
+          }
+          
+          .desktop-nav select {
+            position: relative;
+            z-index: 1001;
+          }
+          
+          .desktop-nav select option {
+            position: relative;
+          }
         }
 
         /* ── NAVBAR TAGLINE ── */
@@ -377,10 +400,12 @@ export default function Navbar() {
         position: 'sticky',
         top: 0,
         zIndex: 1000,
-        flexWrap: 'wrap'
+        flexWrap: 'wrap',
+        minHeight: '70px',
+        overflow: 'visible'
       }}>
         {/* Brand Logo and Text */}
-        <Link to="/" style={{ textDecoration: 'none', color: 'inherit', display: 'flex' }}>
+        <Link to="/" style={{ textDecoration: 'none', color: 'inherit', display: 'flex', flexShrink: 0 }}>
           <div className="navbar-brand-container">
             <div className="navbar-logo">
               <img src="/assets/chennai_profiles.png" alt="Chennai Profiles Logo" 
@@ -399,8 +424,9 @@ export default function Navbar() {
         {/* Desktop Navigation */}
         <div className="desktop-nav" style={{
           display: 'flex',
-          gap: 'clamp(20px, 5vw, 40px)',
-          alignItems: 'center'
+          gap: 'clamp(12px, 3vw, 25px)',
+          alignItems: 'center',
+          flexWrap: 'nowrap'
         }}>
           <Link to="/" style={navLinkStyle} 
             onMouseEnter={(e) => {
@@ -471,7 +497,14 @@ export default function Navbar() {
               cursor: 'pointer',
               fontSize: '14px',
               fontWeight: '500',
-              transition: 'all 0.3s ease'
+              transition: 'all 0.3s ease',
+              flexShrink: 0,
+              marginLeft: 'auto',
+              minWidth: '120px',
+              maxWidth: '150px',
+              overflow: 'hidden',
+              position: 'relative',
+              zIndex: 1001
             }}
             onMouseEnter={(e) => {
               e.target.style.backgroundColor = 'rgba(232,183,106,0.2)';

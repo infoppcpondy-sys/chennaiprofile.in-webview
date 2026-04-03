@@ -11,6 +11,8 @@ import PrivacyPolicy from './PrivacyPolicy.jsx'
 import AboutUs from './AboutUs.jsx'
 import TermsAndConditions from './TermsAndConditions.jsx'
 import Search from './search.jsx'
+import GoogleForm from './GoogleForm.jsx'
+import GoogleFormTA from './GoogleFormTA.jsx'
 import './index.css'
 import './i18n.js'
 
@@ -33,6 +35,8 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/registration" element={<Registration />} />
+        <Route path="/google-form" element={<GoogleForm />} />
+        <Route path="/google-form-ta" element={<GoogleFormTA />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/detail/:id" element={<Detail />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
