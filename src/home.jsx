@@ -69,38 +69,107 @@ export default function Home() {
     return () => clearInterval(adTimer);
   }, [adImages.length]);
 
+  // Debug effect to check scroll element properties
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (maleScrollRef.current) {
+        console.log('Male scroll element:', {
+          scrollHeight: maleScrollRef.current.scrollHeight,
+          clientHeight: maleScrollRef.current.clientHeight,
+          children: maleScrollRef.current.children.length,
+        });
+      }
+      if (femaleScrollRef.current) {
+        console.log('Female scroll element:', {
+          scrollHeight: femaleScrollRef.current.scrollHeight,
+          clientHeight: femaleScrollRef.current.clientHeight,
+          children: femaleScrollRef.current.children.length,
+        });
+      }
+    }, 500);
+    return () => clearTimeout(timer);
+  }, []);
+
   useEffect(() => {
     const el = maleScrollRef.current;
     if (!el) return;
-    const speed = 0.6;
-    const step = () => {
-      if (!isPausedMale && el) {
-        malePosRef.current += speed;
-        const oneSetHeight = el.scrollHeight / 3;
-        if (malePosRef.current >= oneSetHeight) malePosRef.current = 0;
-        el.scrollTop = malePosRef.current;
-      }
+    
+    // Small delay to ensure DOM is fully rendered
+    const startTimer = setTimeout(() => {
+      const speed = 0.6;
+      let isFirstFrame = true;
+      
+      const step = () => {
+        if (!isPausedMale && el) {
+          const scrollHeight = el.scrollHeight;
+          const clientHeight = el.clientHeight;
+          const maxScroll = scrollHeight - clientHeight;
+          
+          if (isFirstFrame) {
+            console.log('Starting male scroll animation', { scrollHeight, clientHeight, maxScroll });
+            isFirstFrame = false;
+          }
+          
+          malePosRef.current -= speed;                        // ✅ decrement to scroll upward
+          const oneSetHeight = scrollHeight / 3;
+          
+          if (malePosRef.current <= -oneSetHeight) {          // ✅ reset when scrolled up one full set
+            malePosRef.current = 0;
+          }
+          
+          el.scrollTop = malePosRef.current;
+        }
+        maleAnimRef.current = requestAnimationFrame(step);
+      };
+      
       maleAnimRef.current = requestAnimationFrame(step);
+    }, 100);
+    
+    return () => {
+      clearTimeout(startTimer);
+      if (maleAnimRef.current) cancelAnimationFrame(maleAnimRef.current);
     };
-    maleAnimRef.current = requestAnimationFrame(step);
-    return () => cancelAnimationFrame(maleAnimRef.current);
   }, [isPausedMale]);
 
   useEffect(() => {
     const el = femaleScrollRef.current;
     if (!el) return;
-    const speed = 0.6;
-    const step = () => {
-      if (!isPausedFemale && el) {
-        femalePosRef.current += speed;
-        const oneSetHeight = el.scrollHeight / 3;
-        if (femalePosRef.current >= oneSetHeight) femalePosRef.current = 0;
-        el.scrollTop = femalePosRef.current;
-      }
+    
+    // Small delay to ensure DOM is fully rendered
+    const startTimer = setTimeout(() => {
+      const speed = 0.6;
+      let isFirstFrame = true;
+      
+      const step = () => {
+        if (!isPausedFemale && el) {
+          const scrollHeight = el.scrollHeight;
+          const clientHeight = el.clientHeight;
+          const maxScroll = scrollHeight - clientHeight;
+          
+          if (isFirstFrame) {
+            console.log('Starting female scroll animation', { scrollHeight, clientHeight, maxScroll });
+            isFirstFrame = false;
+          }
+          
+          femalePosRef.current -= speed;                      // ✅ decrement to scroll upward
+          const oneSetHeight = scrollHeight / 3;
+          
+          if (femalePosRef.current <= -oneSetHeight) {        // ✅ reset when scrolled up one full set
+            femalePosRef.current = 0;
+          }
+          
+          el.scrollTop = femalePosRef.current;
+        }
+        femaleAnimRef.current = requestAnimationFrame(step);
+      };
+      
       femaleAnimRef.current = requestAnimationFrame(step);
+    }, 100);
+    
+    return () => {
+      clearTimeout(startTimer);
+      if (femaleAnimRef.current) cancelAnimationFrame(femaleAnimRef.current);
     };
-    femaleAnimRef.current = requestAnimationFrame(step);
-    return () => cancelAnimationFrame(femaleAnimRef.current);
   }, [isPausedFemale]);
 
   const maleProfiles = [
