@@ -1,5 +1,5 @@
-import { useState, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useMemo, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 // Static data kept as-is — values are locale-neutral keys used for filtering.
@@ -26,6 +26,7 @@ const INIT = { gender:"Female", language:"Any", caste:"Any", sortId:"asc", ageFr
 
 export default function MatrimonySearch() {
   const navigate   = useNavigate();
+  const location   = useLocation();
   const { t }      = useTranslation();
   const [filters,  setFilters]  = useState(INIT);
   const [applied,  setApplied]  = useState(INIT);
@@ -33,7 +34,20 @@ export default function MatrimonySearch() {
   const [showContact, setShowContact] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [viewMode, setViewMode] = useState("card");
+  const [quickSearchData, setQuickSearchData] = useState(null);
   const itemsPerPage = 10;
+
+  // ── Handle quick search results from home page ──
+  useEffect(() => {
+    if (location.state?.quickSearchResults) {
+      setQuickSearchData({
+        results: location.state.quickSearchResults,
+        filters: location.state.quickSearchFilters
+      });
+      // Clear the state to prevent issues on page reload
+      window.history.replaceState({}, document.title);
+    }
+  }, [location]);
 
   // ── Dropdown option arrays — sourced entirely from JSON ──────────────────
   const genderOptions  = t("search.genderOptions",  { returnObjects: true }) || [];
@@ -51,6 +65,12 @@ export default function MatrimonySearch() {
   };
 
   const results = useMemo(() => {
+    // If quick search data exists, use those results
+    if (quickSearchData) {
+      return quickSearchData.results;
+    }
+    
+    // Otherwise, apply normal filters
     let d = [...DUMMY];
     if (applied.gender   !== "Any") d = d.filter(r => r.gender   === applied.gender);
     if (applied.language !== "Any") d = d.filter(r => r.language === applied.language);
@@ -60,7 +80,7 @@ export default function MatrimonySearch() {
     if (applied.ageTo)              d = d.filter(r => r.age <= Number(applied.ageTo));
     d.sort((a, b) => applied.sortId === "asc" ? a.id - b.id : b.id - a.id);
     return d;
-  }, [applied]);
+  }, [applied, quickSearchData]);
 
   // Helper: get translated label for a value from an options array
   const getLabel = (options, value) => {

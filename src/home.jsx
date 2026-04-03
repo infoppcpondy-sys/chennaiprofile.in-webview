@@ -48,8 +48,6 @@ export default function Home() {
   const [registrationData, setRegistrationData] = useState({ createdFor: '', name: '', countryCode: '+91', phone: '' });
   const [isPausedMale,   setIsPausedMale]   = useState(false);
   const [isPausedFemale, setIsPausedFemale] = useState(false);
-  const [filteredResults, setFilteredResults] = useState([]);
-  const [showFilterResultsModal, setShowFilterResultsModal] = useState(false);
 
   const maleScrollRef   = useRef(null);
   const femaleScrollRef = useRef(null);
@@ -184,12 +182,12 @@ export default function Home() {
       return true;
     });
     if (results.length > 0) {
-      setFilteredResults(results); setShowFilterResultsModal(true);
-      setFeedbackMessage(t('home.foundProfiles') || `Found ${results.length} profile(s)`);
+      // Navigate to search page with filtered results
+      navigate('/search', { state: { quickSearchResults: results, quickSearchFilters: quickSearch } });
     } else {
       setFeedbackMessage(t('home.noProfilesFound') || 'No profiles found matching your criteria');
+      setTimeout(() => setFeedbackMessage(''), 3000);
     }
-    setTimeout(() => setFeedbackMessage(''), 3000);
   };
 
   const maskPhone = (phone) => {
@@ -896,7 +894,8 @@ export default function Home() {
         </div>
         {/* ══ END AD SECTION ══ */}
 
-        {/* Profile Scrollers */}
+        {/* Profile Scrollers - COMMENTED OUT */}
+        {false && (
         <div className="scroller-section">
           <div>
             <div className="scroller-title">
@@ -940,6 +939,7 @@ export default function Home() {
             </div>
           </div>
         </div>
+        )}
 
       </main>
 
@@ -1059,44 +1059,6 @@ export default function Home() {
         </div>
       )}
 
-      {/* Filter Results Modal */}
-      {showFilterResultsModal && (
-        <div className="modal-overlay" onClick={() => setShowFilterResultsModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <button className="modal-close-btn" onClick={() => setShowFilterResultsModal(false)}>✕</button>
-              <div className="modal-header-title">{t('home.searchResults') || 'Search Results'}</div>
-            </div>
-            <div className="modal-body">
-              <div style={{ fontSize: 12, color: "#666", marginBottom: 16, textAlign: "center" }}>
-                Found {filteredResults.length} {filteredResults.length === 1 ? 'profile' : 'profiles'}
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16, maxHeight: '60vh', overflowY: 'auto' }}>
-                {filteredResults.map((profile) => (
-                  <div key={profile.id} style={{ background: "linear-gradient(135deg,#fff 0%,#fafbfc 100%)", borderRadius: 12, overflow: "hidden", boxShadow: "0 2px 8px rgba(0,0,0,0.1)", border: "2px solid rgba(201,145,58,0.15)" }}>
-                    <img src={profile.photo} alt={profile.name}
-                      style={{ width: "100%", height: 160, objectFit: "cover" }}
-                      onError={(e) => { e.target.src=`https://ui-avatars.com/api/?name=${encodeURIComponent(profile.name)}&background=c0392b&color=fff&size=200`; }} />
-                    <div style={{ padding: "14px 12px" }}>
-                      <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 14, fontWeight: 700, color: "#1a1a1a", marginBottom: 4 }}>{profile.name}</div>
-                      <div style={{ fontSize: 11, background: "#fdecea", color: "#c0392b", padding: "3px 9px", borderRadius: 4, display: "inline-block", marginBottom: 8 }}>{profile.regId}</div>
-                      <div style={{ display: "flex", gap: 4, flexWrap: "wrap", marginBottom: 10, marginTop: 6 }}>
-                        <span style={{ padding: "3px 8px", borderRadius: 12, fontSize: 10, fontWeight: 600, background: profile.gender==="Male" ? "#e8f4fd" : "#fde8f0", color: profile.gender==="Male" ? "#1a6ea8" : "#c0392b" }}>{profile.gender}</span>
-                        <span style={{ padding: "3px 8px", borderRadius: 12, fontSize: 10, fontWeight: 600, background: "#fff3e0", color: "#d35400" }}>{profile.language}</span>
-                        <span style={{ padding: "3px 8px", borderRadius: 12, fontSize: 10, fontWeight: 600, background: "#f0f0f0", color: "#666" }}>{profile.caste}</span>
-                      </div>
-                      <button onClick={() => { setShowFilterResultsModal(false); navigate(`/detail/${profile.id}`, { state: { profile } }); }}
-                        style={{ width: "100%", padding: "6px 10px", borderRadius: 6, border: "none", fontSize: 11, fontWeight: 600, cursor: "pointer", background: "linear-gradient(135deg,#7B1C2E,#9B2A40)", color: "#fff" }}>
-                        View Profile
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
