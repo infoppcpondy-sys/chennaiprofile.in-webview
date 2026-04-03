@@ -119,7 +119,7 @@ export default function MatrimonySearch() {
         .rtable tr:nth-child(even) td{background:#fffafa;} .rtable tr:nth-child(odd) td{background:#fff;}
         .rtable tbody tr{cursor:pointer;transition:background-color 0.15s ease;}
         .rtable tbody tr:hover td{background:#fdecea;}
-        .thumb{width:120px;height:120px;border-radius:8px;object-fit:cover;border:none;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s;display:block;}
+        .thumb{width:400px;height:400px;border-radius:8px;object-fit:cover;border:none;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s;display:block;}
         .thumb:hover{transform:scale(1.14);box-shadow:0 4px 16px rgba(192,57,43,0.4);}
         .regbadge{background:#fdecea;color:#c0392b;padding:3px 9px;border-radius:4px;font-size:12px;font-weight:700;}
         .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.65);backdrop-filter:blur(7px);z-index:999;display:flex;align-items:center;justify-content:center;padding:16px;}
@@ -135,7 +135,7 @@ export default function MatrimonySearch() {
         .card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;margin-bottom:30px;}
         .profile-card{background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 4px 12px rgba(192,57,43,0.1);border:1px solid rgba(192,57,43,0.12);transition:all 0.3s ease;cursor:pointer;display:flex;flex-direction:column;}
         .profile-card:hover{transform:translateY(-4px);box-shadow:0 8px 24px rgba(192,57,43,0.2);}
-        .card-photo{width:100%;height:240px;object-fit:cover;background:linear-gradient(135deg,#fdecea,#fff);}
+        .card-photo{width:400px;height:400px;object-fit:cover;background:linear-gradient(135deg,#fdecea,#fff);}
         .card-content{padding:16px 14px;flex:1;display:flex;flex-direction:column;}
         .card-name{font-family:'Merriweather',serif;font-size:16px;font-weight:700;color:#1a1a1a;margin-bottom:4px;}
         .card-regid{font-size:11px;color:#999;font-family:Georgia,serif;margin-bottom:10px;}

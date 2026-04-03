@@ -556,7 +556,7 @@ export default function Home() {
         .profile-card-vertical:last-child { border-bottom: none; }
 
         .profile-image-vertical {
-          width: 90px; height: 90px; object-fit: cover; border-radius: 4px;
+          width: 200px; height: 200px; object-fit: cover; border-radius: 4px;
           border: 2px solid rgba(201,145,58,0.3); flex-shrink: 0;
           background: linear-gradient(135deg, var(--gold-light), var(--maroon-light)); display: block;
         }
